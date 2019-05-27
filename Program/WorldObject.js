@@ -12,6 +12,7 @@ class WorldObject {
 	removeFromMeshCollection(item) { this.meshCollection = this.meshCollection.filter(function(value, index, arr) { return value !== item; })};
 	getMeshCollection() { return this.meshCollection; }
 	setIsRayColliding(func) { this.isRayColliding = func; }
+	getFullType() { return this.objectType + " - " + this.objectSubtype; }
 
 	isRayColliding(raycaster) {
 		let intersects = raycaster.intersectObjects(this.meshCollection);

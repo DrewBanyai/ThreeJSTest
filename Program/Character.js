@@ -1,6 +1,6 @@
 class Character {
     constructor() {
-        this.object = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
+        this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
         this.group = null;
         this.head = null;
         this.body = null;
@@ -57,20 +57,20 @@ class Character {
 
         this.setPartPositions();
 
-        this.leg1.worldObject = this.object;
-        this.leg2.worldObject = this.object;
-        this.body.worldObject = this.object;
-        this.arm1.worldObject = this.object;
-        this.arm2.worldObject = this.object;
-        this.head.worldObject = this.object;
+        this.leg1.worldObject = this.worldObject;
+        this.leg2.worldObject = this.worldObject;
+        this.body.worldObject = this.worldObject;
+        this.arm1.worldObject = this.worldObject;
+        this.arm2.worldObject = this.worldObject;
+        this.head.worldObject = this.worldObject;
 
         //  Add all meshes to the WorldObject mesh collection
-        this.object.addToMeshCollection(this.leg1);
-        this.object.addToMeshCollection(this.leg2);
-        this.object.addToMeshCollection(this.body);
-        this.object.addToMeshCollection(this.arm1);
-        this.object.addToMeshCollection(this.arm2);
-        this.object.addToMeshCollection(this.head);
+        this.worldObject.addToMeshCollection(this.leg1);
+        this.worldObject.addToMeshCollection(this.leg2);
+        this.worldObject.addToMeshCollection(this.body);
+        this.worldObject.addToMeshCollection(this.arm1);
+        this.worldObject.addToMeshCollection(this.arm2);
+        this.worldObject.addToMeshCollection(this.head);
 
         //  Create a group of the meshes to add to the scene
         this.group = new THREE.Group();
@@ -105,7 +105,8 @@ class Character {
             deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
             if (deltaPosition.lengthSq() > lengthSq) { 
                 this.position = this.targetPosition;
-                if ((this.positionTarget.object.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
+                if ((this.positionTarget.worldObject.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
+                if ((this.positionTarget.worldObject.objectSubtype === "Dirt") && this.chopTreeFunc !== null) { this.plantCropFunc(this, this.positionTarget); }
                 this.targetPosition = null;
             }
             else { this.position.add(deltaPosition); }

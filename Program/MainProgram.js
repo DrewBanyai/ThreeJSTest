@@ -142,22 +142,36 @@ function init() {
 			{
 				if (selectedObject === null) { return; }
 				if (mouseOverObject === null) { return; }
-				if ((selectedObject.objectType === "Character") && (mouseOverObject.objectType === "GroundBlock")) {
-					let groundBlockPos = mouseOverObject.baseObject.content.position;
-					let additive = new THREE.Vector3(0, 50, 0); //  TODO: Fix this later by having GroundBlock be an object type like Character
-					selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject);
-				}
-				else if ((selectedObject.objectType === "Character") && (mouseOverObject.objectType === "Tree")) {
-					let groundBlockPos = mouseOverObject.baseObject.groundBlock.content.position;
-					let additive = new THREE.Vector3(0, 50, 0); //  TODO: Fix this later by having GroundBlock be an object type like Character
-					selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject.groundBlock);
-				}
+				if (selectedObject.objectType !== "Character") { return; }
+				rightClickObject(mouseOverObject);
 			}
 			break;
 		}
 	});
 	
 	animate();
+}
+
+function rightClickObject(object) {
+	let objectFullType = object.getFullType();
+	switch (objectFullType) {
+		case "GroundBlock - Grass":
+		case "GroundBlock - Dirt":
+		case "GroundBlock - Tree":
+			{
+				let groundBlockPos = mouseOverObject.baseObject.content.position;
+				let additive = GroundBlock.getTopMiddleDelta();
+				selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject);
+			}
+			break;
+		case "Tree - Basic":
+			{
+				let groundBlockPos = mouseOverObject.baseObject.groundBlock.content.position;
+				let additive = GroundBlock.getTopMiddleDelta();
+				selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject.groundBlock);
+			}
+			break;
+	}
 }
 
 function onWindowResize() {
@@ -205,7 +219,7 @@ function highlightFirstMouseIntersect() {
 		mouseOverObject.highlightObject();
 
 		let objectTypeTitle = document.getElementById("ObjectTypeTitle");
-		if (objectTypeTitle) { objectTypeTitle.innerText = mouseOverObject.objectType ? (mouseOverObject.objectType + " - " + mouseOverObject.objectSubtype) : ""; }
+		if (objectTypeTitle) { objectTypeTitle.innerText = mouseOverObject.objectType ? (mouseOverObject.getFullType()) : ""; }
 	}
 }
 
@@ -214,6 +228,7 @@ function animate() {
 
 	let deltaTime = clock.getDelta();
 	testWorld.characters.forEach((character) => character.update(deltaTime));
+	testWorld.update(deltaTime);
 	
 	highlightFirstMouseIntersect();
 
