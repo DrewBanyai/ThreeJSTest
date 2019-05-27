@@ -14,6 +14,7 @@ class Character {
         this.walkSpeed = 200;
         this.chopTreeFunc = null;
         this.plantCropFunc = null;
+        this.harvestFunc = null;
         this.drinkWaterFunc = null;
         this.content = this.generateContent();
     }
@@ -105,8 +106,9 @@ class Character {
             deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
             if (deltaPosition.lengthSq() > lengthSq) { 
                 this.position = this.targetPosition;
-                if ((this.positionTarget.worldObject.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
-                if ((this.positionTarget.worldObject.objectSubtype === "Dirt") && this.chopTreeFunc !== null) { this.plantCropFunc(this, this.positionTarget); }
+                if      ((this.positionTarget.worldObject.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
+                else if ((this.positionTarget.worldObject.objectSubtype === "Dirt") && this.chopTreeFunc !== null) { this.plantCropFunc(this, this.positionTarget); }
+                else if ((this.positionTarget.worldObject.objectSubtype === "Crop") && this.harvestFunc !== null) { this.harvestFunc(this, this.positionTarget); }
                 this.targetPosition = null;
             }
             else { this.position.add(deltaPosition); }

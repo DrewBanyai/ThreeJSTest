@@ -71,6 +71,7 @@ class TestWorld {
 
         let tree = this.trees["tree" + positionIndex.toString()];
         tree.worldObject.meshCollection.forEach((mesh) => this.scene.remove(mesh));
+        this.trees.remove(tree);
         tree = null;
 
         this.groundPieces[positionIndex].setGroundSubtype("Grass");
@@ -85,11 +86,22 @@ class TestWorld {
 
         this.crops["crop" + positionIndex.toString()] = crop;
         crop.groundBlock = this.groundPieces[positionIndex];
+        this.groundPieces[positionIndex].crop = crop;
         this.scene.add(crop.meshGroup);
     }
 
     harvestCrop(positionIndex) {
+        if (!this.isGroundSubtype(positionIndex, "Crop")) { console.log(`Attempted to harvest non-existent crop at index ${positionIndex}`); return; }
 
+        let crop = this.crops["crop" + positionIndex.toString()];
+        if (crop.currentState != Crop.stateEnum.GROWN) { console.log("You can't harvest this crop until it is fully grown!"); return; }
+
+        crop.removeCrop();
+        delete this.crops["crop" + positionIndex.toString()];
+        crop = null;
+
+        this.groundPieces[positionIndex].setGroundSubtype("Dirt");
+        this.groundPieces[positionIndex].crop = null;
     }
 
     static getWorldSize() { return { x: 20, z: 20 }; }
@@ -111,6 +123,12 @@ class TestWorld {
             if (target.crop !== null) { return; }
             let positionIndex = TestWorld.getPositionIndexFromBlocks(target.blockPositionIndex);
             this.plantCrop(positionIndex);
+        }
+
+        character.harvestFunc = (char, target) => {
+            if (target.crop === null) { return; }
+            let positionIndex = TestWorld.getPositionIndexFromBlocks(target.blockPositionIndex);
+            this.harvestCrop(positionIndex);
         }
     }
 

@@ -158,6 +158,7 @@ function rightClickObject(object) {
 		case "GroundBlock - Grass":
 		case "GroundBlock - Dirt":
 		case "GroundBlock - Tree":
+		case "GroundBlock - Crop":
 			{
 				let groundBlockPos = mouseOverObject.baseObject.content.position;
 				let additive = GroundBlock.getTopMiddleDelta();
@@ -227,7 +228,6 @@ function animate() {
 	requestAnimationFrame(animate);
 
 	let deltaTime = clock.getDelta();
-	testWorld.characters.forEach((character) => character.update(deltaTime));
 	testWorld.update(deltaTime);
 	
 	highlightFirstMouseIntersect();
