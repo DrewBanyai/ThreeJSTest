@@ -31,7 +31,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 	function activate() {
 
 		_domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		_domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+		_domElement.addEventListener( 'mousedown', onDocumentMouseDown, true );
 		_domElement.addEventListener( 'mouseup', onDocumentMouseCancel, false );
 		_domElement.addEventListener( 'mouseleave', onDocumentMouseCancel, false );
 		_domElement.addEventListener( 'touchmove', onDocumentTouchMove, false );
@@ -43,7 +43,7 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 	function deactivate() {
 
 		_domElement.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-		_domElement.removeEventListener( 'mousedown', onDocumentMouseDown, false );
+		_domElement.removeEventListener( 'mousedown', onDocumentMouseDown, true );
 		_domElement.removeEventListener( 'mouseup', onDocumentMouseCancel, false );
 		_domElement.removeEventListener( 'mouseleave', onDocumentMouseCancel, false );
 		_domElement.removeEventListener( 'touchmove', onDocumentTouchMove, false );
@@ -118,7 +118,6 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 	}
 
 	function onDocumentMouseDown( event ) {
-
 		event.preventDefault();
 
 		_raycaster.setFromCamera( _mouse, _camera );

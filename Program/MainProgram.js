@@ -1,76 +1,22 @@
 var container, stats;
 var camera, controls, scene, renderer;
-var objects = [];
+var draggableObjects = [];
 var mouse = new THREE.Vector2(), INTERSECTED;
 var radius = 100, theta = 0;
 var raycaster = new THREE.Raycaster();
 var mouseOverObject = null;
+var selectedObject = null;
+var clock = new THREE.Clock();
+
+let testWorld = null;
 
 init();
-
-function createInitialScene() {
-	//  Create a basic scene with a background color and an embient light value
-	scene = new THREE.Scene();
-	scene.background = new THREE.Color(0xf0f0f0);
-	scene.add(new THREE.AmbientLight(0x505050));
-	
-	//  Add a new spotlight shining over all objects in the scene
-	var light = new THREE.SpotLight(0xffffff, 1.5);
-	light.position.set(0, 500, 2000);
-	light.angle = Math.PI / 9;
-
-	//  Define the light shadow, so that dynamic shadows can generate
-	light.castShadow = true;
-	light.shadow.camera.near = 1000;
-	light.shadow.camera.far = 4000;
-	light.shadow.mapSize.width = 1024;
-	light.shadow.mapSize.height = 1024;
-	scene.add(light);
-}
-
-function createTestGeometry() {
-	//  Create a flyweight geometry object to copy into objects
-	var geometry = new THREE.BoxBufferGeometry( 40, 40, 40 );
-
-	//  Copy it into a large number of objects, randomly determining each objects color, rotation, and scale
-	for ( var i = 0; i < 200; i ++ ) {
-		var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: "rgb(" + parseInt(Math.random() * 255).toString() + ", " + parseInt(Math.random() * 255).toString() + ", " + parseInt(Math.random() * 255).toString() + ")" /*Math.random() * 0xffffff*/ } ) );
-
-		object.position.x = Math.random() * 1000 - 500;
-		object.position.y = Math.random() * 600 - 300;
-		object.position.z = Math.random() * 800 - 400;
-
-		object.rotation.x = Math.random() * 2 * Math.PI;
-		object.rotation.y = Math.random() * 2 * Math.PI;
-		object.rotation.z = Math.random() * 2 * Math.PI;
-
-		object.scale.x = Math.random() * 2 + 1;
-		object.scale.y = Math.random() * 2 + 1;
-		object.scale.z = Math.random() * 2 + 1;
-
-		object.castShadow = true;
-		object.receiveShadow = true;
-
-		//  Add each object to the scene and objects list
-		scene.add(object);
-		objects.push(object);
-	}
-}
 
 function createCameraAndRenderer() {
 	//  Create a 3D camera, and set it behind the 0,0,0 position, aiming at it.
 	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
+	camera.position.y = 1000;
 	camera.position.z = 1000;
-
-	//  Set the camera to be controllable by the mouse
-	controls = new THREE.TrackballControls( camera );
-	controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 1.2;
-	controls.panSpeed = 0.8;
-	controls.noZoom = false;
-	controls.noPan = false;
-	controls.staticMoving = true;
-	controls.dynamicDampingFactor = 0.3;
 
 	//  Create a WebGL renderer to render the scene through the camera
 	renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -80,23 +26,59 @@ function createCameraAndRenderer() {
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFShadowMap;
 
+	//  Set the camera to be controllable by the mouse
+	controls = new THREE.MapControls( camera, renderer.domElement );
+	controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+	controls.dampingFactor = 0.99;
+	controls.screenSpacePanning = false;
+	controls.minDistance = 100;
+	controls.maxDistance = 1000;
+	controls.maxPolarAngle = Math.PI / 2;
+
 	container.appendChild(renderer.domElement);
-	
-	//  Set the controls on both the camera and objects list
-	var dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
-	dragControls.addEventListener('dragstart', function (e) { controls.enabled = false; });
-	dragControls.addEventListener('dragend', function (e) { controls.enabled = true; });
 }
 
 function createTitleBar() {
 	//  Create the title bar at the top of the screen
 	var info = document.createElement( 'div' );
+	info.id = "TopScreenTitle",
 	info.style.position = 'absolute';
 	info.style.top = '10px';
 	info.style.width = '100%';
 	info.style.textAlign = 'center';
-	info.innerHTML = '<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - draggable cubes';
+	info.innerHTML = '<a href="https://github.com/DrewBanyai/ThreeJSTest" target="_blank" rel="noopener">Basic THREE.js test</a>';
 	container.appendChild( info );
+	
+	//  Create the object type label at the top of the screen
+	var objectType = document.createElement( 'div' );
+	objectType.id = "ObjectTypeTitle",
+	objectType.style.position = 'absolute';
+	objectType.style.top = '30px';
+	objectType.style.width = '100%';
+	objectType.style.textAlign = 'center';
+	objectType.innerHTML = "";
+	container.appendChild( objectType );
+	
+	//  Create the object type label at the top of the screen
+	var selectedType = document.createElement( 'div' );
+	selectedType.id = "SelectedTypeTitle",
+	selectedType.style.position = 'absolute';
+	selectedType.style.top = '50px';
+	selectedType.style.width = '100%';
+	selectedType.style.textAlign = 'center';
+	selectedType.innerHTML = "";
+	container.appendChild( selectedType );
+	
+	//  Create the day time label at the top of the screen
+	var dayTimeLabel = document.createElement( 'div' );
+	dayTimeLabel.id = "SelectedTypeTitle",
+	dayTimeLabel.style.position = 'absolute';
+	dayTimeLabel.style.top = '50px';
+	dayTimeLabel.style.left = "800px";
+	dayTimeLabel.style.width = '100%';
+	dayTimeLabel.style.textAlign = 'center';
+	dayTimeLabel.innerHTML = "TEST";
+	container.appendChild( dayTimeLabel );
 }
 
 function createStatsBlock() {
@@ -114,9 +96,7 @@ function init() {
 	container = document.createElement( 'div' );
 	document.body.appendChild( container );
 	
-	createInitialScene();
-	
-	createTestGeometry();
+	testWorld = new TestWorld({ backgroundColor: "rgb(240, 240, 240)", ambientLightColor: "rgb(80, 80, 80)" });
 	
 	createCameraAndRenderer();
 
@@ -129,6 +109,38 @@ function init() {
 	
 	//  Add an event listener to keep track of mouse position
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+	window.addEventListener( 'mousedown', function( event ) {
+		switch (event.button) {
+			case 0: //  Left button
+			{
+				selectedObject = (mouseOverObject && mouseOverObject.objectType === "Character") ? mouseOverObject : null;
+				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
+				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
+			}
+			break;
+
+			case 1: //  Middle button
+			{
+				selectedObject = null;
+				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
+				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
+			}
+			break;
+
+			case 2: //  Right button
+			{
+				if (selectedObject === null) { return; }
+				if (mouseOverObject === null) { return; }
+				if ((selectedObject.objectType === "Character") && (mouseOverObject.objectType === "GroundBlock")) {
+					let groundBlockPos = mouseOverObject.baseObject.content.position;
+					let additive = new THREE.Vector3(0, 50, 0); //  TODO: Fix this later by having GroundBlock be an object type like Character
+					selectedObject.baseObject.commandToMove(additive.add(groundBlockPos));
+				}
+			}
+			break;
+		}
+	});
 	
 	animate();
 }
@@ -146,30 +158,47 @@ function onDocumentMouseMove( event ) {
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
 
-function highlightFirstMouseIntersect() {
+function getFirstMouseIntersectObject() {
 	raycaster.setFromCamera( mouse, camera );
-	var intersects = raycaster.intersectObjects( scene.children );
-	
-	if (intersects.length === 0) { 
-		if (mouseOverObject) { mouseOverObject.material.emissive.setHex(mouseOverObject.savedHex); }
+
+	let intersects = raycaster.intersectObjects(testWorld.scene.children);
+	if (intersects.length === 0) { return null; }
+	let object = intersects[0].object;
+	if (!object || !object.worldObject) { return null; }
+
+	return object.worldObject;
+}
+
+function highlightFirstMouseIntersect() {
+	let intersectObject = getFirstMouseIntersectObject();
+
+	if (intersectObject === null) { 
+		if (mouseOverObject) { mouseOverObject.dehighlightObject(); }
 		mouseOverObject = null;
+		let objectTypeTitle = document.getElementById("ObjectTypeTitle");
+		if (objectTypeTitle) { objectTypeTitle.innerText = ""; }
 		return;
 	}
-	
+
 	//  If we haven't already selected this object, select it as the mouse over object and highlight it
-	if (mouseOverObject !== intersects[0].object) {
+	if (mouseOverObject !== intersectObject) {
 		//  If we already have a highlighted object, de-highlight it
-		if (mouseOverObject) { mouseOverObject.material.emissive.setHex(mouseOverObject.savedHex); }
+		if (mouseOverObject) { mouseOverObject.dehighlightObject(); }
 		
-		//  "Select" the new object and highlight it, saving off the old color for later
-		mouseOverObject = intersects[0].object;
-		mouseOverObject.savedHex = mouseOverObject.material.emissive.getHex();
-		mouseOverObject.material.emissive.setHex( 0xff0000 );
+		//  Save off the new object and highlight it
+		mouseOverObject = intersectObject;
+		mouseOverObject.highlightObject();
+
+		let objectTypeTitle = document.getElementById("ObjectTypeTitle");
+		if (objectTypeTitle) { objectTypeTitle.innerText = mouseOverObject.objectType ? (mouseOverObject.objectType + " - " + mouseOverObject.objectSubtype) : ""; }
 	}
 }
 
 function animate() {
 	requestAnimationFrame(animate);
+
+	let deltaTime = clock.getDelta();
+	testWorld.characters.forEach((character) => character.update(deltaTime));
 	
 	highlightFirstMouseIntersect();
 
@@ -180,5 +209,5 @@ function animate() {
 function render() {
 	controls.update();
 	
-	renderer.render(scene, camera);
+	renderer.render(testWorld.getScene(), camera);
 }

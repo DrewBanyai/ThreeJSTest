@@ -380,7 +380,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	}
 
-	function mousedown( event ) {
+	this.trackballMousedown = function ( event ) {
 
 		if ( _this.enabled === false ) return;
 
@@ -579,7 +579,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 	this.dispose = function () {
 
 		this.domElement.removeEventListener( 'contextmenu', contextmenu, false );
-		this.domElement.removeEventListener( 'mousedown', mousedown, false );
+		this.domElement.removeEventListener( 'mousedown', this.trackballMousedown, false );
 		this.domElement.removeEventListener( 'wheel', mousewheel, false );
 
 		this.domElement.removeEventListener( 'touchstart', touchstart, false );
@@ -595,8 +595,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 	};
 
 	this.domElement.addEventListener( 'contextmenu', contextmenu, false );
-	this.domElement.addEventListener( 'mousedown', mousedown, false );
-	//this.domElement.addEventListener( 'wheel', mousewheel, true );
+	//this.domElement.addEventListener( 'mousedown', this.trackballMousedown, true );
+	this.domElement.addEventListener( 'wheel', mousewheel, true );
 
 	this.domElement.addEventListener( 'wheel', mousewheel, { passive: true} );
 

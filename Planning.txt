@@ -1,0 +1,88 @@
+FIRST BUILD:
+- Display a basic flat map (can later push for different levels of ground)
+	- Small crop field with dirt plots (only beans for this demo... just tiny green marks when ripe?)
+	- Small house (no roof for now) with bed
+	- Small river/creek with a bridge over it
+	- A few basic trees
+	
+- Display a basic UI with counts for amounts of food and wood, as well as character stats like hunger, thirst, and exhaustion
+
+- A character can move around the map with clicks
+	- Clicking a tree will make them walk to it, chop it down (2 seconds, add chop sound) and get more wood
+	- Clicking a dirt plot will make them plant beans (1 second, add dirt moving sound)
+	- Clicking the river will make them drink (1 second, and slurping noise) which lowers their thirst
+	
+FUTURE BUILDS
+	- Grassy areas (grass should move with wind?)
+	- Character inventory (assume multiple characters eventually, all with their own hunger, thirst, exhaustion, fear, etc)
+	- Other crops (corn, squash, potatoes) with different growth times and nutritional values
+	- Animals (wolves will attack people in the forest, foxes stealing crops, deer wandering to be hunted)
+	- Sickness / health factors if a person works passed their exhaustion or doesn't eat enough or drinks too much river water
+	- Water gathering and purifying
+	- Wandering townsfolk will join the town and you can command them as well
+	- Special plants that grow in the forest like mushrooms (for medicine?)
+	- Command system which will allow you to give command lists to the characters which they will follow without intervention
+	- Bridge building for access to otherwise blocked areas
+	- Mining, Blacksmithing, Patrolling, Farming, Water Gathering/Purifying, Foresting, Construction, etc
+	
+EXAMPLES TO PULL FROM
+	- "framebuffer / texture": For making screenshots or "zooming in" on events as they occur
+	- "geometry / dynamic": For water effects, maybe an ocean at the edges of the map
+	- "geometry / minecraft" and "geometry / minecraft ao": For voxel world creation
+	- "geometry / spline / editor": For making bird or river paths
+	- "geometry / text / shapes": For 3D text objects floating off of characters and events
+	- "inveractive / voxelpainter": For building the worlds of the game
+	- "lights / hemisphere": Have to get lighting right in the game...
+	- "lights / physical": Have to get lighting right in the game...
+	- "lights / pointlights": Have to get lighting right in the game...
+	- "lights / pointlights2": Have to get lighting right in the game...
+	- "lights / spotlight": Have to get lighting right in the game...
+	- "lights / spotlights": Have to get lighting right in the game...
+	- "lights / rectarealight": Have to get lighting right in the game...
+	- "lines / dashed": Show movement patterns and form patrol lines
+	- "lod": Have to get level of detail rendering correct...
+	
+	- "materials": Definitely will want a wide range of materials with lighting conditions
+	- "materials / blending": Definitely will want a wide range of materials with lighting conditions
+	- "materials / blending / custom": Definitely will want a wide range of materials with lighting conditions
+	- "materials / channels": Definitely will want a wide range of materials with lighting conditions
+	- "materials / displacementmap": Definitely will want a wide range of materials with lighting conditions
+	- "materials / grass": Want to get a basic, cheap grass material as well as other ground materials
+	- "materials / standard": Definitely will want a wide range of materials with lighting conditions
+	- "materials / texture / anisotropy": Definitely will want a wide range of materials with lighting conditions
+	- "materials / texture / canvas": Allow players to make their own material textures to decorate their world
+	- "materials / texture / filters": Definitely will want a wide range of materials with lighting conditions
+	- "materials / variations / basic": Definitely will want a wide range of materials with lighting conditions
+	- "materials / variations / lambert": Definitely will want a wide range of materials with lighting conditions
+	- "materials / variations / phong": Definitely will want a wide range of materials with lighting conditions
+	- "materials / variations / standard": Definitely will want a wide range of materials with lighting conditions
+	- "materials / variations / physical": Definitely will want a wide range of materials with lighting conditions
+	- "materials / variations / toon": Definitely will want a wide range of materials with lighting conditions
+	
+	- "materials / video": Might eventually want video display for tutorials or special effects
+	- "math / orientation / transform": Making charaters turn their heads to events, or controlling the camera for cinematics
+	- "points / billboards": Great to know for this project and maybe my own?
+	- "points / sprites": Great for weather effects and other vfx
+	- "refraction": Great for a simple water effect?
+	- "shader": Will definitely want to learn this eventually
+	- "shader / lava": Will definitely want to learn this eventually, great lava effect
+	- "shader2": Will definitely want to learn this eventually
+	- "shader / ocean": Will definitely want to learn this eventually, great water effect
+	- "shader / ocean2": Will definitely want to learn this eventually, great water effect
+	- "shader / sky": Will definitely want to learn this eventually, great sky effect
+	- "shadowmap / pointlight": Have to get lighting right in the game...
+	- "shadowmap / viewer": Have to get lighting right in the game...
+	- "terrain / dynamic": Want to get that good looking terrain and also this might be useful for water?
+	- "tonemapping": Have to get lighting right in the game...
+	- "water": Great water effect, most likely a similar shader to "shader / ocean"
+	- "water / flowmap": Great water effect, useful for rivers that have direction
+	
+	- "postprocessing / unreal / bloom": Have to get lighting right in the game...
+	- "postprocessing / unreal / bloom / selective": Have to get lighting right in the game...
+	- "gpu / particle / system": Have to get particles right in the game...
+	- "animation": Have to get animation right in the game...
+	- "timing": Have to get audio right in the game...
+	- "animation / authoring": Have to get animation right in the game...
+	- "animation / skinning / morph": This is pretty much how I want my animations to work once I have them
+	- "boxselection": Might want to select multiple characters?
+	- "controls / map": This is the type of camera movement I want
