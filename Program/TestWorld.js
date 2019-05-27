@@ -6,7 +6,8 @@ class TestWorld {
         this.ambientLight = null;
         this.light = null;
         this.groundPieces = []; //  A list of ground plot WorldObject entities
-        this.characters = [];
+        this.trees = {}; //  A dictionary of tree WorldObject entities
+        this.characters = []; //  A list of character WorldObject entities
         this.content = this.generateContent();
     }
 
@@ -22,22 +23,11 @@ class TestWorld {
         this.scene.background = new THREE.Color(this.BackgroundColor);
         this.ambientLight = new THREE.AmbientLight(this.AmbientLightColor)
         this.scene.add(this.ambientLight);
-	
-        //  Add a new spotlight shining over all objects in the scene, with shadow effects
-        this.light = new THREE.SpotLight(0xffffff, 1.5);
-        this.light.position.set(0, 500, 2000);
-        this.light.angle = Math.PI / 9;
-        this.light.castShadow = true;
-        this.light.shadow.camera.near = 1000;
-        this.light.shadow.camera.far = 4000;
-        this.light.shadow.mapSize.width = 1024;
-        this.light.shadow.mapSize.height = 1024;
-        this.scene.add(this.light);
     }
 
     createBasicGroundPlot() {
-        for (let i = 0; i < 10; ++i) {
-            for (let j = 0; j < 10; ++j) {
+        for (let i = 0; i < TestWorld.getWorldSize().x; ++i) {
+            for (let j = 0; j < TestWorld.getWorldSize().z; ++j) {
                 let groundBlock = new GroundBlock({ groundType: "Grass", blockPositionIndex: { row: i, column: j } });
 
                 //  Add this ground piece to the scene and also to the list of ground pieces
@@ -47,17 +37,58 @@ class TestWorld {
         }
 
         //  Add the dirt plots
-        this.groundPieces[88].setGroundSubtype("Dirt");
-        this.groundPieces[87].setGroundSubtype("Dirt");
-        this.groundPieces[86].setGroundSubtype("Dirt");
-        this.groundPieces[85].setGroundSubtype("Dirt");
-        this.groundPieces[84].setGroundSubtype("Grass");
+        this.groundPieces[TestWorld.getWorldSize().x + 1].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getWorldSize().x + 2].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getWorldSize().x + 3].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getWorldSize().x + 4].setGroundSubtype("Dirt");
+
+        //  Add a few trees
+        this.plantTree(145);
     }
+
+    isGroundSubtype(positionIndex, type) {
+        if (positionIndex < 0) { return false; }
+        if (positionIndex >= (TestWorld.getWorldSize().x * TestWorld.getWorldSize().y)) { return false; }
+        if (this.groundPieces[positionIndex].getGroundSubtype() === type) { return true; }
+        return false;
+    }
+
+    plantTree(indexOverride) {
+        let positionIndex = indexOverride ? indexOverride : parseInt(Math.random() * (TestWorld.getWorldSize().x * TestWorld.getWorldSize().z));
+        while (!this.isGroundSubtype(positionIndex, "Grass")) { positionIndex = Math.random() * (TestWorld.getWorldSize().x * TestWorld.getWorldSize().z); }
+
+        let tree = new Tree({ height: "100", blockPositionIndex: { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x }})
+        tree.object.meshCollection.forEach((mesh) => this.scene.add(mesh));
+        this.groundPieces[positionIndex].setGroundSubtype("Tree");
+
+        this.trees["tree" + positionIndex.toString()] = tree;
+        tree.groundBlock = this.groundPieces[positionIndex];
+    }
+
+    destroyTree(positionIndex) {
+        if (!this.isGroundSubtype(positionIndex, "Tree")) { console.log(`Attempted to remove non-existent tree at index ${positionIndex}`); return; }
+
+        let tree = this.trees["tree" + positionIndex.toString()];
+        tree.object.meshCollection.forEach((mesh) => this.scene.remove(mesh));
+        tree = null;
+
+        this.groundPieces[positionIndex].setGroundSubtype("Grass");
+    }
+
+    static getWorldSize() { return { x: 20, z: 20 }; }
+    static getPositionIndexFromBlocks(blocks) {  return (blocks.row * TestWorld.getWorldSize().x) + blocks.column; }
+    static getBlocksFromPositionIndex(positionIndex) { return { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x } };
 
     createCharacter() {
         let character = new Character();
         this.characters.push(character);
         character.object.meshCollection.forEach((mesh) => this.scene.add(mesh));
+
+        character.chopTreeFunc = (char, target) => {
+            let positionIndex = TestWorld.getPositionIndexFromBlocks(target.blockPositionIndex);
+            this.destroyTree(positionIndex);
+            this.plantTree();
+        }
     }
 
     getScene() { return this.scene; }

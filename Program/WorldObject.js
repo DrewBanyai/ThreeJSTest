@@ -8,7 +8,8 @@ class WorldObject {
 		this.highlightColor = data.highlightColor ? data.highlightColor : 0xFF0000;
 	}
 
-	addToMeshCollection(mesh) { this.meshCollection.push(mesh); }
+	addToMeshCollection(item) { item.worldObject = this; this.meshCollection.push(item); }
+	removeFromMeshCollection(item) { this.meshCollection = this.meshCollection.filter(function(value, index, arr) { return value !== item; })};
 	getMeshCollection() { return this.meshCollection; }
 	setIsRayColliding(func) { this.isRayColliding = func; }
 
@@ -20,7 +21,7 @@ class WorldObject {
 	highlightObject() {
 		if (!this.meshCollection || (this.meshCollection.length === 0)) return;
 		this.meshCollection.forEach((mesh) => {
-			if (mesh.material.emissive) {
+			if (mesh.material && mesh.material.emissive) {
 				mesh.savedHex = mesh.material.emissive.getHex();
 				mesh.material.emissive.setHex(this.highlightColor);
 			}
@@ -29,7 +30,7 @@ class WorldObject {
 
 	dehighlightObject() {
 		this.meshCollection.forEach((mesh) => {
-			if (mesh.material.emissive) {
+			if (mesh.material && mesh.material.emissive) {
 				mesh.material.emissive.setHex(mesh.savedHex);
 			}
 		});

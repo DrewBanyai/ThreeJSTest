@@ -1,7 +1,7 @@
 var container, stats;
 var camera, controls, scene, renderer;
 var draggableObjects = [];
-var mouse = new THREE.Vector2(), INTERSECTED;
+var mouse = new THREE.Vector2(10000, 10000), INTERSECTED;
 var radius = 100, theta = 0;
 var raycaster = new THREE.Raycaster();
 var mouseOverObject = null;
@@ -9,6 +9,7 @@ var selectedObject = null;
 var clock = new THREE.Clock();
 
 let testWorld = null;
+let characterInventory = null;
 
 init();
 
@@ -81,6 +82,11 @@ function createTitleBar() {
 	container.appendChild( dayTimeLabel );
 }
 
+function createCharacterInventory() {
+	characterInventory = new CharacterInventory();
+	container.appendChild(characterInventory.content);
+}
+
 function createStatsBlock() {
 	stats = new Stats();
 	container.appendChild(stats.dom);
@@ -96,11 +102,13 @@ function init() {
 	container = document.createElement( 'div' );
 	document.body.appendChild( container );
 	
-	testWorld = new TestWorld({ backgroundColor: "rgb(240, 240, 240)", ambientLightColor: "rgb(80, 80, 80)" });
+	testWorld = new TestWorld({ backgroundColor: "rgb(240, 240, 240)", ambientLightColor: "rgb(222, 222, 222)" });
 	
 	createCameraAndRenderer();
 
 	createTitleBar();
+
+	createCharacterInventory();
 	
 	createStatsBlock();
 	
@@ -115,6 +123,7 @@ function init() {
 			case 0: //  Left button
 			{
 				selectedObject = (mouseOverObject && mouseOverObject.objectType === "Character") ? mouseOverObject : null;
+				//characterInventory.content.style.visibility = selectedObject ? "visible" : "hidden";
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
 				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
 			}
@@ -123,6 +132,7 @@ function init() {
 			case 1: //  Middle button
 			{
 				selectedObject = null;
+				//characterInventory.content.style.visibility = "hidden";
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
 				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
 			}
@@ -135,7 +145,12 @@ function init() {
 				if ((selectedObject.objectType === "Character") && (mouseOverObject.objectType === "GroundBlock")) {
 					let groundBlockPos = mouseOverObject.baseObject.content.position;
 					let additive = new THREE.Vector3(0, 50, 0); //  TODO: Fix this later by having GroundBlock be an object type like Character
-					selectedObject.baseObject.commandToMove(additive.add(groundBlockPos));
+					selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject);
+				}
+				else if ((selectedObject.objectType === "Character") && (mouseOverObject.objectType === "Tree")) {
+					let groundBlockPos = mouseOverObject.baseObject.groundBlock.content.position;
+					let additive = new THREE.Vector3(0, 50, 0); //  TODO: Fix this later by having GroundBlock be an object type like Character
+					selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject.groundBlock);
 				}
 			}
 			break;

@@ -13,6 +13,7 @@ FIRST BUILD:
 	- Clicking the river will make them drink (1 second, and slurping noise) which lowers their thirst
 	
 FUTURE BUILDS
+	- Move characters using a navigation mesh or A* on block maps? (test different methods... see what works best)
 	- Grassy areas (grass should move with wind?)
 	- Character inventory (assume multiple characters eventually, all with their own hunger, thirst, exhaustion, fear, etc)
 	- Other crops (corn, squash, potatoes) with different growth times and nutritional values

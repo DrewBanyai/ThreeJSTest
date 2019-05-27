@@ -10,7 +10,11 @@ class Character {
         this.leg2 = null;
         this.position = new THREE.Vector3(0, 0, 0);
         this.targetPosition = null;
+        this.positionTarget = null;
         this.walkSpeed = 200;
+        this.chopTreeFunc = null;
+        this.plantCropFunc = null;
+        this.drinkWaterFunc = null;
         this.content = this.generateContent();
     }
 
@@ -87,9 +91,10 @@ class Character {
         this.head.position.set(this.position.x + (0), this.position.y + (this.legsSize.y + this.bodySize.y + (this.headSize.y / 2)), this.position.z + 0);
     }
 
-    commandToMove(position) {
+    commandToMove(position, target) {
         if (this.targetPosition === null) { this.targetPosition = new THREE.Vector3(); }
         this.targetPosition.set(position.x, position.y, position.z);
+        this.positionTarget = target;
     }
 
     update(timeDelta) {
@@ -100,6 +105,7 @@ class Character {
             deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
             if (deltaPosition.lengthSq() > lengthSq) { 
                 this.position = this.targetPosition;
+                if ((this.positionTarget.object.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
                 this.targetPosition = null;
             }
             else { this.position.add(deltaPosition); }

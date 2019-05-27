@@ -2,7 +2,7 @@ class GroundBlock {
     constructor(data) {
         this.object = new WorldObject({ type: "GroundBlock", subtype: (data.groundType ? data.groundType : "Grass"), baseObject: this });
         this.blockPositionIndex = data.blockPositionIndex;
-        this.grass = new THREE.Group();
+        this.grass = null;
         this.content = this.generateContent();
     }
 
@@ -17,41 +17,52 @@ class GroundBlock {
         groundMesh.castShadow = false;
         groundMesh.receiveShadow = true;
 
-        groundMesh.worldObject = this.object;
-
-        if (this.blockPositionIndex.row === 8 && this.blockPositionIndex.column === 4) { this.addGrass(); }
+        if (this.object.objectSubtype === "Grass") { this.addGrass(); }
 
         this.object.addToMeshCollection(groundMesh);
 
         return groundMesh;
     }
 
+    getGroundSubtype() { return this.object.objectSubtype; }
+
     setGroundSubtype(subtype) {
-        //  TODO: Get rid of any special additions from the old subtype (this.object.objectSubtype)
+        //  Get rid of any special additions from the old subtype (this.object.objectSubtype)
+        if (this.object.objectSubtype === "Grass") { this.removeGrass(); }
 
         this.object.objectSubtype = subtype;
         this.content.material.color.set(GroundBlock.getGroundBlockColor(this.object.objectSubtype));
 
-        //  TODO: Add any special additions from the new subtype (this.object.objectSubtype)
+        //  Add any special additions from the new subtype (this.object.objectSubtype)
         if (subtype === "Grass") { this.addGrass(); }
     }
 
     addGrass() {
-        if (this.grass.length !== 0) { return; }
+        return;
+        if (this.grass !== null) { return; }
+        this.grass = new THREE.Group();
 
-        let grassColor = new THREE.Color().setHSL( 0.3, 0.75, ( 0 / 15 ) * 0.4 + 0.1 )
+        let grassBladeColor = "rgb(40, 160, 0)";
+        let grassBladeSize = { x: 2, y: 10, z: 2 };
+        let grassBladeGeom = new THREE.BoxBufferGeometry(grassBladeSize.x, grassBladeSize.y, grassBladeSize.z);
+        for (let i = 0; i < 200; ++i) {
+            let blade = new THREE.Mesh(grassBladeGeom, new THREE.MeshLambertMaterial({ color: grassBladeColor }));
+            
+            let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
+            blade.position.x = position.x - (GroundBlock.getPlotSize().x / 2) + (Math.random() * GroundBlock.getPlotSize().x);
+            blade.position.y = position.y + 50 + (grassBladeSize.y / 2);
+            blade.position.z = position.z - (GroundBlock.getPlotSize().z / 2) + (Math.random() * GroundBlock.getPlotSize().z);
 
-        var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
-        var texture = new THREE.CanvasTexture( GroundBlock.generateGrassTexture() );
-        var material = new THREE.MeshBasicMaterial( { color: grassColor, map: texture, depthTest: false, depthWrite: false, transparent: true } );
-        var mesh = new THREE.Mesh( geometry, material );
-
-        let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
-        mesh.position.set(position.x, position.y + 100, position.z);
-
-        this.grass.add(mesh);
+            this.grass.add(blade);
+        }
 
         this.object.addToMeshCollection(this.grass);
+    }
+
+    removeGrass() {
+        if (this.grass === null) { return; }
+        this.object.removeFromMeshCollection(this.grass);
+        this.grass = null;
     }
 
     static getPlotSize() { return { x: 100, y: 100, z: 100 }; }
@@ -59,24 +70,29 @@ class GroundBlock {
     static getGroundBlockColor(subtype) {
         switch (subtype) {
             case "Grass":       return "rgb(40, 200, 40)";
+            case "Tree":        return "rgb(30, 170, 30)";
             case "Dirt":        return "rgb(89, 60, 31)";
             default:            return "rgb(255, 0, 255)";
         }
     }
 
     static generateGrassTexture() {
-        let canvas = document.createElement( 'canvas' );
-        canvas.width = 128;
-        canvas.height = 128;
+        var canvas = document.createElement( 'canvas' );
+        canvas.width = 512;
+        canvas.height = 512;
+
         var context = canvas.getContext( '2d' );
-        for ( var i = 0; i < 4000; i ++ ) {
+
+        for ( var i = 0; i < 20000; i ++ ) {
             context.fillStyle = 'hsl(0,0%,' + ( Math.random() * 50 + 50 ) + '%)';
             context.beginPath();
             context.arc( Math.random() * canvas.width, Math.random() * canvas.height, Math.random() + 0.15, 0, Math.PI * 2, true );
             context.fill();
         }
+
         context.globalAlpha = 0.075;
         context.globalCompositeOperation = 'lighter';
+
         return canvas;
     }
 
