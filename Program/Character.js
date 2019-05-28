@@ -1,7 +1,6 @@
 class Character {
     constructor() {
         this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
-        this.group = null;
         this.head = null;
         this.body = null;
         this.arm1 = null;
@@ -58,29 +57,13 @@ class Character {
 
         this.setPartPositions();
 
-        this.leg1.worldObject = this.worldObject;
-        this.leg2.worldObject = this.worldObject;
-        this.body.worldObject = this.worldObject;
-        this.arm1.worldObject = this.worldObject;
-        this.arm2.worldObject = this.worldObject;
-        this.head.worldObject = this.worldObject;
-
         //  Add all meshes to the WorldObject mesh collection
-        this.worldObject.addToMeshCollection(this.leg1);
-        this.worldObject.addToMeshCollection(this.leg2);
-        this.worldObject.addToMeshCollection(this.body);
-        this.worldObject.addToMeshCollection(this.arm1);
-        this.worldObject.addToMeshCollection(this.arm2);
-        this.worldObject.addToMeshCollection(this.head);
-
-        //  Create a group of the meshes to add to the scene
-        this.group = new THREE.Group();
-        this.group.add(this.leg1);
-        this.group.add(this.leg2);
-        this.group.add(this.body);
-        this.group.add(this.arm1);
-        this.group.add(this.arm2);
-        this.group.add(this.head);
+        this.worldObject.addToMeshGroup(this.leg1);
+        this.worldObject.addToMeshGroup(this.leg2);
+        this.worldObject.addToMeshGroup(this.body);
+        this.worldObject.addToMeshGroup(this.arm1);
+        this.worldObject.addToMeshGroup(this.arm2);
+        this.worldObject.addToMeshGroup(this.head);
     }
 
     setPartPositions() {
@@ -95,6 +78,7 @@ class Character {
     commandToMove(position, target) {
         if (this.targetPosition === null) { this.targetPosition = new THREE.Vector3(); }
         this.targetPosition.set(position.x, position.y, position.z);
+        console.log(this.targetPosition);
         this.positionTarget = target;
     }
 
@@ -104,7 +88,7 @@ class Character {
             let lengthSq = deltaPosition.lengthSq();
             deltaPosition.normalize();
             deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
-            if (deltaPosition.lengthSq() > lengthSq) { 
+            if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { 
                 this.position = this.targetPosition;
                 if      ((this.positionTarget.worldObject.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
                 else if ((this.positionTarget.worldObject.objectSubtype === "Dirt") && this.chopTreeFunc !== null) { this.plantCropFunc(this, this.positionTarget); }

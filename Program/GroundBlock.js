@@ -4,7 +4,6 @@ class GroundBlock {
         this.blockPositionIndex = data.blockPositionIndex;
         this.grass = null;
         this.crop = null;
-        this.updateFunc = null;
         this.content = this.generateContent();
     }
 
@@ -21,7 +20,7 @@ class GroundBlock {
 
         if (this.worldObject.objectSubtype === "Grass") { this.addGrass(); }
 
-        this.worldObject.addToMeshCollection(groundMesh);
+        this.worldObject.addToMeshGroup(groundMesh);
 
         return groundMesh;
     }
@@ -58,12 +57,12 @@ class GroundBlock {
             this.grass.add(blade);
         }
 
-        this.worldObject.addToMeshCollection(this.grass);
+        this.worldObject.addToMeshGroup(this.grass);
     }
 
     removeGrass() {
         if (this.grass === null) { return; }
-        this.worldObject.removeFromMeshCollection(this.grass);
+        this.worldObject.removeFromMeshGroup(this.grass);
         this.grass = null;
     }
 
@@ -73,9 +72,10 @@ class GroundBlock {
     static getGroundBlockColor(subtype) {
         switch (subtype) {
             case "Grass":       return "rgb(40, 200, 40)";
-            case "Tree":        return "rgb(30, 170, 30)";
+            case "Tree":        return "rgb(40, 200, 40)";
             case "Dirt":        return "rgb(89, 60, 31)";
             case "Crop":        return "rgb(100, 70, 40)";
+            case "Bed":        return "rgb(100, 100, 200)";
             default:            return "rgb(255, 0, 255)";
         }
     }

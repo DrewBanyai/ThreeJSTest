@@ -885,7 +885,7 @@ THREE.MapControls = function ( object, domElement ) {
 
 		if ( scope.enabled === false || scope.enableZoom === false || ( state !== STATE.NONE && state !== STATE.ROTATE ) ) return;
 
-		event.preventDefault();
+		//event.preventDefault();
 		event.stopPropagation();
 
 		scope.dispatchEvent( startEvent );
@@ -908,7 +908,7 @@ THREE.MapControls = function ( object, domElement ) {
 
 		if ( scope.enabled === false ) return;
 
-		event.preventDefault();
+		//event.preventDefault();
 
 		switch ( event.touches.length ) {
 
@@ -951,7 +951,7 @@ THREE.MapControls = function ( object, domElement ) {
 
 		if ( scope.enabled === false ) return;
 
-		event.preventDefault();
+		//event.preventDefault();
 		event.stopPropagation();
 
 		switch ( event.touches.length ) {
@@ -1012,11 +1012,11 @@ THREE.MapControls = function ( object, domElement ) {
 	scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
 
 	scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	scope.domElement.addEventListener( 'wheel', onMouseWheel, false );
+	scope.domElement.addEventListener( 'wheel', onMouseWheel, { passive: true } );
 
-	scope.domElement.addEventListener( 'touchstart', onTouchStart, false );
+	scope.domElement.addEventListener( 'touchstart', onTouchStart, { passive: true } );
 	scope.domElement.addEventListener( 'touchend', onTouchEnd, false );
-	scope.domElement.addEventListener( 'touchmove', onTouchMove, false );
+	scope.domElement.addEventListener( 'touchmove', onTouchMove, { passive: true } );
 
 	window.addEventListener( 'keydown', onKeyDown, false );
 

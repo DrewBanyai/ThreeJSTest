@@ -2,44 +2,46 @@ class WorldObject {
 	constructor(data) {
 		this.objectType = data.type;
 		this.objectSubtype = data.subtype;
-		this.meshCollection = data.mesh ? [ data.mesh ] : [];
+		this.meshObjectGroup = new THREE.Group();
 		this.baseObject = data.baseObject;
 
 		this.highlightColor = data.highlightColor ? data.highlightColor : 0xFF0000;
 	}
 
-	addToMeshCollection(item) { item.worldObject = this; this.meshCollection.push(item); }
-	removeFromMeshCollection(item) { this.meshCollection = this.meshCollection.filter(function(value, index, arr) { return value !== item; })};
-	getMeshCollection() { return this.meshCollection; }
+	addToMeshGroup(item) { item.worldObject = this; this.meshObjectGroup.add(item); }
+	removeFromMeshGroup(item) { this.meshObjectGroup.children = this.meshObjectGroup.children.filter(function(value, index, arr) { return value !== item; })};
+	clearMeshGroup() { while (this.meshObjectGroup.children.length > 0) { this.meshObjectGroup.children.pop(); } }
+	getMeshObjectGroup() { return this.meshObjectGroup; }
 	setIsRayColliding(func) { this.isRayColliding = func; }
 	getFullType() { return this.objectType + " - " + this.objectSubtype; }
 
 	isRayColliding(raycaster) {
-		let intersects = raycaster.intersectObjects(this.meshCollection);
+		let intersects = raycaster.intersectObjects(this.meshObjectGroup);
 		return (intersects.length > 0);
 	}
 
-	highlightObject() {
-		if (!this.meshCollection || (this.meshCollection.length === 0)) return;
-		this.meshCollection.forEach((mesh) => {
-			if (mesh.material && mesh.material.emissive) {
-				mesh.savedHex = mesh.material.emissive.getHex();
-				mesh.material.emissive.setHex(this.highlightColor);
+	highlightObject(meshObject) {
+		if (!meshObject) { meshObject = this.meshObjectGroup; }
+		if (!meshObject || (meshObject.children.length === 0)) return;
+
+		meshObject.children.forEach((meshObject) => {
+			if (meshObject.type === "Group") { this.highlightObject(meshObject); }
+			else if (meshObject.material && meshObject.material.emissive) {
+				meshObject.savedHex = meshObject.material.emissive.getHex();
+				meshObject.material.emissive.setHex(this.highlightColor);
 			}
 		});
 	}
 
-	dehighlightObject() {
-		this.meshCollection.forEach((mesh) => {
-			if (mesh.material && mesh.material.emissive) {
-				mesh.material.emissive.setHex(mesh.savedHex);
-			}
-		});
-	}
+	dehighlightObject(meshObject) {
+		if (!meshObject) { meshObject = this.meshObjectGroup; }
+		if (!meshObject || (meshObject.children.length === 0)) return;
 
-	setColor(color) {
-		this.meshCollection.forEach((mesh) => {
-			mesh.material.color.set(color);
+		meshObject.children.forEach((meshObject) => {
+			if (meshObject.type === "Group") { this.dehighlightObject(meshObject); }
+			else if (meshObject.material && meshObject.material.emissive) {
+				meshObject.material.emissive.setHex(meshObject.savedHex);
+			}
 		});
 	}
 };

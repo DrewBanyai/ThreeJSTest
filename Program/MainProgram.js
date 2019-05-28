@@ -166,6 +166,7 @@ function rightClickObject(object) {
 			}
 			break;
 		case "Tree - Basic":
+		case "Crop - Beans":
 			{
 				let groundBlockPos = mouseOverObject.baseObject.groundBlock.content.position;
 				let additive = GroundBlock.getTopMiddleDelta();
@@ -191,7 +192,7 @@ function onDocumentMouseMove( event ) {
 function getFirstMouseIntersectObject() {
 	raycaster.setFromCamera( mouse, camera );
 
-	let intersects = raycaster.intersectObjects(testWorld.scene.children);
+	let intersects = raycaster.intersectObjects(testWorld.scene.children, true);
 	if (intersects.length === 0) { return null; }
 	let object = intersects[0].object;
 	if (!object || !object.worldObject) { return null; }

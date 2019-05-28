@@ -29,22 +29,30 @@ class TestWorld {
     createBasicGroundPlot() {
         for (let i = 0; i < TestWorld.getWorldSize().x; ++i) {
             for (let j = 0; j < TestWorld.getWorldSize().z; ++j) {
-                let groundBlock = new GroundBlock({ groundType: "Grass", blockPositionIndex: { row: i, column: j } });
+                let groundBlock = new GroundBlock({ groundType: "Grass", blockPositionIndex: { column: i, row: j } });
 
                 //  Add this ground piece to the scene and also to the list of ground pieces
-                groundBlock.worldObject.meshCollection.forEach((mesh) => this.scene.add(mesh));
+                this.scene.add(groundBlock.worldObject.getMeshObjectGroup());
                 this.groundPieces.push(groundBlock);
             }
         }
 
         //  Add the dirt plots
-        this.groundPieces[TestWorld.getWorldSize().x + 1].setGroundSubtype("Dirt");
-        this.groundPieces[TestWorld.getWorldSize().x + 2].setGroundSubtype("Dirt");
-        this.groundPieces[TestWorld.getWorldSize().x + 3].setGroundSubtype("Dirt");
-        this.groundPieces[TestWorld.getWorldSize().x + 4].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 1})].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 2})].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 3})].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 4})].setGroundSubtype("Dirt");
 
         //  Add a few trees
-        this.plantTree(145);
+        this.plantTree(TestWorld.getPositionIndexFromRowColumn(7, 4));
+
+        let bed = new Bed({ blockPositionIndex: { column: 7, row: 7 } });
+        this.scene.add(bed.worldObject.getMeshObjectGroup());
+        let bedPositionIndex1 = TestWorld.getPositionIndexFromBlocks({ column: 7, row: 7});
+        let bedPositionIndex2 = TestWorld.getPositionIndexFromBlocks({ column: 7, row: 8});
+        this.groundPieces[bedPositionIndex1].setGroundSubtype("Bed");
+        this.groundPieces[bedPositionIndex2].setGroundSubtype("Bed");
+        bed.groundBlock = this.groundPieces[bedPositionIndex1];
     }
 
     isGroundSubtype(positionIndex, type) {
@@ -55,11 +63,11 @@ class TestWorld {
     }
 
     plantTree(indexOverride) {
-        let positionIndex = indexOverride ? indexOverride : parseInt(Math.random() * (TestWorld.getWorldSize().x * TestWorld.getWorldSize().z));
-        while (!this.isGroundSubtype(positionIndex, "Grass")) { positionIndex = Math.random() * (TestWorld.getWorldSize().x * TestWorld.getWorldSize().z); }
+        let positionIndex = indexOverride ? indexOverride : TestWorld.getRandomWorldPosition();
+        while (!this.isGroundSubtype(positionIndex, "Grass")) { positionIndex = TestWorld.getRandomWorldPosition(); }
 
-        let tree = new Tree({ height: "100", blockPositionIndex: { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x }})
-        tree.worldObject.meshCollection.forEach((mesh) => this.scene.add(mesh));
+        let tree = new Tree({ height: "100", blockPositionIndex: TestWorld.getRowColumnFromPositionIndex(positionIndex) })
+        this.scene.add(tree.worldObject.getMeshObjectGroup());
         this.groundPieces[positionIndex].setGroundSubtype("Tree");
 
         this.trees["tree" + positionIndex.toString()] = tree;
@@ -70,8 +78,8 @@ class TestWorld {
         if (!this.isGroundSubtype(positionIndex, "Tree")) { console.log(`Attempted to remove non-existent tree at index ${positionIndex}`); return; }
 
         let tree = this.trees["tree" + positionIndex.toString()];
-        tree.worldObject.meshCollection.forEach((mesh) => this.scene.remove(mesh));
-        this.trees.remove(tree);
+        this.scene.remove(tree.worldObject.getMeshObjectGroup());
+        delete this.trees["tree" + positionIndex.toString()];
         tree = null;
 
         this.groundPieces[positionIndex].setGroundSubtype("Grass");
@@ -80,14 +88,13 @@ class TestWorld {
     plantCrop(positionIndex) {
         if (!this.isGroundSubtype(positionIndex, "Dirt")) { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
         
-        let crop = new Crop({ cropType: "Beans", blockPositionIndex: { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x }});
-        crop.worldObject.meshCollection.forEach((mesh) => this.scene.add(mesh));
+        let crop = new Crop({ cropType: "Beans", blockPositionIndex: TestWorld.getRowColumnFromPositionIndex(positionIndex) });
+        this.scene.add(crop.worldObject.getMeshObjectGroup());
         this.groundPieces[positionIndex].setGroundSubtype("Crop");
 
         this.crops["crop" + positionIndex.toString()] = crop;
         crop.groundBlock = this.groundPieces[positionIndex];
         this.groundPieces[positionIndex].crop = crop;
-        this.scene.add(crop.meshGroup);
     }
 
     harvestCrop(positionIndex) {
@@ -104,14 +111,17 @@ class TestWorld {
         this.groundPieces[positionIndex].crop = null;
     }
 
-    static getWorldSize() { return { x: 20, z: 20 }; }
+    static getRandomWorldPosition() { return parseInt(Math.random() * (TestWorld.getWorldSize().x * TestWorld.getWorldSize().z)); }
+    static getWorldSize() { return { x: 10, z: 10 }; }
+    static getPositionIndexFromRowColumn(column, row) { return column * TestWorld.getWorldSize().x + row; }
+    static getRowColumnFromPositionIndex(positionIndex) { return { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x }; }
     static getPositionIndexFromBlocks(blocks) {  return (blocks.row * TestWorld.getWorldSize().x) + blocks.column; }
     static getBlocksFromPositionIndex(positionIndex) { return { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x } };
 
     createCharacter() {
         let character = new Character();
         this.characters.push(character);
-        character.worldObject.meshCollection.forEach((mesh) => this.scene.add(mesh));
+        this.scene.add(character.worldObject.getMeshObjectGroup());
 
         character.chopTreeFunc = (char, target) => {
             let positionIndex = TestWorld.getPositionIndexFromBlocks(target.blockPositionIndex);
