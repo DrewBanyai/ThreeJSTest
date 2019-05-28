@@ -66,8 +66,8 @@ class GroundBlock {
         this.grass = null;
     }
 
-    static getPlotSize() { return { x: 100, y: 100, z: 100 }; }
-    static getTopMiddleDelta() { return new THREE.Vector3(0, 50, 0); }
+    static getPlotSize() { return { x: 100, y: 30, z: 100 }; }
+    static getTopMiddleDelta() { return new THREE.Vector3(0, GroundBlock.getPlotSize().y / 2, 0); }
 
     static getGroundBlockColor(subtype) {
         switch (subtype) {
@@ -102,9 +102,9 @@ class GroundBlock {
 
     static getBlockPosition(blockPositionIndex) {
         let position = new THREE.Vector3();
-        position.x = (-GroundBlock.getPlotSize().x * 5) + (blockPositionIndex.row * GroundBlock.getPlotSize().x);
+        position.x = (-GroundBlock.getPlotSize().x * 5) + (blockPositionIndex.column * GroundBlock.getPlotSize().x);
         position.y = (-GroundBlock.getPlotSize().y / 2); //  Boxes expand from their center point by default, so these will reach 0 on the y axis.
-        position.z = (-GroundBlock.getPlotSize().z * 5) + (blockPositionIndex.column * GroundBlock.getPlotSize().z);
+        position.z = (-GroundBlock.getPlotSize().z * 5) + (blockPositionIndex.row * GroundBlock.getPlotSize().z);
         return position;
     }
 };

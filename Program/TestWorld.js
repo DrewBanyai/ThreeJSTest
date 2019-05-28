@@ -27,8 +27,8 @@ class TestWorld {
     }
 
     createBasicGroundPlot() {
-        for (let i = 0; i < TestWorld.getWorldSize().x; ++i) {
-            for (let j = 0; j < TestWorld.getWorldSize().z; ++j) {
+        for (let j = 0; j < TestWorld.getWorldSize().z; ++j) {
+            for (let i = 0; i < TestWorld.getWorldSize().x; ++i) {
                 let groundBlock = new GroundBlock({ groundType: "Grass", blockPositionIndex: { column: i, row: j } });
 
                 //  Add this ground piece to the scene and also to the list of ground pieces
@@ -38,18 +38,18 @@ class TestWorld {
         }
 
         //  Add the dirt plots
-        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 1})].setGroundSubtype("Dirt");
-        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 2})].setGroundSubtype("Dirt");
-        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 3})].setGroundSubtype("Dirt");
-        this.groundPieces[TestWorld.getPositionIndexFromBlocks({ column: 1, row: 4})].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 1)].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 2)].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 3)].setGroundSubtype("Dirt");
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 4)].setGroundSubtype("Dirt");
 
         //  Add a few trees
         this.plantTree(TestWorld.getPositionIndexFromRowColumn(7, 4));
 
-        let bed = new Bed({ blockPositionIndex: { column: 7, row: 7 } });
+        let bed = new Bed({ blockPositionIndex: { column: 7, row: 6 } });
         this.scene.add(bed.worldObject.getMeshObjectGroup());
-        let bedPositionIndex1 = TestWorld.getPositionIndexFromBlocks({ column: 7, row: 7});
-        let bedPositionIndex2 = TestWorld.getPositionIndexFromBlocks({ column: 7, row: 8});
+        let bedPositionIndex1 = TestWorld.getPositionIndexFromRowColumn(bed.blockPositionIndex.column, bed.blockPositionIndex.row + 0);
+        let bedPositionIndex2 = TestWorld.getPositionIndexFromRowColumn(bed.blockPositionIndex.column, bed.blockPositionIndex.row + 1);
         this.groundPieces[bedPositionIndex1].setGroundSubtype("Bed");
         this.groundPieces[bedPositionIndex2].setGroundSubtype("Bed");
         bed.groundBlock = this.groundPieces[bedPositionIndex1];
@@ -113,11 +113,10 @@ class TestWorld {
 
     static getRandomWorldPosition() { return parseInt(Math.random() * (TestWorld.getWorldSize().x * TestWorld.getWorldSize().z)); }
     static getWorldSize() { return { x: 10, z: 10 }; }
-    static getPositionIndexFromRowColumn(column, row) { return column * TestWorld.getWorldSize().x + row; }
+    static getPositionIndexFromRowColumn(column, row) { return row * TestWorld.getWorldSize().x + column; }
     static getRowColumnFromPositionIndex(positionIndex) { return { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x }; }
-    static getPositionIndexFromBlocks(blocks) {  return (blocks.row * TestWorld.getWorldSize().x) + blocks.column; }
-    static getBlocksFromPositionIndex(positionIndex) { return { row: parseInt(positionIndex / TestWorld.getWorldSize().x), column: positionIndex % TestWorld.getWorldSize().x } };
-
+    static getPositionIndexFromBlocks(blocks) {  return TestWorld.getPositionIndexFromRowColumn(blocks.column, blocks.row); }
+    
     createCharacter() {
         let character = new Character();
         this.characters.push(character);

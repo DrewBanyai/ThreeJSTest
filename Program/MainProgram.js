@@ -74,11 +74,11 @@ function createTitleBar() {
 	var dayTimeLabel = document.createElement( 'div' );
 	dayTimeLabel.id = "SelectedTypeTitle",
 	dayTimeLabel.style.position = 'absolute';
-	dayTimeLabel.style.top = '50px';
-	dayTimeLabel.style.left = "800px";
+	dayTimeLabel.style.top = '10px';
+	dayTimeLabel.style.left = "600px";
 	dayTimeLabel.style.width = '100%';
 	dayTimeLabel.style.textAlign = 'center';
-	dayTimeLabel.innerHTML = "TEST";
+	dayTimeLabel.innerHTML = "DAY/TIME";
 	container.appendChild( dayTimeLabel );
 }
 

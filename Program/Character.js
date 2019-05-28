@@ -78,7 +78,6 @@ class Character {
     commandToMove(position, target) {
         if (this.targetPosition === null) { this.targetPosition = new THREE.Vector3(); }
         this.targetPosition.set(position.x, position.y, position.z);
-        console.log(this.targetPosition);
         this.positionTarget = target;
     }
 
