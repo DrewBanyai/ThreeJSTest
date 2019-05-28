@@ -72,12 +72,11 @@ function createTitleBar() {
 	
 	//  Create the day time label at the top of the screen
 	var dayTimeLabel = document.createElement( 'div' );
-	dayTimeLabel.id = "SelectedTypeTitle",
+	dayTimeLabel.id = "DayTimeLabel",
 	dayTimeLabel.style.position = 'absolute';
-	dayTimeLabel.style.top = '10px';
-	dayTimeLabel.style.left = "600px";
+	dayTimeLabel.style.top = '60px';
+	dayTimeLabel.style.left = "10px";
 	dayTimeLabel.style.width = '100%';
-	dayTimeLabel.style.textAlign = 'center';
 	dayTimeLabel.innerHTML = "DAY/TIME";
 	container.appendChild( dayTimeLabel );
 }
@@ -228,8 +227,8 @@ function highlightFirstMouseIntersect() {
 function animate() {
 	requestAnimationFrame(animate);
 
-	let deltaTime = clock.getDelta();
-	testWorld.update(deltaTime);
+	let timeDelta = clock.getDelta();
+	testWorld.update(timeDelta);
 	
 	highlightFirstMouseIntersect();
 

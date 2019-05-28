@@ -9,6 +9,7 @@ class TestWorld {
         this.trees = {}; //  A dictionary of tree WorldObject entities
         this.crops = {}; //  A dictionary of crop WorldObject entities
         this.characters = []; //  A list of character WorldObject entities
+        this.dayTime = 15;
         this.content = this.generateContent();
     }
 
@@ -144,6 +145,22 @@ class TestWorld {
     update(timeDelta) {
         this.characters.forEach((character) => character.update(timeDelta));
         for (let crop in this.crops) { this.crops[crop].update(timeDelta); }
+        this.updateDayNightCycle(timeDelta);
+    }
+
+    updateDayNightCycle(timeDelta) {
+        const hourMultiplier = 1;
+        this.dayTime += (timeDelta * hourMultiplier);
+        const dayLightLevels = [ 145, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225, 235, 245, 255, 245, 235, 225, 215, 205, 195, 185, 175, 165, 155 ];
+        while (this.dayTime >= dayLightLevels.length) { this.dayTime -= dayLightLevels.length; }
+        let dayTimeIndex = parseInt(this.dayTime);
+        let nextIndex = (dayTimeIndex < dayLightLevels.length - 1) ? (dayTimeIndex + 1) : 0;
+        let lightLevel = parseInt(dayLightLevels[dayTimeIndex] + ((this.dayTime - dayTimeIndex) * (dayLightLevels[nextIndex] - dayLightLevels[dayTimeIndex])));
+        this.ambientLight.color = new THREE.Color(`rgb(${lightLevel}, ${lightLevel}, ${lightLevel})`);
+
+        let dayTimeLabel = document.getElementById("DayTimeLabel");
+        let nightTime = ((this.dayTime < dayLightLevels.length / 4) || (this.dayTime >= dayLightLevels.length - (dayLightLevels.length / 4)));
+        dayTimeLabel.innerText = nightTime ? "Night time" : "Day time";
     }
 
     getScene() { return this.scene; }
