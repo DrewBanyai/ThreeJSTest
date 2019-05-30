@@ -2,27 +2,29 @@ class GroundBlock {
     constructor(data) {
         this.worldObject = new WorldObject({ type: "GroundBlock", subtype: (data.groundType ? data.groundType : "Grass"), baseObject: this });
         this.blockPositionIndex = data.blockPositionIndex;
+        this.block = null;
         this.grass = null;
         this.crop = null;
+        this.bed = null;
         this.content = this.generateContent();
     }
 
     generateContent() {
         //  Create a basic block geometry and then generate a mesh with it
         let geometry = new THREE.BoxBufferGeometry(GroundBlock.getPlotSize().x, GroundBlock.getPlotSize().y, GroundBlock.getPlotSize().z);
-        let groundMesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype) }));
+        this.block = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype) }));
 
         let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
-        groundMesh.position.set(position.x, position.y, position.z);
+        this.block.position.set(position.x, position.y, position.z);
 
-        groundMesh.castShadow = false;
-        groundMesh.receiveShadow = true;
+        this.block.castShadow = false;
+        this.block.receiveShadow = true;
 
         if (this.worldObject.objectSubtype === "Grass") { this.addGrass(); }
 
-        this.worldObject.addToMeshGroup(groundMesh);
+        this.worldObject.addToMeshGroup(this.block);
 
-        return groundMesh;
+        return this.block;
     }
 
     getGroundSubtype() { return this.worldObject.objectSubtype; }
@@ -30,12 +32,14 @@ class GroundBlock {
     setGroundSubtype(subtype) {
         //  Get rid of any special additions from the old subtype (this.worldObject.objectSubtype)
         if (this.worldObject.objectSubtype === "Grass") { this.removeGrass(); }
+        this.block.scale.y = 1.0;
 
         this.worldObject.objectSubtype = subtype;
         this.content.material.color.set(GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype));
 
         //  Add any special additions from the new subtype (this.worldObject.objectSubtype)
         if (subtype === "Grass") { this.addGrass(); }
+        if (subtype === "Water") { this.block.scale.y = 0.5; }
     }
 
     addGrass() {
@@ -67,6 +71,7 @@ class GroundBlock {
     }
 
     static getPlotSize() { return { x: 100, y: 30, z: 100 }; }
+    static getPlotSizeWater() { return { x: 100, y: 15, z: 100 }; }
     static getTopMiddleDelta() { return new THREE.Vector3(0, GroundBlock.getPlotSize().y / 2, 0); }
 
     static getGroundBlockColor(subtype) {
@@ -75,7 +80,8 @@ class GroundBlock {
             case "Tree":        return "rgb(40, 200, 40)";
             case "Dirt":        return "rgb(89, 60, 31)";
             case "Crop":        return "rgb(100, 70, 40)";
-            case "Bed":        return "rgb(100, 100, 200)";
+            case "Bed":         return "rgb(100, 100, 200)";
+            case "Water":       return "rgb(0, 109, 168)";
             default:            return "rgb(255, 0, 255)";
         }
     }

@@ -1,9 +1,10 @@
 FIRST BUILD:
 - Display a basic flat map (can later push for different levels of ground)
-	- Small crop field with dirt plots (only beans for this demo... just tiny green marks when ripe?)
-	- Small house (no roof for now) with bed
-	- Small river/creek with a bridge over it
-	- A few basic trees
+	- Small crop field with dirt plots (only beans for this demo... harvesting lowers hunger)
+	- A few basic trees (harvesting just re-plants a new one, gives wood)
+	- A basic bed used for jumping to daytime (sleeping lowers exhaustion)
+	- Small river/creek (adrinking lowers thirst)
+	- Basic day/night cycle
 	
 - Display a basic UI with counts for amounts of food and wood, as well as character stats like hunger, thirst, and exhaustion
 

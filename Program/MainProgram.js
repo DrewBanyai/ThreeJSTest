@@ -41,7 +41,7 @@ function createCameraAndRenderer() {
 
 function createTitleBar() {
 	//  Create the title bar at the top of the screen
-	var info = document.createElement( 'div' );
+	let info = document.createElement( 'div' );
 	info.id = "TopScreenTitle",
 	info.style.position = 'absolute';
 	info.style.top = '10px';
@@ -51,7 +51,7 @@ function createTitleBar() {
 	container.appendChild( info );
 	
 	//  Create the object type label at the top of the screen
-	var objectType = document.createElement( 'div' );
+	let objectType = document.createElement( 'div' );
 	objectType.id = "ObjectTypeTitle",
 	objectType.style.position = 'absolute';
 	objectType.style.top = '30px';
@@ -61,7 +61,7 @@ function createTitleBar() {
 	container.appendChild( objectType );
 	
 	//  Create the object type label at the top of the screen
-	var selectedType = document.createElement( 'div' );
+	let selectedType = document.createElement( 'div' );
 	selectedType.id = "SelectedTypeTitle",
 	selectedType.style.position = 'absolute';
 	selectedType.style.top = '50px';
@@ -71,7 +71,7 @@ function createTitleBar() {
 	container.appendChild( selectedType );
 	
 	//  Create the day time label at the top of the screen
-	var dayTimeLabel = document.createElement( 'div' );
+	let dayTimeLabel = document.createElement( 'div' );
 	dayTimeLabel.id = "DayTimeLabel",
 	dayTimeLabel.style.position = 'absolute';
 	dayTimeLabel.style.top = '60px';
@@ -79,6 +79,46 @@ function createTitleBar() {
 	dayTimeLabel.style.width = '100%';
 	dayTimeLabel.innerHTML = "DAY/TIME";
 	container.appendChild( dayTimeLabel );
+	
+	//  Create the hunger label at the top of the screen
+	let hungerLabel = document.createElement( 'div' );
+	hungerLabel.id = "HungerLabel",
+	hungerLabel.style.position = 'absolute';
+	hungerLabel.style.top = '80px';
+	hungerLabel.style.left = "10px";
+	hungerLabel.style.width = '100%';
+	hungerLabel.innerHTML = "HUNGER";
+	container.appendChild( hungerLabel );
+	
+	//  Create the thirst label at the top of the screen
+	let thirstLabel = document.createElement( 'div' );
+	thirstLabel.id = "ThirstLabel",
+	thirstLabel.style.position = 'absolute';
+	thirstLabel.style.top = '100px';
+	thirstLabel.style.left = "10px";
+	thirstLabel.style.width = '100%';
+	thirstLabel.innerHTML = "THIRST";
+	container.appendChild( thirstLabel );
+	
+	//  Create the exhaustion label at the top of the screen
+	let exhaustionLabel = document.createElement( 'div' );
+	exhaustionLabel.id = "ExhaustionLabel",
+	exhaustionLabel.style.position = 'absolute';
+	exhaustionLabel.style.top = '120px';
+	exhaustionLabel.style.left = "10px";
+	exhaustionLabel.style.width = '100%';
+	exhaustionLabel.innerHTML = "EXHAUSTION";
+	container.appendChild( exhaustionLabel );
+	
+	//  Create the wood label at the top of the screen
+	let woodLabel = document.createElement( 'div' );
+	woodLabel.id = "ExhaustionLabel",
+	woodLabel.style.position = 'absolute';
+	woodLabel.style.top = '140px';
+	woodLabel.style.left = "10px";
+	woodLabel.style.width = '100%';
+	woodLabel.innerHTML = "WOOD";
+	container.appendChild( woodLabel );
 }
 
 function createCharacterInventory() {
@@ -158,6 +198,8 @@ function rightClickObject(object) {
 		case "GroundBlock - Dirt":
 		case "GroundBlock - Tree":
 		case "GroundBlock - Crop":
+		case "GroundBlock - Bed":
+		case "GroundBlock - Water":
 			{
 				let groundBlockPos = mouseOverObject.baseObject.content.position;
 				let additive = GroundBlock.getTopMiddleDelta();
@@ -166,6 +208,7 @@ function rightClickObject(object) {
 			break;
 		case "Tree - Basic":
 		case "Crop - Beans":
+		case "Bed - Basic":
 			{
 				let groundBlockPos = mouseOverObject.baseObject.groundBlock.content.position;
 				let additive = GroundBlock.getTopMiddleDelta();

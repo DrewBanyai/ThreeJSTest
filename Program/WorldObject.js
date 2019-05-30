@@ -2,7 +2,7 @@ class WorldObject {
 	constructor(data) {
 		this.objectType = data.type;
 		this.objectSubtype = data.subtype;
-		this.meshObjectGroup = new THREE.Group();
+		this.meshObjectGroup = new THREE.Object3D();
 		this.baseObject = data.baseObject;
 
 		this.highlightColor = data.highlightColor ? data.highlightColor : 0xFF0000;
@@ -25,7 +25,7 @@ class WorldObject {
 		if (!meshObject || (meshObject.children.length === 0)) return;
 
 		meshObject.children.forEach((meshObject) => {
-			if (meshObject.type === "Group") { this.highlightObject(meshObject); }
+			if (meshObject.children.length > 0) { this.highlightObject(meshObject); }
 			else if (meshObject.material && meshObject.material.emissive) {
 				meshObject.savedHex = meshObject.material.emissive.getHex();
 				meshObject.material.emissive.setHex(this.highlightColor);
@@ -38,7 +38,7 @@ class WorldObject {
 		if (!meshObject || (meshObject.children.length === 0)) return;
 
 		meshObject.children.forEach((meshObject) => {
-			if (meshObject.type === "Group") { this.dehighlightObject(meshObject); }
+			if (meshObject.children.length > 0) { this.dehighlightObject(meshObject); }
 			else if (meshObject.material && meshObject.material.emissive) {
 				meshObject.material.emissive.setHex(meshObject.savedHex);
 			}

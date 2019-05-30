@@ -44,6 +44,11 @@ class TestWorld {
         this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 3)].setGroundSubtype("Dirt");
         this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 4)].setGroundSubtype("Dirt");
 
+        //  Add some water plots
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 6)].setGroundSubtype("Water");
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 7)].setGroundSubtype("Water");
+        this.groundPieces[TestWorld.getPositionIndexFromRowColumn(1, 8)].setGroundSubtype("Water");
+
         //  Add a few trees
         this.plantTree(TestWorld.getPositionIndexFromRowColumn(7, 4));
 
@@ -54,6 +59,8 @@ class TestWorld {
         this.groundPieces[bedPositionIndex1].setGroundSubtype("Bed");
         this.groundPieces[bedPositionIndex2].setGroundSubtype("Bed");
         bed.groundBlock = this.groundPieces[bedPositionIndex1];
+        this.groundPieces[bedPositionIndex1].bed = bed;
+        this.groundPieces[bedPositionIndex2].bed = bed;
     }
 
     isGroundSubtype(positionIndex, type) {
@@ -140,6 +147,16 @@ class TestWorld {
             let positionIndex = TestWorld.getPositionIndexFromBlocks(target.blockPositionIndex);
             this.harvestCrop(positionIndex);
         }
+
+        character.sleepFunc = async (char, target) => {
+            if (target.bed === null) { return; }
+            await char.layDown();
+            this.dayTime = 6;
+        }
+
+        character.waterFunc = async (char, target) => {
+            char.drinkWater();
+        }
     }
 
     update(timeDelta) {
@@ -151,16 +168,19 @@ class TestWorld {
     updateDayNightCycle(timeDelta) {
         const hourMultiplier = 1;
         this.dayTime += (timeDelta * hourMultiplier);
-        const dayLightLevels = [ 145, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225, 235, 245, 255, 245, 235, 225, 215, 205, 195, 185, 175, 165, 155 ];
+        const dayLightLevels = [ 99, 85, 99, 113, 127, 142, 157, 171, 185, 199, 213, 227, 241, 255, 241, 227, 213, 199, 185, 171, 157, 142, 127, 113 ];
+        const skyColorLevels = [ 69, 55, 69, 83, 97, 112, 127, 141, 155, 169, 183, 197, 211, 225, 211, 197, 183, 169, 155, 141, 127, 112, 97, 83 ]
         while (this.dayTime >= dayLightLevels.length) { this.dayTime -= dayLightLevels.length; }
         let dayTimeIndex = parseInt(this.dayTime);
         let nextIndex = (dayTimeIndex < dayLightLevels.length - 1) ? (dayTimeIndex + 1) : 0;
         let lightLevel = parseInt(dayLightLevels[dayTimeIndex] + ((this.dayTime - dayTimeIndex) * (dayLightLevels[nextIndex] - dayLightLevels[dayTimeIndex])));
         this.ambientLight.color = new THREE.Color(`rgb(${lightLevel}, ${lightLevel}, ${lightLevel})`);
+        let skyLevel = parseInt(skyColorLevels[dayTimeIndex] + ((this.dayTime - dayTimeIndex) * (skyColorLevels[nextIndex] - skyColorLevels[dayTimeIndex])));
+        this.scene.background = new THREE.Color(`rgb(${skyLevel}, ${skyLevel}, ${skyLevel})`);
 
         let dayTimeLabel = document.getElementById("DayTimeLabel");
         let nightTime = ((this.dayTime < dayLightLevels.length / 4) || (this.dayTime >= dayLightLevels.length - (dayLightLevels.length / 4)));
-        dayTimeLabel.innerText = nightTime ? "Night time" : "Day time";
+        dayTimeLabel.innerText = nightTime ? `Night time - ${parseInt(this.dayTime)}` : `Day time - ${parseInt(this.dayTime)}`;
     }
 
     getScene() { return this.scene; }

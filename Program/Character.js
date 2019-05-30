@@ -75,10 +75,24 @@ class Character {
         this.head.position.set(this.position.x + (0), this.position.y + (this.legsSize.y + this.bodySize.y + (this.headSize.y / 2)), this.position.z + 0);
     }
 
+    getCenterPoint() {
+        let height = this.position.y + (this.legsSize.y + this.bodySize.y + this.headSize.y);
+        let ground = GroundBlock.getTopMiddleDelta();
+        return new THREE.Vector3(ground.x, ground.y + (height / 2), ground.z)
+    }
+
     commandToMove(position, target) {
         if (this.targetPosition === null) { this.targetPosition = new THREE.Vector3(); }
         this.targetPosition.set(position.x, position.y, position.z);
         this.positionTarget = target;
+    }
+
+    async layDown(bedPosition) {
+        console.log("Sleeping...");
+    }
+
+    drinkWater() {
+        console.log("Drinking water...");
     }
 
     update(timeDelta) {
@@ -89,9 +103,13 @@ class Character {
             deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
             if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { 
                 this.position = this.targetPosition;
-                if      ((this.positionTarget.worldObject.objectSubtype === "Tree") && this.chopTreeFunc !== null) { this.chopTreeFunc(this, this.positionTarget); }
-                else if ((this.positionTarget.worldObject.objectSubtype === "Dirt") && this.chopTreeFunc !== null) { this.plantCropFunc(this, this.positionTarget); }
-                else if ((this.positionTarget.worldObject.objectSubtype === "Crop") && this.harvestFunc !== null) { this.harvestFunc(this, this.positionTarget); }
+                switch (this.positionTarget.worldObject.objectSubtype) {
+                    case "Tree":        if (this.chopTreeFunc)  { this.chopTreeFunc(this, this.positionTarget); }   break;
+                    case "Dirt":        if (this.plantCropFunc) { this.plantCropFunc(this, this.positionTarget); }  break;
+                    case "Crop":        if (this.harvestFunc)   { this.harvestFunc(this, this.positionTarget); }    break;
+                    case "Bed":         if (this.sleepFunc)     { this.sleepFunc(this, this.positionTarget); }      break;
+                    case "Water":       if (this.waterFunc)     { this.waterFunc(this, this.positionTarget); }      break;
+                }
                 this.targetPosition = null;
             }
             else { this.position.add(deltaPosition); }

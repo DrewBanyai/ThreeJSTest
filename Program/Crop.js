@@ -143,10 +143,10 @@ class Crop {
 		this.worldObject.addToMeshGroup(seed3);
 	}
 
-	update(deltaTime) {
+	update(timeDelta) {
 		if (this.currentState === Crop.stateEnum.GROWN) { return; }
 
-		this.cropTime += deltaTime;
+		this.cropTime += timeDelta;
 		switch (this.currentState) {
 			case Crop.stateEnum.YOUTH: 	if (this.cropCycle.grown <= this.cropTime) { this.switchState(Crop.stateEnum.YOUTH, Crop.stateEnum.GROWN); } 	break;
 			case Crop.stateEnum.SPROUT: if (this.cropCycle.youth <= this.cropTime) { this.switchState(Crop.stateEnum.SPROUT, Crop.stateEnum.YOUTH); } 	break;
