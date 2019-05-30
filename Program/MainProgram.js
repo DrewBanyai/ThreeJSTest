@@ -112,7 +112,7 @@ function createTitleBar() {
 	
 	//  Create the wood label at the top of the screen
 	let woodLabel = document.createElement( 'div' );
-	woodLabel.id = "ExhaustionLabel",
+	woodLabel.id = "WoodLabel",
 	woodLabel.style.position = 'absolute';
 	woodLabel.style.top = '140px';
 	woodLabel.style.left = "10px";

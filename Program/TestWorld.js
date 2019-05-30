@@ -10,6 +10,8 @@ class TestWorld {
         this.crops = {}; //  A dictionary of crop WorldObject entities
         this.characters = []; //  A list of character WorldObject entities
         this.dayTime = 15;
+        this.characterStats = { hunger: 0, thirst: 0, exhaustion: 0, wood: 0 };
+        this.characterStatTimers = { hunger: 0, thirst: 0, exhaustion: 0 };
         this.content = this.generateContent();
     }
 
@@ -114,6 +116,8 @@ class TestWorld {
         crop.removeCrop();
         delete this.crops["crop" + positionIndex.toString()];
         crop = null;
+        
+        this.characterStats.hunger = (this.characterStats.hunger > 5) ? this.characterStats.hunger - 5 : 0;
 
         this.groundPieces[positionIndex].setGroundSubtype("Dirt");
         this.groundPieces[positionIndex].crop = null;
@@ -134,6 +138,7 @@ class TestWorld {
             let positionIndex = TestWorld.getPositionIndexFromBlocks(target.blockPositionIndex);
             this.destroyTree(positionIndex);
             this.plantTree();
+            this.characterStats.wood += 5;
         }
 
         character.plantCropFunc = (char, target) => {
@@ -152,10 +157,12 @@ class TestWorld {
             if (target.bed === null) { return; }
             await char.layDown();
             this.dayTime = 6;
+            this.characterStats.exhaustion = (this.characterStats.exhaustion > 5) ? this.characterStats.exhaustion - 5 : 0;
         }
 
         character.waterFunc = async (char, target) => {
             char.drinkWater();
+            this.characterStats.thirst = (this.characterStats.thirst > 5) ? this.characterStats.thirst - 5 : 0;
         }
     }
 
@@ -163,6 +170,21 @@ class TestWorld {
         this.characters.forEach((character) => character.update(timeDelta));
         for (let crop in this.crops) { this.crops[crop].update(timeDelta); }
         this.updateDayNightCycle(timeDelta);
+
+        if ((this.characterStatTimers.hunger += timeDelta) > 5) { this.characterStats.hunger += 1; this.characterStatTimers.hunger -= 5; }
+        if ((this.characterStatTimers.thirst += timeDelta) > 4) { this.characterStats.thirst += 1; this.characterStatTimers.thirst -= 4; }
+        if ((this.characterStatTimers.exhaustion += timeDelta) > 3) { this.characterStats.exhaustion += 1; this.characterStatTimers.exhaustion -= 3; }
+        if (this.characterStats.hunger > 100) { this.characterStats.hunger = 100; }
+        if (this.characterStats.thirst > 100) { this.characterStats.thirst = 100; }
+        if (this.characterStats.exhaustion > 100) { this.characterStats.exhaustion = 100; }
+        let hungerLabel = document.getElementById("HungerLabel");
+        let thirstLabel = document.getElementById("ThirstLabel");
+        let exhaustionLabel = document.getElementById("ExhaustionLabel");
+        let woodLabel = document.getElementById("WoodLabel");
+        hungerLabel.innerText = `Hunger: ${this.characterStats.hunger}`;
+        thirstLabel.innerText = `Thirst: ${this.characterStats.thirst}`;
+        exhaustionLabel.innerText = `Exhaustion: ${this.characterStats.exhaustion}`;
+        woodLabel.innerText = `Wood: ${this.characterStats.wood}`;
     }
 
     updateDayNightCycle(timeDelta) {
