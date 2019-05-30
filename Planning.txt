@@ -1,17 +1,19 @@
-FIRST BUILD:
-- Display a basic flat map (can later push for different levels of ground)
-	- Small crop field with dirt plots (only beans for this demo... harvesting lowers hunger)
-	- A few basic trees (harvesting just re-plants a new one, gives wood)
-	- A basic bed used for jumping to daytime (sleeping lowers exhaustion)
-	- Small river/creek (adrinking lowers thirst)
+First Build:
+==========
+- Display a basic flat map
+	- Small crop field with dirt plots
+	- A few basic trees
+	- A basic bed used for jumping to daytime
+	- Small river/creek
 	- Basic day/night cycle
 	
 - Display a basic UI with counts for amounts of food and wood, as well as character stats like hunger, thirst, and exhaustion
 
 - A character can move around the map with clicks
-	- Clicking a tree will make them walk to it, chop it down (2 seconds, add chop sound) and get more wood
-	- Clicking a dirt plot will make them plant beans (1 second, add dirt moving sound)
-	- Clicking the river will make them drink (1 second, and slurping noise) which lowers their thirst
+	- Clicking a tree will make them walk to it, chop it down and get more wood, and replant a tree elsewhere
+	- Clicking a dirt plot will make them plant beans, which grow over time and can then be harvested
+	- Clicking the river will make them drink which lowers their thirst
+==========
 	
 FUTURE BUILDS
 	- Move characters using a navigation mesh or A* on block maps? (test different methods... see what works best)
