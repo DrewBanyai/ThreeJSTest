@@ -1,168 +1,92 @@
-var container, stats;
-var camera, controls, scene, renderer;
-var draggableObjects = [];
-var mouse = new THREE.Vector2(10000, 10000), INTERSECTED;
-var radius = 100, theta = 0;
+var container = null;
+var camera = null;
+var controls = null;
+var scene = null;
+var renderer = null;
+
+var statsBlock = null;
+var mousePosition = new THREE.Vector2(10000, 10000), INTERSECTED;
 var raycaster = new THREE.Raycaster();
-var mouseOverObject = null;
-var selectedObject = null;
 var clock = new THREE.Clock();
 
-let testWorld = null;
-let characterInventory = null;
+var mouseOverObject = null;
+var selectedObject = null;
 
-init();
+var worldController = null;
 
-function createCameraAndRenderer() {
+function createScene() {
+	scene = new THREE.Scene();
+}
+
+function createCamera() {
+	var aspectRatio = window.innerWidth / window.innerHeight;
+	var fieldOfView = 25;
+	var nearPlane = .1;
+	var farPlane = 1000; 
+
 	//  Create a 3D camera, and set it behind the 0,0,0 position, aiming at it.
-	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 5000 );
-	camera.position.y = 1000;
-	camera.position.z = 1000;
+	camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
+	camera.position.set(-5, 6, 8);
+	camera.lookAt(new THREE.Vector3(0,0,0));
+}
 
+function createRenderer() {
 	//  Create a WebGL renderer to render the scene through the camera
-	renderer = new THREE.WebGLRenderer({ antialias: true });
-	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer = new THREE.WebGLRenderer({canvas:canvas,alpha: true, antialias: true});
 	renderer.setSize(window.innerWidth, window.innerHeight);
-
 	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFShadowMap;
-
+	renderer.shadowMapSoft = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	document.body.appendChild(renderer.domElement);
+}
+function createCameraControls() {
 	//  Set the camera to be controllable by the mouse
 	controls = new THREE.MapControls( camera, renderer.domElement );
 	controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
 	controls.dampingFactor = 0.99;
 	controls.screenSpacePanning = false;
-	controls.minDistance = 100;
+	controls.minDistance = 1;
 	controls.maxDistance = 1000;
 	controls.maxPolarAngle = Math.PI / 2;
-
-	container.appendChild(renderer.domElement);
-}
-
-function createTitleBar() {
-	//  Create the title bar at the top of the screen
-	let info = document.createElement( 'div' );
-	info.id = "TopScreenTitle",
-	info.style.position = 'absolute';
-	info.style.top = '10px';
-	info.style.width = '100%';
-	info.style.textAlign = 'center';
-	info.innerHTML = '<a href="https://github.com/DrewBanyai/ThreeJSTest" target="_blank" rel="noopener">Basic THREE.js test</a>';
-	container.appendChild( info );
-	
-	//  Create the object type label at the top of the screen
-	let objectType = document.createElement( 'div' );
-	objectType.id = "ObjectTypeTitle",
-	objectType.style.position = 'absolute';
-	objectType.style.top = '30px';
-	objectType.style.width = '100%';
-	objectType.style.textAlign = 'center';
-	objectType.innerHTML = "";
-	container.appendChild( objectType );
-	
-	//  Create the object type label at the top of the screen
-	let selectedType = document.createElement( 'div' );
-	selectedType.id = "SelectedTypeTitle",
-	selectedType.style.position = 'absolute';
-	selectedType.style.top = '50px';
-	selectedType.style.width = '100%';
-	selectedType.style.textAlign = 'center';
-	selectedType.innerHTML = "";
-	container.appendChild( selectedType );
-	
-	//  Create the day time label at the top of the screen
-	let dayTimeLabel = document.createElement( 'div' );
-	dayTimeLabel.id = "DayTimeLabel",
-	dayTimeLabel.style.position = 'absolute';
-	dayTimeLabel.style.top = '60px';
-	dayTimeLabel.style.left = "10px";
-	dayTimeLabel.style.width = '100%';
-	dayTimeLabel.innerHTML = "DAY/TIME";
-	container.appendChild( dayTimeLabel );
-	
-	//  Create the hunger label at the top of the screen
-	let hungerLabel = document.createElement( 'div' );
-	hungerLabel.id = "HungerLabel",
-	hungerLabel.style.position = 'absolute';
-	hungerLabel.style.top = '80px';
-	hungerLabel.style.left = "10px";
-	hungerLabel.style.width = '100%';
-	hungerLabel.innerHTML = "HUNGER";
-	container.appendChild( hungerLabel );
-	
-	//  Create the thirst label at the top of the screen
-	let thirstLabel = document.createElement( 'div' );
-	thirstLabel.id = "ThirstLabel",
-	thirstLabel.style.position = 'absolute';
-	thirstLabel.style.top = '100px';
-	thirstLabel.style.left = "10px";
-	thirstLabel.style.width = '100%';
-	thirstLabel.innerHTML = "THIRST";
-	container.appendChild( thirstLabel );
-	
-	//  Create the exhaustion label at the top of the screen
-	let exhaustionLabel = document.createElement( 'div' );
-	exhaustionLabel.id = "ExhaustionLabel",
-	exhaustionLabel.style.position = 'absolute';
-	exhaustionLabel.style.top = '120px';
-	exhaustionLabel.style.left = "10px";
-	exhaustionLabel.style.width = '100%';
-	exhaustionLabel.innerHTML = "EXHAUSTION";
-	container.appendChild( exhaustionLabel );
-	
-	//  Create the wood label at the top of the screen
-	let woodLabel = document.createElement( 'div' );
-	woodLabel.id = "WoodLabel",
-	woodLabel.style.position = 'absolute';
-	woodLabel.style.top = '140px';
-	woodLabel.style.left = "10px";
-	woodLabel.style.width = '100%';
-	woodLabel.innerHTML = "WOOD";
-	container.appendChild( woodLabel );
-}
-
-function createCharacterInventory() {
-	characterInventory = new CharacterInventory();
-	container.appendChild(characterInventory.content);
 }
 
 function createStatsBlock() {
-	stats = new Stats();
-	container.appendChild(stats.dom);
+	statsBlock = new Stats();
+	container.appendChild(statsBlock.dom);
 }
 
-function init() {
-	if ( !WEBGL.isWebGLAvailable() ) {
-		var warning = WEBGL.getWebGLErrorMessage();
-		document.getElementById( 'container' ).appendChild( warning );
-		return;
-	}
-	
-	container = document.createElement( 'div' );
-	document.body.appendChild( container );
-	
-	testWorld = new TestWorld({ backgroundColor: "rgb(240, 240, 240)", ambientLightColor: "rgb(222, 222, 222)" });
-	
-	createCameraAndRenderer();
+function createTitleBar() {
+	let mainUI = new MainUI();
+	container.appendChild(mainUI.content);
+}
 
-	createTitleBar();
+function createWorldController() {
+	//  Create the world controller instance, and pass in the scene so it can use it directly
+	worldController = new WorldController(scene);
+}
 
-	createCharacterInventory();
-	
-	createStatsBlock();
-	
+function setEventListeners() {
 	//  Add an event listener to keep track of screen size and ratio
-	window.addEventListener( 'resize', onWindowResize, false );
+	window.addEventListener( 'resize', () => {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
 	
-	//  Add an event listener to keep track of mouse position
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		renderer.setSize( window.innerWidth, window.innerHeight );
+	}, false );
 
+	//  Add an event listener to keep track of mouse position
+	document.addEventListener( 'mousemove', (event) => {
+		event.preventDefault();
+		mousePosition.x = (event.clientX / window.innerWidth) * 2 - 1;
+		mousePosition.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	}, false );
+
+	//  Add an event listener to keep track of mouse clicks
 	window.addEventListener( 'mousedown', function( event ) {
 		switch (event.button) {
 			case 0: //  Left button
 			{
 				selectedObject = (mouseOverObject && mouseOverObject.objectType === "Character") ? mouseOverObject : null;
-				//characterInventory.content.style.visibility = selectedObject ? "visible" : "hidden";
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
 				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
 			}
@@ -171,7 +95,6 @@ function init() {
 			case 1: //  Middle button
 			{
 				selectedObject = null;
-				//characterInventory.content.style.visibility = "hidden";
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
 				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
 			}
@@ -187,8 +110,8 @@ function init() {
 			break;
 		}
 	});
-	
-	animate();
+
+	animateProgram();
 }
 
 function rightClickObject(object) {
@@ -218,25 +141,17 @@ function rightClickObject(object) {
 	}
 }
 
-function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-
-	renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
-function onDocumentMouseMove( event ) {
-	event.preventDefault();
-	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-}
-
 function getFirstMouseIntersectObject() {
-	raycaster.setFromCamera( mouse, camera );
+	raycaster.setFromCamera(mousePosition, camera);
 
-	let intersects = raycaster.intersectObjects(testWorld.scene.children, true);
+	let intersects = raycaster.intersectObjects(scene.children, true);
 	if (intersects.length === 0) { return null; }
-	let object = intersects[0].object;
+	
+	let object = null;
+	for (let i = 0; i < intersects.length; ++i) {
+		object = intersects[i].object;
+		if (object && object.worldObject) { break; }
+	}
 	if (!object || !object.worldObject) { return null; }
 
 	return object.worldObject;
@@ -267,20 +182,52 @@ function highlightFirstMouseIntersect() {
 	}
 }
 
-function animate() {
-	requestAnimationFrame(animate);
+function animateProgram() {
+	requestAnimationFrame(animateProgram);
 
 	let timeDelta = clock.getDelta();
-	testWorld.update(timeDelta);
+	worldController.update(timeDelta);
 	
 	highlightFirstMouseIntersect();
 
-	render();
-	stats.update();
+	//controls.update();
+	statsBlock.update();
 }
 
-function render() {
-	controls.update();
+function initialize() {
+	//  Check if WebGL is available. If not, show a warning and exit out
+	if ( !WEBGL.isWebGLAvailable() ) {
+		var warning = WEBGL.getWebGLErrorMessage();
+		document.getElementById('container').appendChild(warning);
+		return;
+	}
 	
-	renderer.render(testWorld.getScene(), camera);
+	//  Create the base container that the program will exist in
+	container = document.createElement( 'div' );
+	document.body.appendChild(container);
+	
+	createScene();
+	createCamera();
+	createRenderer();
+	createCameraControls();
+
+	createStatsBlock();
+	createTitleBar();
+	createWorldController();
+
+	setEventListeners();
+
+	beginRender();
 }
+
+function beginRender() {
+	var render = function() {
+		requestAnimationFrame( render );
+
+		renderer.render( scene, camera );
+	}
+	render();
+}
+
+//  Run the initialize function above
+initialize();

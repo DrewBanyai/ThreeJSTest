@@ -1,4 +1,6 @@
-First Build:
+Version updates documented at: https://imgur.com/a/HGhlbDy
+
+Version 0000 (build 20190529):
 ==========
 - Display a basic flat map
 	- Small crop field with dirt plots
@@ -14,6 +16,13 @@ First Build:
 	- Clicking a dirt plot will make them plant beans, which grow over time and can then be harvested
 	- Clicking the river will make them drink which lowers their thirst
 ==========
+
+Version 0001 (build 20190602) :
+==========
+- Get proper coloring and lighting
+==========
+
+
 	
 FUTURE BUILDS
 	- Move characters using a navigation mesh or A* on block maps? (test different methods... see what works best)

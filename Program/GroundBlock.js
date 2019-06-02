@@ -3,26 +3,25 @@ class GroundBlock {
         this.worldObject = new WorldObject({ type: "GroundBlock", subtype: (data.groundType ? data.groundType : "Grass"), baseObject: this });
         this.blockPositionIndex = data.blockPositionIndex;
         this.block = null;
-        this.grass = null;
-        this.crop = null;
-        this.bed = null;
+        this.topper = null;
+        this.shadow = null;
         this.content = this.generateContent();
     }
 
     generateContent() {
-        //  Create a basic block geometry and then generate a mesh with it
-        let geometry = new THREE.BoxBufferGeometry(GroundBlock.getPlotSize().x, GroundBlock.getPlotSize().y, GroundBlock.getPlotSize().z);
-        this.block = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype) }));
+        var geometry = new THREE.BoxGeometry(GroundBlock.getPlotSize().x, GroundBlock.getPlotSize().y, GroundBlock.getPlotSize().z);
+        var material = new THREE.MeshLambertMaterial({ color: Colors.greenLight });
+        this.block = new THREE.Mesh(geometry, material);
 
+        //  Create a basic block geometry and then generate a mesh with it
         let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
         this.block.position.set(position.x, position.y, position.z);
 
-        this.block.castShadow = false;
-        this.block.receiveShadow = true;
-
         if (this.worldObject.objectSubtype === "Grass") { this.addGrass(); }
 
+        this.shadow = customizeShadow(this.block, 0.25) // mess, opacity
         this.worldObject.addToMeshGroup(this.block);
+        this.worldObject.addToMeshGroup(this.shadow);
 
         return this.block;
     }
@@ -32,58 +31,62 @@ class GroundBlock {
     setGroundSubtype(subtype) {
         //  Get rid of any special additions from the old subtype (this.worldObject.objectSubtype)
         if (this.worldObject.objectSubtype === "Grass") { this.removeGrass(); }
+        if (this.worldObject.objectSubtype === "Water") { 
+            this.block.position.y -= ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
+            this.shadow.position.y -= ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
+        }
         this.block.scale.y = 1.0;
+        this.shadow.scale.y = 1;
 
         this.worldObject.objectSubtype = subtype;
         this.content.material.color.set(GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype));
 
         //  Add any special additions from the new subtype (this.worldObject.objectSubtype)
         if (subtype === "Grass") { this.addGrass(); }
-        if (subtype === "Water") { this.block.scale.y = 0.5; }
+        if (subtype === "Water") { 
+            this.block.scale.y = (GroundBlock.getPlotSizeWater().y / GroundBlock.getPlotSize().y);
+            this.shadow.scale.y = (GroundBlock.getPlotSizeWater().y / GroundBlock.getPlotSize().y);
+            this.block.position.y += ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
+            this.shadow.position.y += ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
+        }
     }
 
     addGrass() {
         return;
-        if (this.grass !== null) { return; }
-        this.grass = new THREE.Group();
+        if (this.topper && this.topper.grass === true) { console.log("Attempting to place a grass patch where one already exists!"); return; }
+        this.topper = new THREE.Group();
+        this.topper.grass = true;
 
-        let grassBladeColor = "rgb(40, 160, 0)";
         let grassBladeSize = { x: 2, y: 10, z: 2 };
         let grassBladeGeom = new THREE.BoxBufferGeometry(grassBladeSize.x, grassBladeSize.y, grassBladeSize.z);
         for (let i = 0; i < 200; ++i) {
-            let blade = new THREE.Mesh(grassBladeGeom, new THREE.MeshLambertMaterial({ color: grassBladeColor }));
+            let blade = new THREE.Mesh(grassBladeGeom, new THREE.MeshLambertMaterial({ color: Colors.GrassBlade }));
             
             let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
             blade.position.x = position.x - (GroundBlock.getPlotSize().x / 2) + (Math.random() * GroundBlock.getPlotSize().x);
             blade.position.y = position.y + 50 + (grassBladeSize.y / 2);
             blade.position.z = position.z - (GroundBlock.getPlotSize().z / 2) + (Math.random() * GroundBlock.getPlotSize().z);
 
-            this.grass.add(blade);
+            this.topper.add(blade);
         }
 
-        this.worldObject.addToMeshGroup(this.grass);
+        this.worldObject.addToMeshGroup(this.topper);
     }
 
     removeGrass() {
-        if (this.grass === null) { return; }
-        this.worldObject.removeFromMeshGroup(this.grass);
-        this.grass = null;
+        return; //  For now, return out... we don't have grass
+        if (!this.topper || this.topper.grass !== true) { console.log("Attempting to remove a grass patch where one does not exist!"); return; }
+        this.worldObject.removeFromMeshGroup(this.topper);
+        this.topper = null;
     }
 
-    static getPlotSize() { return { x: 100, y: 30, z: 100 }; }
-    static getPlotSizeWater() { return { x: 100, y: 15, z: 100 }; }
+    static getPlotSize() { return { x: 0.18, y: 0.18, z: 0.18 }; }
+    static getPlotSizeWater() { return { x: 0.18, y: 0.16, z: 0.18 }; }
     static getTopMiddleDelta() { return new THREE.Vector3(0, GroundBlock.getPlotSize().y / 2, 0); }
 
     static getGroundBlockColor(subtype) {
-        switch (subtype) {
-            case "Grass":       return "rgb(40, 200, 40)";
-            case "Tree":        return "rgb(40, 200, 40)";
-            case "Dirt":        return "rgb(89, 60, 31)";
-            case "Crop":        return "rgb(100, 70, 40)";
-            case "Bed":         return "rgb(100, 100, 200)";
-            case "Water":       return "rgb(0, 109, 168)";
-            default:            return "rgb(255, 0, 255)";
-        }
+        if (Colors.hasOwnProperty("GroundBlock_" + subtype)) { return Colors["GroundBlock_" + subtype]; }
+        else { return Colors.unknown; }
     }
 
     static generateGrassTexture() {

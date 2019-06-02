@@ -1,0 +1,26 @@
+Current Structure:
+
+- MainProgram:
+	- Creates the camera, controls, scene, and renderer
+	- Handles mouse input and raycasting
+	- Creates 2D UI components
+	- Creates and updates/renders the TestWorld instance
+	
+- TestWorld:
+	- Handles lighting and background color of the game world
+	- Creates the initial scene of the game world
+	- Creates and manages the list of objects/geometry that make up the world, including characters
+	- Contains the functions that are called when a character interacts with the game world (should be moved to the character class)
+	- Updates the day/night cycle of the game world
+	- Updates player stats (should be moved to the character class)
+	- Manages 2D UI components (should be it's own class with static calls)
+	
+- GroundBlock:
+	- Creates and holds the geometry of the basic ground or water block
+	- Holds a link to the tree, crop, bed, or grass on top of the ground (should be standardized as a single link?)
+
+- MapControls:
+	- Handles the camera movement (should be remade into a project specific control class)
+	
+- DragControls:
+	- Handles the mouse drag events (should be remade into a project specific control class if we even need it)

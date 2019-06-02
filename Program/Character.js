@@ -10,7 +10,7 @@ class Character {
         this.position = new THREE.Vector3(0, 0, 0);
         this.targetPosition = null;
         this.positionTarget = null;
-        this.walkSpeed = 200;
+        this.walkSpeed = 0.36;
         this.chopTreeFunc = null;
         this.plantCropFunc = null;
         this.harvestFunc = null;
@@ -26,10 +26,10 @@ class Character {
         let leg1Color = "rgb(100, 100, 100)";
         let leg2Color = "rgb(100, 60, 100)";
 
-        this.headSize = { x: 50, y: 50, z: 50 };
-        this.bodySize = { x: 60, y: 80, z: 25 };
-        this.armsSize = { x: 25, y: 70, z: 25 };
-        this.legsSize = { x: 25, y: 55, z: 25 };
+        this.headSize = { x: .090, y: .090, z: .090 };
+        this.bodySize = { x: .120, y: .150, z: .050 };
+        this.armsSize = { x: .050, y: .120, z: .050 };
+        this.legsSize = { x: .050, y: .130, z: .050 };
         
         let headGeom = new THREE.BoxBufferGeometry(this.headSize.x, this.headSize.y, this.headSize.z);
         this.head = new THREE.Mesh(headGeom, new THREE.MeshLambertMaterial({ color: headColor }));
@@ -43,17 +43,11 @@ class Character {
         this.leg2 = new THREE.Mesh(legsGeom, new THREE.MeshLambertMaterial({ color: leg2Color }));
 
         this.head.castShadow = true;
-        this.head.receiveShadow = true;
         this.body.castShadow = true;
-        this.body.receiveShadow = true;
         this.arm1.castShadow = true;
-        this.arm1.receiveShadow = true;
         this.arm2.castShadow = true;
-        this.arm2.receiveShadow = true;
         this.leg1.castShadow = true;
-        this.leg1.receiveShadow = true;
         this.leg2.castShadow = true;
-        this.leg2.receiveShadow = true;
 
         this.setPartPositions();
 
