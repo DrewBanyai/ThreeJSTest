@@ -175,7 +175,7 @@ class WorldController {
         character.actions.sleep = async (char, target) => {
             if (!(target.topper instanceof Bed)) { console.log("Attempting to lay in a bed where one does not exist"); return; }
             await char.layDown();
-            this.dayTime = 6;
+            DayNightCurrentState.currentTimer = 6;
             this.characterStats.exhaustion = (this.characterStats.exhaustion > 5) ? this.characterStats.exhaustion - 5 : 0;
         }
 
@@ -188,7 +188,7 @@ class WorldController {
     update(timeDelta) {
         this.characters.forEach((character) => character.update(timeDelta));
         for (let plot in this.groundPieces) { this.groundPieces[plot].update(timeDelta); }
-        this.updateDayNightCycle(timeDelta);
+        this.updateDayTime(timeDelta);
 
         if ((this.characterStatTimers.hunger += timeDelta) > 5) { this.characterStats.hunger += 1; this.characterStatTimers.hunger -= 5; }
         if ((this.characterStatTimers.thirst += timeDelta) > 4) { this.characterStats.thirst += 1; this.characterStatTimers.thirst -= 4; }
@@ -202,24 +202,20 @@ class WorldController {
         MainUI.setWoodValue(this.characterStats.wood);
     }
 
-    updateDayNightCycle(timeDelta) {
-        const hourMultiplier = 1;
-        this.dayTime += (timeDelta * hourMultiplier);
-        const dayLightLevels = [ 99, 85, 99, 113, 127, 142, 157, 171, 185, 199, 213, 227, 241, 255, 241, 227, 213, 199, 185, 171, 157, 142, 127, 113 ];
-        const skyColorLevels = [ 69, 55, 69, 83, 97, 112, 127, 141, 155, 169, 183, 197, 211, 225, 211, 197, 183, 169, 155, 141, 127, 112, 97, 83 ]
-        while (this.dayTime >= dayLightLevels.length) { this.dayTime -= dayLightLevels.length; }
-        let dayTimeIndex = parseInt(this.dayTime);
-        let nextIndex = (dayTimeIndex < dayLightLevels.length - 1) ? (dayTimeIndex + 1) : 0;
-        let lightLevel = parseInt(dayLightLevels[dayTimeIndex] + ((this.dayTime - dayTimeIndex) * (dayLightLevels[nextIndex] - dayLightLevels[dayTimeIndex])));
+    updateDayTime(timeDelta) {
+        //  Update the DayNightCycle data with the time delta
+        updateDayTimeCycle(timeDelta);
         
-        this.lighting.ambient.intensity = (lightLevel / 255) * 0.5;
-        this.lighting.shadow.intensity = (lightLevel / 255) * 0.5;
-        this.lighting.backlight.intensity = (lightLevel / 255) * 0.3;
+        //  Set the lighting according to the current day/time state
+        this.lighting.ambient.intensity = (DayNightCurrentState.lightLevel / 255) * 0.5;
+        this.lighting.shadow.intensity = (DayNightCurrentState.lightLevel / 255) * 0.5;
+        this.lighting.backlight.intensity = (DayNightCurrentState.lightLevel / 255) * 0.3;
         
-        let skyLevel = parseInt(skyColorLevels[dayTimeIndex] + ((this.dayTime - dayTimeIndex) * (skyColorLevels[nextIndex] - skyColorLevels[dayTimeIndex])));
-        this.scene.background.set(`rgb(${skyLevel}, ${skyLevel}, ${skyLevel})`);
+        //  Set the sky color according to the current day/time state
+        this.scene.background.set(`rgb(${DayNightCurrentState.skyLevel}, ${DayNightCurrentState.skyLevel}, ${DayNightCurrentState.skyLevel})`);
 
-        let nightTime = ((this.dayTime < dayLightLevels.length / 4) || (this.dayTime >= dayLightLevels.length - (dayLightLevels.length / 4)));
-        MainUI.setDayTimeValue(nightTime ? `Night time - ${parseInt(this.dayTime)}` : `Day time - ${parseInt(this.dayTime)}`)
+        //  Show the current time of day in the UI
+        let timeOfDay = DayNightCurrentState.nightTime ? "Night time" : "Day time";
+        MainUI.setDayTimeValue(`${timeOfDay} - ${parseInt(DayNightCurrentState.currentTimer)}`)
     }
 };

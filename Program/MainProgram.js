@@ -39,6 +39,7 @@ function createRenderer() {
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	document.body.appendChild(renderer.domElement);
 }
+
 function createCameraControls() {
 	//  Set the camera to be controllable by the mouse
 	controls = new THREE.MapControls( camera, renderer.domElement );
