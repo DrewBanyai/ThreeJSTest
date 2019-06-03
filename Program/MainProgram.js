@@ -125,18 +125,14 @@ function rightClickObject(object) {
 		case "GroundBlock - Bed":
 		case "GroundBlock - Water":
 			{
-				let groundBlockPos = mouseOverObject.baseObject.content.position;
-				let additive = GroundBlock.getTopMiddleDelta();
-				selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject);
+				selectedObject.baseObject.commandToMove(mouseOverObject.baseObject.blockPositionIndex, mouseOverObject.baseObject);
 			}
 			break;
 		case "Tree - Basic":
 		case "Crop - Beans":
 		case "Bed - Basic":
 			{
-				let groundBlockPos = mouseOverObject.baseObject.groundBlock.content.position;
-				let additive = GroundBlock.getTopMiddleDelta();
-				selectedObject.baseObject.commandToMove(additive.add(groundBlockPos), mouseOverObject.baseObject.groundBlock);
+				selectedObject.baseObject.commandToMove(mouseOverObject.baseObject.blockPositionIndex, mouseOverObject.baseObject.groundBlock);
 			}
 			break;
 	}

@@ -1,10 +1,11 @@
 class Character {
-    constructor() {
+    constructor(data) {
         this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
+		this.blockPositionIndex = data.blockPositionIndex;
         this.modelSizes = { head: { x: .090, y: .090, z: .090 }, body: { x: .120, y: .150, z: .050 }, arms: { x: .050, y: .120, z: .050 }, legs: { x: .050, y: .130, z: .050 } };
         this.model = { head: null, body: null, arm1: null, arm2: null, leg1: null, leg2: null };
-        this.position = new THREE.Vector3(0, 0, 0);
-        this.targetPosition = null;
+        this.position = new THREE.Vector3();
+        this.walkPath = null;
         this.positionTarget = null;
         this.walkSpeed = 0.36;
         this.actions = { chop: null, plant: null, harvest: null, sleep: null, drink: null };
@@ -18,6 +19,9 @@ class Character {
         let arm2Color = "rgb(100, 60, 200)";
         let leg1Color = "rgb(100, 100, 100)";
         let leg2Color = "rgb(100, 60, 100)";
+        
+		this.position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
+		this.position.y += GroundBlock.getTopMiddleDelta().y;
         
         let headGeom = new THREE.BoxBufferGeometry(this.modelSizes.head.x, this.modelSizes.head.y, this.modelSizes.head.z);
         this.model.head = new THREE.Mesh(headGeom, new THREE.MeshLambertMaterial({ color: headColor }));
@@ -53,9 +57,8 @@ class Character {
         return new THREE.Vector3(ground.x, ground.y + (height / 2), ground.z)
     }
 
-    commandToMove(position, target) {
-        if (this.targetPosition === null) { this.targetPosition = new THREE.Vector3(); }
-        this.targetPosition.set(position.x, position.y, position.z);
+    commandToMove(columnRow, target) {
+        this.walkPath = navigateWalk(this.blockPositionIndex, columnRow);
         this.positionTarget = target;
     }
 
@@ -72,16 +75,22 @@ class Character {
     }
 
     walk(timeDelta) { 
-        if (this.targetPosition !== null) {
-            let deltaPosition = new THREE.Vector3(this.targetPosition.x - this.position.x, this.targetPosition.y - this.position.y, this.targetPosition.z - this.position.z);
+        if (this.walkPath !== null) {
+            if (this.walkPath.length === 0) { this.walkPath = null; return }
+            this.blockPositionIndex = this.walkPath[0];
+
+            let nextPosition = GroundBlock.getTopMiddleDelta().add(GroundBlock.getBlockPosition(this.walkPath[0]));
+            let deltaPosition = new THREE.Vector3(nextPosition.x - this.position.x, nextPosition.y - this.position.y, nextPosition.z - this.position.z);
             let lengthSq = deltaPosition.lengthSq();
             deltaPosition.normalize();
             deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
-            if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { this.position = this.targetPosition; }
+            if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { this.position = nextPosition; }
             else { this.position.add(deltaPosition); }
             this.setPartPositions();
-
-            if (this.position === this.targetPosition) { this.reachDestination(); }
+            if (this.position === nextPosition) { 
+                this.walkPath.shift();
+                if (this.walkPath.length === 0) { this.reachDestination(); }
+            }
         }
     }
 
@@ -99,7 +108,5 @@ class Character {
                 case "Water":       if (this.actions.drink)     { this.actions.drink(this, this.positionTarget); }      break;
             }
         }
-
-        this.targetPosition = null;
     }
 };
