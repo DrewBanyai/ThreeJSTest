@@ -8,9 +8,9 @@ class Crop {
 
 	constructor(data) {
         this.worldObject = new WorldObject({ type: "Crop", subtype: data.cropType, baseObject: this });
+		this.currentState = Crop.stateEnum.SEED;
 		this.blockPositionIndex = data.blockPositionIndex;
 		this.cropTime = 0;
-		this.currentState = Crop.stateEnum.SEED;
 		this.cropCycle = Crop.getCropCycle(this.worldObject.objectSubtype);
 		this.groundBlock = null;
 		this.content = this.generateContent();

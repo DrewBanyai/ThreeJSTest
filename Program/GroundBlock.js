@@ -19,7 +19,7 @@ class GroundBlock {
 
         if (this.worldObject.objectSubtype === "Grass") { this.addGrass(); }
 
-        this.shadow = customizeShadow(this.block, 0.25) // mess, opacity
+        this.shadow = customizeShadow(this.block, 0.25);
         this.worldObject.addToMeshGroup(this.block);
         this.worldObject.addToMeshGroup(this.shadow);
 
@@ -78,6 +78,10 @@ class GroundBlock {
         if (!this.topper || this.topper.grass !== true) { console.log("Attempting to remove a grass patch where one does not exist!"); return; }
         this.worldObject.removeFromMeshGroup(this.topper);
         this.topper = null;
+    }
+
+    update(timeDelta) { 
+        if (this.topper && this.topper.update) { this.topper.update(timeDelta); }
     }
 
     static getPlotSize() { return { x: 0.18, y: 0.18, z: 0.18 }; }

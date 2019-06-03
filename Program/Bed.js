@@ -6,14 +6,15 @@ class Bed {
 	}
 
 	generateContent() {
+		let bedFullHeight = 0.1;
 		let plotSize = GroundBlock.getPlotSize();
-		let bedPostSize = { x: 0.009, y: 0.027, z: 0.009 };
+		let bedPostSize = { x: plotSize.x * 0.05, y: bedFullHeight * 0.38, z: plotSize.x * 0.05 };
 		let bedPostGeom = new THREE.BoxBufferGeometry(bedPostSize.x, bedPostSize.y, bedPostSize.z);
-		let bedFrameSize = { x: plotSize.x, y: 0.054, z: plotSize.z * 2 };
+		let bedFrameSize = { x: plotSize.x, y: bedFullHeight * 0.43, z: plotSize.z * 2 };
 		let bedFrameGeom = new THREE.BoxBufferGeometry(bedFrameSize.x, bedFrameSize.y, bedFrameSize.z);
-		let mattressSize = { x: plotSize.x * 0.9, y: 0.0036, z: plotSize.z * 1.8 };
+		let mattressSize = { x: plotSize.x * 0.9, y: bedFullHeight * 0.036, z: plotSize.z * 1.8 };
 		let mattressGeom = new THREE.BoxBufferGeometry(mattressSize.x, mattressSize.y, mattressSize.z);
-		let pillowSize = { x: plotSize.x * 0.9, y: 0.0144, z: plotSize.z * 0.4 };
+		let pillowSize = { x: plotSize.x * 0.9, y: bedFullHeight * 0.154, z: plotSize.z * 0.4 };
 		let pillowGeom = new THREE.BoxBufferGeometry(pillowSize.x, pillowSize.y, pillowSize.z);
 
 		let bedPostColor = "rgb(60, 60, 60)";

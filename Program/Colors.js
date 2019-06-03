@@ -5,11 +5,6 @@ var Colors = {
 	GroundBlock_Grass:		"rgb(171, 214, 106)",
 	GroundBlock_Water:		"rgb(107, 198, 255)",
 
-	//  Certain GroundBlock Top objects override the color of the block
-	GroundBlock_Tree:		"rgb(171, 214, 106)",
-	GroundBlock_Crop:		"rgb(100, 70, 40)",
-	GroundBlock_Bed:		"rgb(100, 100, 200)",
-
 	//  Colors of various world objects
 	TreeTrunk:				"rgb(154, 97, 105)",
 	TreeTop:				"rgb(101, 187, 97)",

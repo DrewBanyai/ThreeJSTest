@@ -4,8 +4,6 @@ class WorldController {
         this.lighting = { ambient: null, shadow: null, backlight: null};
 
         this.groundPieces = []; //  A list of ground plot WorldObject entities
-        this.trees = {}; //  A dictionary of tree WorldObject entities
-        this.crops = {}; //  A dictionary of crop WorldObject entities
         this.characters = []; //  A list of character WorldObject entities
         this.dayTime = 15;
         this.characterStats = { hunger: 0, thirst: 0, exhaustion: 0, wood: 0 };
@@ -69,13 +67,23 @@ class WorldController {
         this.scene.add(bed.worldObject.getMeshObjectGroup());
         let bedPositionIndex1 = WorldController.getPositionIndexFromRowColumn(bed.blockPositionIndex.column, bed.blockPositionIndex.row + 0);
         let bedPositionIndex2 = WorldController.getPositionIndexFromRowColumn(bed.blockPositionIndex.column, bed.blockPositionIndex.row + 1);
-        this.groundPieces[bedPositionIndex1].setGroundSubtype("Bed");
-        this.groundPieces[bedPositionIndex2].setGroundSubtype("Bed");
         bed.groundBlock = this.groundPieces[bedPositionIndex1];
-        this.groundPieces[bedPositionIndex1].bed = bed;
-        this.groundPieces[bedPositionIndex2].bed = bed;
         this.groundPieces[bedPositionIndex1].topper = bed;
         this.groundPieces[bedPositionIndex2].topper = bed;
+    }
+
+    isTreePresent(positionIndex) {
+        if (positionIndex < 0) { return false; }
+        if (positionIndex >= (WorldController.getWorldSize().x * WorldController.getWorldSize().y)) { return false; }
+        if (this.groundPieces[positionIndex].topper instanceof Tree) { return true; }
+        return false;
+    }
+
+    isCropPresent(positionIndex) {
+        if (positionIndex < 0) { return false; }
+        if (positionIndex >= (WorldController.getWorldSize().x * WorldController.getWorldSize().y)) { return false; }
+        if (this.groundPieces[positionIndex].topper instanceof Crop) { return true; }
+        return false;
     }
 
     isGroundSubtype(positionIndex, type) {
@@ -87,25 +95,27 @@ class WorldController {
 
     plantTree(indexOverride) {
         let positionIndex = indexOverride ? indexOverride : WorldController.getRandomWorldPosition();
-        while (!this.isGroundSubtype(positionIndex, "Grass")) { positionIndex = WorldController.getRandomWorldPosition(); }
+        let treePositionValid = (positionIndex) => { return (this.isGroundSubtype(positionIndex, "Grass") && (this.groundPieces[positionIndex].topper === null)); };
+        while (!treePositionValid(positionIndex)) { positionIndex = WorldController.getRandomWorldPosition(); }
 
         let tree = new Tree({ height: "0.18", blockPositionIndex: WorldController.getRowColumnFromPositionIndex(positionIndex) })
         this.scene.add(tree.worldObject.getMeshObjectGroup());
-        this.groundPieces[positionIndex].setGroundSubtype("Tree");
 
-        this.trees["tree" + positionIndex.toString()] = tree;
+        this.groundPieces[positionIndex].topper = tree;
         tree.groundBlock = this.groundPieces[positionIndex];
     }
 
     destroyTree(positionIndex) {
-        if (!this.isGroundSubtype(positionIndex, "Tree")) { console.log(`Attempted to remove non-existent tree at index ${positionIndex}`); return; }
+        if (!this.isTreePresent(positionIndex)) { console.log(`Attempted to remove non-existent tree at index ${positionIndex}`); return false; }
 
-        let tree = this.trees["tree" + positionIndex.toString()];
-        this.scene.remove(tree.worldObject.getMeshObjectGroup());
-        delete this.trees["tree" + positionIndex.toString()];
-        tree = null;
+        let tree = this.groundPieces[positionIndex].topper;
+        if (tree.currentState != Tree.stateEnum.GROWN) { console.log("You can't chop down this tree until it is fully grown!"); return false; }
+
+        scene.remove(tree.worldObject.getMeshObjectGroup());
+        this.groundPieces[positionIndex].topper = null;
 
         this.groundPieces[positionIndex].setGroundSubtype("Grass");
+        return true;
     }
 
     plantCrop(positionIndex) {
@@ -113,29 +123,22 @@ class WorldController {
         
         let crop = new Crop({ cropType: "Beans", blockPositionIndex: WorldController.getRowColumnFromPositionIndex(positionIndex) });
         this.scene.add(crop.worldObject.getMeshObjectGroup());
-        this.groundPieces[positionIndex].setGroundSubtype("Crop");
 
-        this.crops["crop" + positionIndex.toString()] = crop;
-        crop.groundBlock = this.groundPieces[positionIndex];
-        this.groundPieces[positionIndex].crop = crop;
         this.groundPieces[positionIndex].topper = crop;
+        crop.groundBlock = this.groundPieces[positionIndex];
     }
 
     harvestCrop(positionIndex) {
-        if (!this.isGroundSubtype(positionIndex, "Crop")) { console.log(`Attempted to harvest non-existent crop at index ${positionIndex}`); return; }
+        if (!this.isCropPresent(positionIndex)) { console.log(`Attempted to harvest non-existent crop at index ${positionIndex}`); return; }
 
-        let crop = this.crops["crop" + positionIndex.toString()];
+        let crop = this.groundPieces[positionIndex].topper;
         if (crop.currentState != Crop.stateEnum.GROWN) { console.log("You can't harvest this crop until it is fully grown!"); return; }
 
-        crop.removeCrop();
-        delete this.crops["crop" + positionIndex.toString()];
-        crop = null;
+        scene.remove(crop.worldObject.getMeshObjectGroup());
+        this.groundPieces[positionIndex].topper = null;
         
         this.characterStats.hunger = (this.characterStats.hunger > 5) ? this.characterStats.hunger - 5 : 0;
 
-        this.groundPieces[positionIndex].setGroundSubtype("Dirt");
-        this.groundPieces[positionIndex].crop = null;
-        this.groundPieces[positionIndex].topper = null;
     }
 
     static getRandomWorldPosition() { return parseInt(Math.random() * (WorldController.getWorldSize().x * WorldController.getWorldSize().z)); }
@@ -149,33 +152,34 @@ class WorldController {
         this.characters.push(character);
         this.scene.add(character.worldObject.getMeshObjectGroup());
 
-        character.chopTreeFunc = (char, target) => {
+        character.actions.chop = (char, target) => {
             let positionIndex = WorldController.getPositionIndexFromBlocks(target.blockPositionIndex);
-            this.destroyTree(positionIndex);
-            this.plantTree();
-            this.characterStats.wood += 5;
+            if (this.destroyTree(positionIndex)) {
+                this.plantTree();
+                this.characterStats.wood += 5;
+            }
         }
 
-        character.plantCropFunc = (char, target) => {
+        character.actions.plant = (char, target) => {
             if (target.topper instanceof Crop) { console.log("Attempting to plant a crop where one already exists"); return; }
             let positionIndex = WorldController.getPositionIndexFromBlocks(target.blockPositionIndex);
             this.plantCrop(positionIndex);
         }
 
-        character.harvestFunc = (char, target) => {
+        character.actions.harvest = (char, target) => {
             if (!(target.topper instanceof Crop)) { console.log("Attempting to harvest a crop where one does not exist"); return; }
             let positionIndex = WorldController.getPositionIndexFromBlocks(target.blockPositionIndex);
             this.harvestCrop(positionIndex);
         }
 
-        character.sleepFunc = async (char, target) => {
+        character.actions.sleep = async (char, target) => {
             if (!(target.topper instanceof Bed)) { console.log("Attempting to lay in a bed where one does not exist"); return; }
             await char.layDown();
             this.dayTime = 6;
             this.characterStats.exhaustion = (this.characterStats.exhaustion > 5) ? this.characterStats.exhaustion - 5 : 0;
         }
 
-        character.waterFunc = async (char, target) => {
+        character.actions.drink = async (char, target) => {
             char.drinkWater();
             this.characterStats.thirst = (this.characterStats.thirst > 5) ? this.characterStats.thirst - 5 : 0;
         }
@@ -183,7 +187,7 @@ class WorldController {
 
     update(timeDelta) {
         this.characters.forEach((character) => character.update(timeDelta));
-        for (let crop in this.crops) { this.crops[crop].update(timeDelta); }
+        for (let plot in this.groundPieces) { this.groundPieces[plot].update(timeDelta); }
         this.updateDayNightCycle(timeDelta);
 
         if ((this.characterStatTimers.hunger += timeDelta) > 5) { this.characterStats.hunger += 1; this.characterStatTimers.hunger -= 5; }

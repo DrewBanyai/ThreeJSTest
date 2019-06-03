@@ -1,6 +1,14 @@
 class Tree {
+	static stateEnum = {
+		SPROUT: 1,
+		SAPLING: 2,
+		YOUTH: 3,
+		GROWN: 4,
+	}
+
 	constructor(data) {
         this.worldObject = new WorldObject({ type: "Tree", subtype: "Basic", baseObject: this });
+		this.currentState = Tree.stateEnum.GROWN;
 		this.blockPositionIndex = data.blockPositionIndex;
 		this.height = data.height;
 		this.groundBlock = null;
