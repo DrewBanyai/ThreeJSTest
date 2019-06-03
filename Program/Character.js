@@ -58,8 +58,9 @@ class Character {
     }
 
     commandToMove(columnRow, target) {
-        this.walkPath = navigateWalk(this.blockPositionIndex, columnRow);
         this.positionTarget = target;
+        if (columnRowsEqual(columnRow, this.blockPositionIndex)) { this.reachDestination(); }
+        else { this.walkPath = navigateWalk(this.blockPositionIndex, columnRow); }
     }
 
     async layDown(bedPosition) {
@@ -99,14 +100,10 @@ class Character {
         let object = (worldObject ? worldObject.baseObject : null);
         if (!object) { console.log("No object found at destination!"); return; }
 
-        if      ((object.topper instanceof Bed) && this.actions.sleep) { this.actions.sleep(this, this.positionTarget); }
-        else if ((object.topper instanceof Crop) && this.actions.harvest) { this.actions.harvest(this, this.positionTarget); }
-        else if ((object.topper instanceof Tree) && this.actions.chop) { this.actions.chop(this, this.positionTarget); }
-        else {
-            switch (this.positionTarget.worldObject.objectSubtype) {
-                case "Dirt":        if (this.actions.plant)     { this.actions.plant(this, this.positionTarget); }      break;
-                case "Water":       if (this.actions.drink)     { this.actions.drink(this, this.positionTarget); }      break;
-            }
-        }
+        if      ((object.topper instanceof Bed) && this.actions.sleep)      { this.actions.sleep(this, this.positionTarget); }
+        else if ((object.topper instanceof Crop) && this.actions.harvest)   { this.actions.harvest(this, this.positionTarget); }
+        else if ((object.topper instanceof Tree) && this.actions.chop)      { this.actions.chop(this, this.positionTarget); }
+        else if (this.positionTarget.worldObject.objectSubtype === "Dirt")  { this.actions.plant(this, this.positionTarget); }
+        else if (this.positionTarget.worldObject.objectSubtype === "Water") { this.actions.drink(this, this.positionTarget); }
     }
 };
