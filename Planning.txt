@@ -17,9 +17,11 @@ Version 0000 (build 20190529):
 	- Clicking the river will make them drink which lowers their thirst
 ==========
 
-Version 0001 (build 20190602) :
+Version 0001 (build XXX) :
 ==========
-- Get proper coloring and lighting
+- Proper coloring and lighting
+- Alteration to day/night cycle to improve coloring and lighting
+- Pathfinding and block-map based movement
 ==========
 
 

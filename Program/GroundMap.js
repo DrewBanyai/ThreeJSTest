@@ -83,12 +83,6 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
         addToFrontier({ column: x + 1, row: z + 1 },  pathPlusEntry(frontierEntry, { column: x + 1, row: z + 1 }));
         addToFrontier({ column: x - 1, row: z + 1 },  pathPlusEntry(frontierEntry, { column: x - 1, row: z + 1 }));
     }
-
-    let cloneDict = (dict) => { 
-        let clone = {};
-        for (let key in dict) { clone[key] = dict[key]; }
-        return clone;
-    }
     
     //  Put in a starting index frontier entry (frontier is a list of XZ positions, beginning with the start point)
     addToFrontier(columnRowStart, [ columnRowStart ]);
@@ -97,7 +91,7 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
     while (Object.keys(frontier).length > 0) {
         ++index;
         //  Add all frontier entries to the old frontier map, make a copy of the frontier list, then clear it
-        for (let key in frontier) { oldFrontier[key] = [...frontier[key]]; }
+        for (let key in frontier) { oldFrontier[key] = true; }
         let currentFrontier = {}
         for (let key in frontier) { currentFrontier[key] = Object.assign(frontier[key]); }
         frontier = {};
