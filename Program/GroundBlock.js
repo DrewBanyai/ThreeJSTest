@@ -26,8 +26,6 @@ class GroundBlock {
         return this.block;
     }
 
-    getGroundSubtype() { return this.worldObject.objectSubtype; }
-
     setGroundSubtype(subtype) {
         //  Get rid of any special additions from the old subtype (this.worldObject.objectSubtype)
         if (this.worldObject.objectSubtype === "Grass") { this.removeGrass(); }

@@ -1,9 +1,7 @@
 class WorldController {
-    constructor(scene) {
-        this.scene = scene;
+    constructor() {
         this.lighting = { ambient: null, shadow: null, backlight: null};
 
-        this.groundPieces = []; //  A list of ground plot WorldObject entities
         this.characters = []; //  A list of character WorldObject entities
         this.dayTime = 15;
         this.characterStats = { hunger: 0, thirst: 0, exhaustion: 0, wood: 0 };
@@ -13,17 +11,17 @@ class WorldController {
 
     generateContent() {
         this.createSceneColorAndLighting();
-        this.createBasicGroundPlot();
+        this.createTestMap();
         this.createCharacter();
     }
 
     createSceneColorAndLighting() {
         //  Set the background color for the scene
-        this.scene.background = new THREE.Color(null);
+        scene.background = new THREE.Color(null);
 
         //  Set the ambient lighting for the scene
         this.lighting.ambient = new THREE.AmbientLight(null, 0.5)
-        this.scene.add(this.lighting.ambient);
+        scene.add(this.lighting.ambient);
 
         //  Set the shadow lighting for the scene
         this.lighting.shadow = new THREE.DirectionalLight(null, 0.5);
@@ -38,83 +36,71 @@ class WorldController {
         scene.add(this.lighting.backlight);
     }
 
-    createBasicGroundPlot() {
+    createTestMap() {
         for (let j = 0; j < WorldController.getWorldSize().z; ++j) {
             for (let i = 0; i < WorldController.getWorldSize().x; ++i) {
                 let groundBlock = new GroundBlock({ groundType: "Grass", blockPositionIndex: { column: i, row: j } });
 
                 //  Add this ground piece to the scene and also to the list of ground pieces
-                this.scene.add(groundBlock.worldObject.getMeshObjectGroup());
-                this.groundPieces.push(groundBlock);
+                scene.add(groundBlock.worldObject.getMeshObjectGroup());
+                addGroundBlockToMap(groundBlock);
             }
         }
 
         //  Add the dirt plots
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 1)].setGroundSubtype("Dirt");
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 2)].setGroundSubtype("Dirt");
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 3)].setGroundSubtype("Dirt");
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 4)].setGroundSubtype("Dirt");
+        setGroundBlockSubTypeFromXZ(1, 1, "Dirt");
+        setGroundBlockSubTypeFromXZ(1, 2, "Dirt");
+        setGroundBlockSubTypeFromXZ(1, 3, "Dirt");
+        setGroundBlockSubTypeFromXZ(1, 4, "Dirt");
 
         //  Add some water plots
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 6)].setGroundSubtype("Water");
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 7)].setGroundSubtype("Water");
-        this.groundPieces[WorldController.getPositionIndexFromRowColumn(1, 8)].setGroundSubtype("Water");
+        setGroundBlockSubTypeFromXZ(1, 6, "Water");
+        setGroundBlockSubTypeFromXZ(1, 7, "Water");
+        setGroundBlockSubTypeFromXZ(1, 8, "Water");
 
         //  Add a few trees
         this.plantTree(WorldController.getPositionIndexFromRowColumn(7, 4));
 
-        let bed = new Bed({ blockPositionIndex: { column: 7, row: 6 } });
-        this.scene.add(bed.worldObject.getMeshObjectGroup());
-        let bedPositionIndex1 = WorldController.getPositionIndexFromRowColumn(bed.blockPositionIndex.column, bed.blockPositionIndex.row + 0);
-        let bedPositionIndex2 = WorldController.getPositionIndexFromRowColumn(bed.blockPositionIndex.column, bed.blockPositionIndex.row + 1);
-        bed.groundBlock = this.groundPieces[bedPositionIndex1];
-        this.groundPieces[bedPositionIndex1].topper = bed;
-        this.groundPieces[bedPositionIndex2].topper = bed;
-    }
-
-    isTreePresent(positionIndex) {
-        if (positionIndex < 0) { return false; }
-        if (positionIndex >= (WorldController.getWorldSize().x * WorldController.getWorldSize().y)) { return false; }
-        if (this.groundPieces[positionIndex].topper instanceof Tree) { return true; }
-        return false;
-    }
-
-    isCropPresent(positionIndex) {
-        if (positionIndex < 0) { return false; }
-        if (positionIndex >= (WorldController.getWorldSize().x * WorldController.getWorldSize().y)) { return false; }
-        if (this.groundPieces[positionIndex].topper instanceof Crop) { return true; }
-        return false;
+        //  Put in a bed to test sleeping
+        this.createBed({ column: 7, row: 6 });
     }
 
     isGroundSubtype(positionIndex, type) {
         if (positionIndex < 0) { return false; }
         if (positionIndex >= (WorldController.getWorldSize().x * WorldController.getWorldSize().y)) { return false; }
-        if (this.groundPieces[positionIndex].getGroundSubtype() === type) { return true; }
+        if (getGroundBlockSubType(positionIndex) === type) { return true; }
         return false;
+    }
+
+    createBed(columnRow) {
+        let bed = new Bed({ blockPositionIndex: columnRow });
+        scene.add(bed.worldObject.getMeshObjectGroup());
+        let bedPositionIndex1 = WorldController.getPositionIndexFromRowColumn(columnRow.column, columnRow.row + 0);
+        let bedPositionIndex2 = WorldController.getPositionIndexFromRowColumn(columnRow.column, columnRow.row + 1);
+        setGroundBlockTopper(bedPositionIndex1, bed);
+        setGroundBlockTopper(bedPositionIndex2, bed, false);
     }
 
     plantTree(indexOverride) {
         let positionIndex = indexOverride ? indexOverride : WorldController.getRandomWorldPosition();
-        let treePositionValid = (positionIndex) => { return (this.isGroundSubtype(positionIndex, "Grass") && (this.groundPieces[positionIndex].topper === null)); };
+        let treePositionValid = (positionIndex) => { return (this.isGroundSubtype(positionIndex, "Grass") && (!getGroundBlockTopper(positionIndex))); };
         while (!treePositionValid(positionIndex)) { positionIndex = WorldController.getRandomWorldPosition(); }
 
         let tree = new Tree({ height: "0.18", blockPositionIndex: WorldController.getRowColumnFromPositionIndex(positionIndex) })
-        this.scene.add(tree.worldObject.getMeshObjectGroup());
+        scene.add(tree.worldObject.getMeshObjectGroup());
 
-        this.groundPieces[positionIndex].topper = tree;
-        tree.groundBlock = this.groundPieces[positionIndex];
+        setGroundBlockTopper(positionIndex, tree);
     }
 
     destroyTree(positionIndex) {
-        if (!this.isTreePresent(positionIndex)) { console.log(`Attempted to remove non-existent tree at index ${positionIndex}`); return false; }
+        if (!isTreePresent(positionIndex)) { console.log(`Attempted to remove non-existent tree at index ${positionIndex}`); return false; }
 
-        let tree = this.groundPieces[positionIndex].topper;
+        let tree = getGroundBlockTopper(positionIndex);
         if (tree.currentState != Tree.stateEnum.GROWN) { console.log("You can't chop down this tree until it is fully grown!"); return false; }
 
         scene.remove(tree.worldObject.getMeshObjectGroup());
-        this.groundPieces[positionIndex].topper = null;
+        setGroundBlockTopper(positionIndex, null);
 
-        this.groundPieces[positionIndex].setGroundSubtype("Grass");
         return true;
     }
 
@@ -122,20 +108,19 @@ class WorldController {
         if (!this.isGroundSubtype(positionIndex, "Dirt")) { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
         
         let crop = new Crop({ cropType: "Beans", blockPositionIndex: WorldController.getRowColumnFromPositionIndex(positionIndex) });
-        this.scene.add(crop.worldObject.getMeshObjectGroup());
+        scene.add(crop.worldObject.getMeshObjectGroup());
 
-        this.groundPieces[positionIndex].topper = crop;
-        crop.groundBlock = this.groundPieces[positionIndex];
+        setGroundBlockTopper(positionIndex, crop);
     }
 
     harvestCrop(positionIndex) {
-        if (!this.isCropPresent(positionIndex)) { console.log(`Attempted to harvest non-existent crop at index ${positionIndex}`); return; }
+        if (!isCropPresent(positionIndex)) { console.log(`Attempted to harvest non-existent crop at index ${positionIndex}`); return; }
 
-        let crop = this.groundPieces[positionIndex].topper;
+        let crop = getGroundBlockTopper(positionIndex);
         if (crop.currentState != Crop.stateEnum.GROWN) { console.log("You can't harvest this crop until it is fully grown!"); return; }
 
         scene.remove(crop.worldObject.getMeshObjectGroup());
-        this.groundPieces[positionIndex].topper = null;
+        setGroundBlockTopper(positionIndex, null);
         
         this.characterStats.hunger = (this.characterStats.hunger > 5) ? this.characterStats.hunger - 5 : 0;
 
@@ -150,7 +135,7 @@ class WorldController {
     createCharacter() {
         let character = new Character();
         this.characters.push(character);
-        this.scene.add(character.worldObject.getMeshObjectGroup());
+        scene.add(character.worldObject.getMeshObjectGroup());
 
         character.actions.chop = (char, target) => {
             let positionIndex = WorldController.getPositionIndexFromBlocks(target.blockPositionIndex);
@@ -187,7 +172,7 @@ class WorldController {
 
     update(timeDelta) {
         this.characters.forEach((character) => character.update(timeDelta));
-        for (let plot in this.groundPieces) { this.groundPieces[plot].update(timeDelta); }
+        updateGroundMap(timeDelta);
         this.updateDayTime(timeDelta);
 
         if ((this.characterStatTimers.hunger += timeDelta) > 5) { this.characterStats.hunger += 1; this.characterStatTimers.hunger -= 5; }
@@ -212,7 +197,7 @@ class WorldController {
         this.lighting.backlight.intensity = DayNightCurrentState.lightLevel * 0.3;
         
         //  Set the sky color according to the current day/time state
-        this.scene.background.set(DayNightCycle.skyColorRGB());
+        scene.background.set(DayNightCycle.skyColorRGB());
 
         //  Show the current time of day in the UI
         let timeOfDay = DayNightCurrentState.nightTime ? "Night time" : "Day time";

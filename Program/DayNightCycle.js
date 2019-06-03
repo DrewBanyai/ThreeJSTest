@@ -25,21 +25,10 @@ const DayNightCycle = {
 if (DayNightCycle.dayLightLevels.length != DayNightCycle.dayNightIntervalCount) { console.log("dayLightLevels is not the correct length!"); }
 if (DayNightCycle.skyColorLevels.length != DayNightCycle.dayNightIntervalCount) { console.log("skyColorLevels is not the correct length!"); }
 
-var rgbAdd = (rgb1, rgb2) => {
-	return { r: rgb2.r + rgb1.r, g: rgb2.g + rgb1.g, b: rgb2.b + rgb1.b };
-}
-
-var rgbDiff = (rgb1, rgb2) => {
-	return { r: rgb2.r - rgb1.r, g: rgb2.g - rgb1.g, b: rgb2.b - rgb1.b };
-}
-
-var rgbMultiply = (rgb, multiple) => {
-	return { r: rgb.r * multiple, g: rgb.g * multiple, b: rgb.b * multiple };
-}
-
-var rgbInt = (rgb, multiple) => {
-	return { r: parseInt(rgb.r), g: parseInt(rgb.g), b: parseInt(rgb.b) };
-}
+let rgbAdd = (rgb1, rgb2) => { return { r: rgb2.r + rgb1.r, g: rgb2.g + rgb1.g, b: rgb2.b + rgb1.b }; }
+let rgbDiff = (rgb1, rgb2) => { return { r: rgb2.r - rgb1.r, g: rgb2.g - rgb1.g, b: rgb2.b - rgb1.b }; }
+let rgbMultiply = (rgb, multiple) => { return { r: rgb.r * multiple, g: rgb.g * multiple, b: rgb.b * multiple }; }
+let rgbInt = (rgb, multiple) => { return { r: parseInt(rgb.r), g: parseInt(rgb.g), b: parseInt(rgb.b) }; }
 
 var updateDayTimeCycle = (timeDelta) => {
 	//  Update the current timer, then ensure we stay within the time range we've defined
@@ -67,5 +56,9 @@ var updateDayTimeCycle = (timeDelta) => {
 	//  Determine if it is currently night-time
 	let beforeDawn = (DayNightCurrentState.currentTimer < DayNightCycle.morning);
 	let afterDusk = (DayNightCurrentState.currentTimer >= DayNightCycle.evening);
+	let oldNightTime = DayNightCurrentState.nightTime;
 	DayNightCurrentState.nightTime = (beforeDawn || afterDusk);
+
+	//  Adjust the UI to night time mode (white text) or day time mode (black text)
+	if (oldNightTime !== DayNightCurrentState.nightTime) { MainUI.setColor(DayNightCurrentState.nightTime ? "white" : "black"); }
 }

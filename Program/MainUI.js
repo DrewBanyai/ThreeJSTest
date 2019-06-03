@@ -5,6 +5,7 @@ class MainUI {
 
 	generateContent() {
 		let container = document.createElement("div");
+		container.id = "MainUIContainer";
 
 		//  Create the title bar at the top of the screen
 		let info = document.createElement( 'div' );
@@ -87,6 +88,12 @@ class MainUI {
 		container.appendChild( woodLabel );
 
 		return container;
+	}
+
+	static setColor(color) { 
+		let container = document.getElementById("MainUIContainer");
+		if (!container) { console.log("Element 'MainUIContainer' could not be found!"); return; }
+		container.style.color = color;
 	}
 
 	static setHungerValue(value) {
