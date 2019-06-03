@@ -175,7 +175,7 @@ class WorldController {
         character.actions.sleep = async (char, target) => {
             if (!(target.topper instanceof Bed)) { console.log("Attempting to lay in a bed where one does not exist"); return; }
             await char.layDown();
-            DayNightCurrentState.currentTimer = 6;
+            DayNightCurrentState.currentTimer = DayNightCycle.morning;
             this.characterStats.exhaustion = (this.characterStats.exhaustion > 5) ? this.characterStats.exhaustion - 5 : 0;
         }
 
@@ -207,12 +207,12 @@ class WorldController {
         updateDayTimeCycle(timeDelta);
         
         //  Set the lighting according to the current day/time state
-        this.lighting.ambient.intensity = (DayNightCurrentState.lightLevel / 255) * 0.5;
-        this.lighting.shadow.intensity = (DayNightCurrentState.lightLevel / 255) * 0.5;
-        this.lighting.backlight.intensity = (DayNightCurrentState.lightLevel / 255) * 0.3;
+        this.lighting.ambient.intensity = DayNightCurrentState.lightLevel * 0.5;
+        this.lighting.shadow.intensity = DayNightCurrentState.lightLevel * 0.5;
+        this.lighting.backlight.intensity = DayNightCurrentState.lightLevel * 0.3;
         
         //  Set the sky color according to the current day/time state
-        this.scene.background.set(`rgb(${DayNightCurrentState.skyLevel}, ${DayNightCurrentState.skyLevel}, ${DayNightCurrentState.skyLevel})`);
+        this.scene.background.set(DayNightCycle.skyColorRGB());
 
         //  Show the current time of day in the UI
         let timeOfDay = DayNightCurrentState.nightTime ? "Night time" : "Day time";
