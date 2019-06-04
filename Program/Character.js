@@ -60,7 +60,7 @@ class Character {
     commandToMove(indexXZ, target) {
         this.positionTarget = target;
         if (columnRowsEqual(indexXZ, this.indexXZ)) { this.reachDestination(); }
-        else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); console.log(this.walkPath); }
+        else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); }
     }
 
     async layDown(bedPosition) {

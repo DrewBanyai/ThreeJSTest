@@ -13,7 +13,7 @@ var TestMapData = {
 		
 		{ indexXZ: { x: 0,   z: 1 },   groundtype: "grass" },
 		{ indexXZ: { x: 1,   z: 1 },   groundtype: "dirt" },
-		{ indexXZ: { x: 2,   z: 1 },   groundtype: "grass" },
+		{ indexXZ: { x: 2,   z: 1 },   groundtype: "dirt" },
 		{ indexXZ: { x: 3,   z: 1 },   groundtype: "grass" },
 		{ indexXZ: { x: 4,   z: 1 },   groundtype: "grass" },
 		{ indexXZ: { x: 5,   z: 1 },   groundtype: "grass" },
@@ -24,7 +24,7 @@ var TestMapData = {
 		
 		{ indexXZ: { x: 0,   z: 2 },   groundtype: "grass" },
 		{ indexXZ: { x: 1,   z: 2 },   groundtype: "dirt" },
-		{ indexXZ: { x: 2,   z: 2 },   groundtype: "grass" },
+		{ indexXZ: { x: 2,   z: 2 },   groundtype: "dirt" },
 		{ indexXZ: { x: 3,   z: 2 },   groundtype: "grass" },
 		{ indexXZ: { x: 4,   z: 2 },   groundtype: "grass" },
 		{ indexXZ: { x: 5,   z: 2 },   groundtype: "grass" },
@@ -35,7 +35,7 @@ var TestMapData = {
 		
 		{ indexXZ: { x: 0,   z: 3 },   groundtype: "grass" },
 		{ indexXZ: { x: 1,   z: 3 },   groundtype: "dirt" },
-		{ indexXZ: { x: 2,   z: 3 },   groundtype: "grass" },
+		{ indexXZ: { x: 2,   z: 3 },   groundtype: "dirt" },
 		{ indexXZ: { x: 3,   z: 3 },   groundtype: "grass" },
 		{ indexXZ: { x: 4,   z: 3 },   groundtype: "grass" },
 		{ indexXZ: { x: 5,   z: 3 },   groundtype: "grass" },
@@ -46,7 +46,7 @@ var TestMapData = {
 		
 		{ indexXZ: { x: 0,   z: 4 },   groundtype: "grass" },
 		{ indexXZ: { x: 1,   z: 4 },   groundtype: "dirt" },
-		{ indexXZ: { x: 2,   z: 4 },   groundtype: "grass" },
+		{ indexXZ: { x: 2,   z: 4 },   groundtype: "dirt" },
 		{ indexXZ: { x: 3,   z: 4 },   groundtype: "grass" },
 		{ indexXZ: { x: 4,   z: 4 },   groundtype: "grass" },
 		{ indexXZ: { x: 5,   z: 4 },   groundtype: "grass" },
