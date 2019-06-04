@@ -66,8 +66,9 @@ var navigateWalk = (indexXZStart, indexXZEnd) => {
     let addToFrontier = (indexXZ, path) => {
         let blockKey = getKeyFromColumnRow(indexXZ);
         let block = getGroundBlock(indexXZ.x, indexXZ.z);
-        let firstOrLast = columnRowsEqual(indexXZ, indexXZEnd) || columnRowsEqual(indexXZ, indexXZStart);
         if (!block) { return; }
+        
+        let firstOrLast = columnRowsEqual(indexXZ, indexXZEnd) || columnRowsEqual(indexXZ, indexXZStart);
         if (groundTypesUnwalkable.includes(block.worldObject.objectSubtype) && !firstOrLast) { return; }
         if (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType) && !firstOrLast) { return; }
         if (oldFrontier.hasOwnProperty(blockKey)) { return; }
