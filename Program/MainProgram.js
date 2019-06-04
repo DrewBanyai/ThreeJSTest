@@ -118,21 +118,21 @@ function setEventListeners() {
 function rightClickObject(object) {
 	let objectFullType = object.getFullType();
 	switch (objectFullType) {
-		case "GroundBlock - Grass":
-		case "GroundBlock - Dirt":
-		case "GroundBlock - Tree":
-		case "GroundBlock - Crop":
-		case "GroundBlock - Bed":
-		case "GroundBlock - Water":
+		case "groundblock - grass":
+		case "groundblock - dirt":
+		case "groundblock - tree":
+		case "groundblock - crop":
+		case "groundblock - bed":
+		case "groundblock - water":
 			{
-				selectedObject.baseObject.commandToMove(mouseOverObject.baseObject.blockPositionIndex, mouseOverObject.baseObject);
+				selectedObject.baseObject.commandToMove(mouseOverObject.baseObject.indexXZ, mouseOverObject.baseObject);
 			}
 			break;
-		case "Tree - Basic":
-		case "Crop - Beans":
-		case "Bed - Basic":
+		case "tree - basic":
+		case "crop - beans":
+		case "bed - basic":
 			{
-				selectedObject.baseObject.commandToMove(mouseOverObject.baseObject.blockPositionIndex, mouseOverObject.baseObject.groundBlock);
+				selectedObject.baseObject.commandToMove(mouseOverObject.baseObject.indexXZ, mouseOverObject.baseObject.groundBlock);
 			}
 			break;
 	}

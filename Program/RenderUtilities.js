@@ -7,4 +7,4 @@ var customizeShadow = (mesh, opacity) =>{ //opacity, target mesh
     return mesh_shadow;
 }
 
-var columnRowsEqual = (a, b) => { return ((a.column === b.column) && (a.row === b.row)); }
+var columnRowsEqual = (a, b) => { return ((a.x === b.x) && (a.z === b.z)); }

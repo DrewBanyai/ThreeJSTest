@@ -1,7 +1,7 @@
 class Bed {
 	constructor(data) {
-        this.worldObject = new WorldObject({ type: "Bed", subtype: "Basic", baseObject: this });
-		this.blockPositionIndex = data.blockPositionIndex;
+        this.worldObject = new WorldObject({ type: "bed", subtype: "basic", baseObject: this });
+		this.indexXZ = data.indexXZ;
 		this.content = this.generateContent();
 	}
 
@@ -23,7 +23,7 @@ class Bed {
 		let mattressColor = "rgb(200, 200, 200)";
 		let pillowColor = "rgb(200, 200, 200)";
 
-		let bedPosition = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
+		let bedPosition = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
 		bedPosition.y += plotYDelta.y;
 
 		//  Top left bed post

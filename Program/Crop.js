@@ -7,9 +7,9 @@ class Crop {
 	}
 
 	constructor(data) {
-        this.worldObject = new WorldObject({ type: "Crop", subtype: data.cropType, baseObject: this });
+        this.worldObject = new WorldObject({ type: "crop", subtype: data.cropType, baseObject: this });
 		this.currentState = Crop.stateEnum.SEED;
-		this.blockPositionIndex = data.blockPositionIndex;
+		this.indexXZ = data.indexXZ;
 		this.cropTime = 0;
 		this.cropCycle = Crop.getCropCycle(this.worldObject.objectSubtype);
 		this.groundBlock = null;
@@ -43,7 +43,7 @@ class Crop {
 		let cropSize = { x: 0.018, y: 0.009, z: 0.018 };
 		let plotSize = GroundBlock.getPlotSize();
 		let plotMiddleTop = GroundBlock.getTopMiddleDelta();
-		plotMiddleTop.add((this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3())));
+		plotMiddleTop.add((this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3())));
 		let seedGeom = new THREE.BoxBufferGeometry(cropSize.x, cropSize.y, cropSize.z);
 
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
@@ -69,7 +69,7 @@ class Crop {
 		let cropSize = { x: 0.0144, y: 0.036, z: 0.0144 };
 		let plotSize = GroundBlock.getPlotSize();
 		let plotMiddleTop = GroundBlock.getTopMiddleDelta();
-		plotMiddleTop.add((this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3())));
+		plotMiddleTop.add((this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3())));
 		let seedGeom = new THREE.BoxBufferGeometry(cropSize.x, cropSize.y, cropSize.z);
 
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
@@ -95,7 +95,7 @@ class Crop {
 		let cropSize = { x: 0.0108, y: 0.072, z: 0.0108 };
 		let plotSize = GroundBlock.getPlotSize();
 		let plotMiddleTop = GroundBlock.getTopMiddleDelta();
-		plotMiddleTop.add((this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3())));
+		plotMiddleTop.add((this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3())));
 		let seedGeom = new THREE.BoxBufferGeometry(cropSize.x, cropSize.y, cropSize.z);
 
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
@@ -121,7 +121,7 @@ class Crop {
 		let cropSize = { x: 0.0108, y: 0.144, z: 0.0108 };
 		let plotSize = GroundBlock.getPlotSize();
 		let plotMiddleTop = GroundBlock.getTopMiddleDelta();
-		plotMiddleTop.add((this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3())));
+		plotMiddleTop.add((this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3())));
 		let seedGeom = new THREE.BoxBufferGeometry(cropSize.x, cropSize.y, cropSize.z);
 
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
@@ -157,7 +157,7 @@ class Crop {
 
 	static getCropCycle(cropType) {
 		switch (cropType) {
-			case "Beans": 		return { seed: 0, sprout: 3, youth: 6, grown: 9 };
+			case "beans": 		return { seed: 0, sprout: 3, youth: 6, grown: 9 };
 			default:			return { seed: 0, sprout: 10, youth: 20, grown: 30 };
 		}
 	}

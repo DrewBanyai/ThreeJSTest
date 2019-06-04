@@ -1,9 +1,9 @@
 //  These colors are usable anywhere in the program
 var Colors = {
 	//  Used by the Groundblock for basic block type colors
-	GroundBlock_Dirt:		"rgb(89, 60, 31)",
-	GroundBlock_Grass:		"rgb(171, 214, 106)",
-	GroundBlock_Water:		"rgb(107, 198, 255)",
+	groundblock_dirt:		"rgb(89, 60, 31)",
+	groundblock_grass:		"rgb(171, 214, 106)",
+	groundblock_water:		"rgb(107, 198, 255)",
 
 	//  Colors of various world objects
 	TreeTrunk:				"rgb(154, 97, 105)",

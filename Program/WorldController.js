@@ -11,7 +11,7 @@ class WorldController {
 
     generateContent() {
         this.createSceneColorAndLighting();
-        this.createTestMap();
+        this.createMapFromData(TestMapData);
         this.createCharacter();
     }
 
@@ -36,99 +36,85 @@ class WorldController {
         scene.add(this.lighting.backlight);
     }
 
-    createTestMap() {
-        for (let j = 0; j < WorldController.getWorldSize().z; ++j) {
-            for (let i = 0; i < WorldController.getWorldSize().x; ++i) {
-                let groundBlock = new GroundBlock({ groundType: "Grass", blockPositionIndex: { column: i, row: j } });
+    createMapFromData(mapData) {
+        //  Load the ground block items in from data
+        mapData.groundBlocks.forEach((groundData) => {
+            let groundBlock = new GroundBlock(groundData);
 
-                //  Add this ground piece to the scene and also to the list of ground pieces
-                scene.add(groundBlock.worldObject.getMeshObjectGroup());
-                addGroundBlockToMap(groundBlock);
+            //  Add this ground piece to the scene and also to the list of ground pieces
+            scene.add(groundBlock.worldObject.getMeshObjectGroup());
+            addGroundBlockToMap(groundBlock);
+        });
+
+        //  Load the world items in from data
+        mapData.objects.forEach((objectData) => {
+            switch (objectData.objecttype) {
+                case "tree":    this.plantTree(objectData.indexXZ);     break;
+                case "bed":     this.createBed(objectData.indexXZ);     break;
             }
-        }
-
-        //  Add the dirt plots
-        setGroundBlockSubType(1, 1, "Dirt");
-        setGroundBlockSubType(1, 2, "Dirt");
-        setGroundBlockSubType(1, 3, "Dirt");
-        setGroundBlockSubType(1, 4, "Dirt");
-
-        //  Add some water plots
-        setGroundBlockSubType(1, 6, "Water");
-        setGroundBlockSubType(1, 7, "Water");
-        setGroundBlockSubType(1, 8, "Water");
-
-        //  Add a few trees
-        this.plantTree({ column: 7, row: 4 });
-
-        //  Put in a bed to test sleeping
-        this.createBed({ column: 7, row: 6 });
+        });
     }
 
-    createBed(columnRow) {
-        let bed = new Bed({ blockPositionIndex: columnRow });
+    createBed(indexXZ) {
+        let bed = new Bed({ indexXZ: indexXZ });
         scene.add(bed.worldObject.getMeshObjectGroup());
-        let columnRow2 = { column: columnRow.column, row: columnRow.row + 1 };
-        setGroundBlockTopper(columnRow, bed);
+        let columnRow2 = { x: indexXZ.x, z: indexXZ.z + 1 };
+        setGroundBlockTopper(indexXZ, bed);
         setGroundBlockTopper(columnRow2, bed, false);
     }
 
     plantTree(columnRowOverride) {
-        let columnRow = columnRowOverride ? columnRowOverride : WorldController.getRandomWorldPosition();
-        let treePositionValid = (columnRow) => { return ((getGroundBlockSubType(columnRow) === "Grass") && (!getGroundBlockTopper(columnRow))); };
-        while (!treePositionValid(columnRow)) { columnRow = WorldController.getRandomWorldPosition(); }
+        let indexXZ = columnRowOverride ? columnRowOverride : getRandomBlockPosition();
+        let treePositionValid = (indexXZ) => { return ((getGroundBlockSubType(indexXZ) === "grass") && (!getGroundBlockTopper(indexXZ))); };
+        while (!treePositionValid(indexXZ)) { indexXZ = getRandomBlockPosition(); }
 
-        let tree = new Tree({ height: "0.18", blockPositionIndex: columnRow })
+        let tree = new Tree({ height: "0.18", indexXZ: indexXZ })
         scene.add(tree.worldObject.getMeshObjectGroup());
 
-        setGroundBlockTopper(columnRow, tree);
+        setGroundBlockTopper(indexXZ, tree);
     }
 
-    destroyTree(columnRow) {
-        if (!isTreePresent(columnRow)) { console.log(`Attempted to remove non-existent tree at index ${getKeyFromColumnRow(columnRow)}`); return false; }
+    destroyTree(indexXZ) {
+        if (!isTreePresent(indexXZ)) { console.log(`Attempted to remove non-existent tree at index ${getKeyFromColumnRow(indexXZ)}`); return false; }
 
-        let tree = getGroundBlockTopper(columnRow);
+        let tree = getGroundBlockTopper(indexXZ);
         if (tree.currentState != Tree.stateEnum.GROWN) { console.log("You can't chop down this tree until it is fully grown!"); return false; }
 
         scene.remove(tree.worldObject.getMeshObjectGroup());
-        setGroundBlockTopper(columnRow, null);
+        setGroundBlockTopper(indexXZ, null);
 
         return true;
     }
 
-    plantCrop(columnRow) {
-        let blockKey = getKeyFromColumnRow(columnRow);
-        if (!(getGroundBlockSubType(columnRow) === "Dirt")) { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
+    plantCrop(indexXZ) {
+        if (!(getGroundBlockSubType(indexXZ) === "dirt")) { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
         
-        let crop = new Crop({ cropType: "Beans", blockPositionIndex: columnRow });
+        let crop = new Crop({ cropType: "beans", indexXZ: indexXZ });
         scene.add(crop.worldObject.getMeshObjectGroup());
 
-        setGroundBlockTopper(columnRow, crop);
+        setGroundBlockTopper(indexXZ, crop);
     }
 
-    harvestCrop(columnRow) {
-        if (!isCropPresent(columnRow)) { console.log(`Attempted to harvest non-existent crop at index ${getKeyFromColumnRow(columnRow)}`); return; }
+    harvestCrop(indexXZ) {
+        if (!isCropPresent(indexXZ)) { console.log(`Attempted to harvest non-existent crop at index ${getKeyFromColumnRow(indexXZ)}`); return; }
 
-        let crop = getGroundBlockTopper(columnRow);
+        let crop = getGroundBlockTopper(indexXZ);
         if (crop.currentState != Crop.stateEnum.GROWN) { console.log("You can't harvest this crop until it is fully grown!"); return; }
 
         scene.remove(crop.worldObject.getMeshObjectGroup());
-        setGroundBlockTopper(columnRow, null);
+        setGroundBlockTopper(indexXZ, null);
         
         this.characterStats.hunger = (this.characterStats.hunger > 5) ? this.characterStats.hunger - 5 : 0;
 
     }
 
-    static getRandomWorldPosition() { return { column: parseInt(Math.random() * WorldController.getWorldSize().x), row: parseInt(Math.random() * WorldController.getWorldSize().z) }; }
-    static getWorldSize() { return { x: 10, z: 10 }; }
-    
     createCharacter() {
-        let character = new Character({ blockPositionIndex: { column: 5, row: 5 } });
+        let character = new Character({ indexXZ: { x: 5, z: 5 } });
         this.characters.push(character);
         scene.add(character.worldObject.getMeshObjectGroup());
 
         character.actions.chop = (char, target) => {
-            if (this.destroyTree(target.blockPositionIndex)) {
+            if (this.destroyTree(target.indexXZ)) {
                 this.plantTree();
                 this.characterStats.wood += 5;
             }
@@ -136,13 +122,13 @@ class WorldController {
 
         character.actions.plant = (char, target) => {
             if (target.topper instanceof Crop) { console.log("Attempting to plant a crop where one already exists"); return; }
-            this.plantCrop(target.blockPositionIndex);
+            this.plantCrop(target.indexXZ);
         }
 
         character.actions.harvest = (char, target) => {
             if (!(target.topper instanceof Crop)) { console.log("Attempting to harvest a crop where one does not exist"); return; }
-            let blockKey = getKeyFromColumnRow(target.blockPositionIndex);
-            this.harvestCrop(target.blockPositionIndex);
+            let blockKey = getKeyFromColumnRow(target.indexXZ);
+            this.harvestCrop(target.indexXZ);
         }
 
         character.actions.sleep = async (char, target) => {

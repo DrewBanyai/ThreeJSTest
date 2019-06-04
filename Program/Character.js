@@ -1,7 +1,7 @@
 class Character {
     constructor(data) {
         this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
-		this.blockPositionIndex = data.blockPositionIndex;
+		this.indexXZ = data.indexXZ;
         this.modelSizes = { head: { x: .090, y: .090, z: .090 }, body: { x: .120, y: .150, z: .050 }, arms: { x: .050, y: .120, z: .050 }, legs: { x: .050, y: .130, z: .050 } };
         this.model = { head: null, body: null, arm1: null, arm2: null, leg1: null, leg2: null };
         this.position = new THREE.Vector3();
@@ -20,7 +20,7 @@ class Character {
         let leg1Color = "rgb(100, 100, 100)";
         let leg2Color = "rgb(100, 60, 100)";
         
-		this.position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
+		this.position = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
 		this.position.y += GroundBlock.getTopMiddleDelta().y;
         
         let headGeom = new THREE.BoxBufferGeometry(this.modelSizes.head.x, this.modelSizes.head.y, this.modelSizes.head.z);
@@ -57,10 +57,10 @@ class Character {
         return new THREE.Vector3(ground.x, ground.y + (height / 2), ground.z)
     }
 
-    commandToMove(columnRow, target) {
+    commandToMove(indexXZ, target) {
         this.positionTarget = target;
-        if (columnRowsEqual(columnRow, this.blockPositionIndex)) { this.reachDestination(); }
-        else { this.walkPath = navigateWalk(this.blockPositionIndex, columnRow); }
+        if (columnRowsEqual(indexXZ, this.indexXZ)) { this.reachDestination(); }
+        else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); }
     }
 
     async layDown(bedPosition) {
@@ -78,7 +78,7 @@ class Character {
     walk(timeDelta) { 
         if (this.walkPath !== null) {
             if (this.walkPath.length === 0) { this.walkPath = null; return }
-            this.blockPositionIndex = this.walkPath[0];
+            this.indexXZ = this.walkPath[0];
 
             let nextPosition = GroundBlock.getTopMiddleDelta().add(GroundBlock.getBlockPosition(this.walkPath[0]));
             let deltaPosition = new THREE.Vector3(nextPosition.x - this.position.x, nextPosition.y - this.position.y, nextPosition.z - this.position.z);
@@ -103,7 +103,7 @@ class Character {
         if      ((object.topper instanceof Bed) && this.actions.sleep)      { this.actions.sleep(this, this.positionTarget); }
         else if ((object.topper instanceof Crop) && this.actions.harvest)   { this.actions.harvest(this, this.positionTarget); }
         else if ((object.topper instanceof Tree) && this.actions.chop)      { this.actions.chop(this, this.positionTarget); }
-        else if (this.positionTarget.worldObject.objectSubtype === "Dirt")  { this.actions.plant(this, this.positionTarget); }
-        else if (this.positionTarget.worldObject.objectSubtype === "Water") { this.actions.drink(this, this.positionTarget); }
+        else if (this.positionTarget.worldObject.objectSubtype === "dirt")  { this.actions.plant(this, this.positionTarget); }
+        else if (this.positionTarget.worldObject.objectSubtype === "water") { this.actions.drink(this, this.positionTarget); }
     }
 };

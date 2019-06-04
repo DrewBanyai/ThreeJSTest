@@ -1,41 +1,42 @@
 var groundPieces = {};
 
 var getKeyFromXZ = (x, z) => { return `(${x}, ${z})`; }
-var getKeyFromColumnRow = (columnRow) => {return getKeyFromXZ(columnRow.column, columnRow.row); }
-var addGroundBlockToMap = (block) => { groundPieces[getKeyFromColumnRow(block.blockPositionIndex)] = block; }
+var getKeyFromColumnRow = (indexXZ) => {return getKeyFromXZ(indexXZ.x, indexXZ.z); }
+var addGroundBlockToMap = (block) => { groundPieces[getKeyFromColumnRow(block.indexXZ)] = block; }
 var setGroundBlockSubType = (x, z, subtype) => { groundPieces[getKeyFromXZ(x, z)].setGroundSubtype(subtype); };
 var getGroundBlock = (x, z) => { let block = groundPieces[getKeyFromXZ(x, z)]; return block ? block : null; }
+var getRandomBlockPosition = () => { return groundPieces[Object.keys(groundPieces)[parseInt(Math.random() * Object.keys(groundPieces).length)]].indexXZ; }
 
-var isTreePresent = (columnRow) => {
-    let block = getGroundBlock(columnRow.column, columnRow.row);
-    if (block === null) { console.log(`isTreePresent called on non-existent block: ${getKeyFromColumnRow(columnRow)}`); return false; }
+var isTreePresent = (indexXZ) => {
+    let block = getGroundBlock(indexXZ.x, indexXZ.z);
+    if (block === null) { console.log(`isTreePresent called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return (block.topper instanceof Tree);
 }
 
-var isCropPresent = (columnRow) => {
-    let block = getGroundBlock(columnRow.column, columnRow.row);
-    if (block === null) { console.log(`isCropPresent called on non-existent block: ${getKeyFromColumnRow(columnRow)}`); return false; }
+var isCropPresent = (indexXZ) => {
+    let block = getGroundBlock(indexXZ.x, indexXZ.z);
+    if (block === null) { console.log(`isCropPresent called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return (block.topper instanceof Crop);
 }
 
-var setGroundBlockTopper = (columnRow, topper, reverse = true) => {
-    let block = getGroundBlock(columnRow.column, columnRow.row);
-    if (block === null) { console.log(`setGroundBlockTopper called on non-existent block: ${getKeyFromColumnRow(columnRow)}`); return false; }
+var setGroundBlockTopper = (indexXZ, topper, reverse = true) => {
+    let block = getGroundBlock(indexXZ.x, indexXZ.z);
+    if (block === null) { console.log(`setGroundBlockTopper called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
 
     block.topper = topper;
     if (topper !== null && reverse) { topper.groundBlock = block; }
 }
 
-var getGroundBlockSubType = (columnRow) => {
-    let block = getGroundBlock(columnRow.column, columnRow.row);
-    if (block === null) { console.log(`getGroundBlockSubType called on non-existent block ${getKeyFromColumnRow(columnRow)}`); return false; }
-    if (!block.worldObject) { console.log(`getGroundBlockSubType called on a block without worldObject: ${getKeyFromColumnRow(columnRow)}`); return false; }
+var getGroundBlockSubType = (indexXZ) => {
+    let block = getGroundBlock(indexXZ.x, indexXZ.z);
+    if (block === null) { console.log(`getGroundBlockSubType called on non-existent block ${getKeyFromColumnRow(indexXZ)}`); return false; }
+    if (!block.worldObject) { console.log(`getGroundBlockSubType called on a block without worldObject: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return block.worldObject.objectSubtype;
 }
 
-var getGroundBlockTopper = (columnRow) => {
-    let block = getGroundBlock(columnRow.column, columnRow.row);
-    if (block === null) { console.log(`doesGroundBlockHaveTopper called on non-existent block ${getKeyFromColumnRow(columnRow)}`); return false; }
+var getGroundBlockTopper = (indexXZ) => {
+    let block = getGroundBlock(indexXZ.x, indexXZ.z);
+    if (block === null) { console.log(`doesGroundBlockHaveTopper called on non-existent block ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return block.topper;
 }
 
@@ -48,9 +49,9 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
     let blockKeyEnd = getKeyFromColumnRow(columnRowEnd);
 
     //  Ensure both the starting and ending block exist
-    let startBlock = getGroundBlock(columnRowStart.column, columnRowStart.row);
+    let startBlock = getGroundBlock(columnRowStart.x, columnRowStart.z);
     if (startBlock === null) { console.log(`navigateWalk called with non-existent starting block: ${blockKeyStart}`); return false; }
-    let endBlock = getGroundBlock(columnRowEnd.column, columnRowEnd.row);
+    let endBlock = getGroundBlock(columnRowEnd.x, columnRowEnd.z);
     if (endBlock === null) { console.log(`navigateWalk called with non-existent ending block: ${blockKeyEnd}`); return false; }
 
     //  Ensure we haven't got two of the same block in the groundPieces list
@@ -59,8 +60,8 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
     let oldFrontier = {};
     let frontier = {};
 
-    let addToFrontier = (columnRow, path) => {
-        let blockKey = getKeyFromColumnRow(columnRow);
+    let addToFrontier = (indexXZ, path) => {
+        let blockKey = getKeyFromColumnRow(indexXZ);
         if (oldFrontier.hasOwnProperty(blockKey)) { return; }
         if (frontier.hasOwnProperty(blockKey)) { return; }
         frontier[blockKey] = path;
@@ -72,16 +73,16 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
         let pathSize = frontierEntry.length;
         if (pathSize <= 0) { console.log("Attempting to addFrontierNeighbors to a node with an empty list!"); return; }
         //console.log([...frontierEntry]);
-        let x = frontierEntry[pathSize - 1].column;
-        let z = frontierEntry[pathSize - 1].row;
-        addToFrontier({ column: x - 1, row: z },      pathPlusEntry(frontierEntry, { column: x - 1, row: z }));
-        addToFrontier({ column: x, row: z - 1 },      pathPlusEntry(frontierEntry, { column: x, row: z - 1 }));
-        addToFrontier({ column: x + 1, row: z },      pathPlusEntry(frontierEntry, { column: x + 1, row: z }));
-        addToFrontier({ column: x, row: z + 1 },      pathPlusEntry(frontierEntry, { column: x, row: z + 1 }));
-        addToFrontier({ column: x - 1, row: z - 1 },  pathPlusEntry(frontierEntry, { column: x - 1, row: z - 1 }));
-        addToFrontier({ column: x + 1, row: z - 1 },  pathPlusEntry(frontierEntry, { column: x + 1, row: z - 1 }));
-        addToFrontier({ column: x + 1, row: z + 1 },  pathPlusEntry(frontierEntry, { column: x + 1, row: z + 1 }));
-        addToFrontier({ column: x - 1, row: z + 1 },  pathPlusEntry(frontierEntry, { column: x - 1, row: z + 1 }));
+        let x = frontierEntry[pathSize - 1].x;
+        let z = frontierEntry[pathSize - 1].z;
+        addToFrontier({ x: x - 1,   z: z },         pathPlusEntry(frontierEntry, { x: x - 1,     z: z }));
+        addToFrontier({ x: x, z:    z - 1 },        pathPlusEntry(frontierEntry, { x: x,         z: z - 1 }));
+        addToFrontier({ x: x + 1,   z: z },         pathPlusEntry(frontierEntry, { x: x + 1,     z: z }));
+        addToFrontier({ x: x, z:    z + 1 },        pathPlusEntry(frontierEntry, { x: x,         z: z + 1 }));
+        addToFrontier({ x: x - 1,   z: z - 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z - 1 }));
+        addToFrontier({ x: x + 1,   z: z - 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z - 1 }));
+        addToFrontier({ x: x + 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z + 1 }));
+        addToFrontier({ x: x - 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z + 1 }));
     }
     
     //  Put in a starting index frontier entry (frontier is a list of XZ positions, beginning with the start point)

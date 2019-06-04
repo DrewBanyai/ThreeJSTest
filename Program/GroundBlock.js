@@ -1,7 +1,7 @@
 class GroundBlock {
     constructor(data) {
-        this.worldObject = new WorldObject({ type: "GroundBlock", subtype: (data.groundType ? data.groundType : "Grass"), baseObject: this });
-        this.blockPositionIndex = data.blockPositionIndex;
+        this.worldObject = new WorldObject({ type: "groundblock", subtype: data.groundtype, baseObject: this });
+        this.indexXZ = data.indexXZ;
         this.block = null;
         this.topper = null;
         this.shadow = null;
@@ -14,22 +14,24 @@ class GroundBlock {
         this.block = new THREE.Mesh(geometry, material);
 
         //  Create a basic block geometry and then generate a mesh with it
-        let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
+        let position = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
         this.block.position.set(position.x, position.y, position.z);
 
-        if (this.worldObject.objectSubtype === "Grass") { this.addGrass(); }
+        if (this.worldObject.objectSubtype === "grass") { this.addGrass(); }
 
         this.shadow = customizeShadow(this.block, 0.25);
         this.worldObject.addToMeshGroup(this.block);
         this.worldObject.addToMeshGroup(this.shadow);
+        
+        this.setGroundSubtype(this.worldObject.objectSubtype);
 
         return this.block;
     }
 
     setGroundSubtype(subtype) {
         //  Get rid of any special additions from the old subtype (this.worldObject.objectSubtype)
-        if (this.worldObject.objectSubtype === "Grass") { this.removeGrass(); }
-        if (this.worldObject.objectSubtype === "Water") { 
+        if (this.worldObject.objectSubtype === "grass") { this.removeGrass(); }
+        if (this.worldObject.objectSubtype === "water") { 
             this.block.position.y -= ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
             this.shadow.position.y -= ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
         }
@@ -37,11 +39,11 @@ class GroundBlock {
         this.shadow.scale.y = 1;
 
         this.worldObject.objectSubtype = subtype;
-        this.content.material.color.set(GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype));
+        this.block.material.color.set(GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype));
 
         //  Add any special additions from the new subtype (this.worldObject.objectSubtype)
-        if (subtype === "Grass") { this.addGrass(); }
-        if (subtype === "Water") { 
+        if (subtype === "grass") { this.addGrass(); }
+        if (subtype === "water") { 
             this.block.scale.y = (GroundBlock.getPlotSizeWater().y / GroundBlock.getPlotSize().y);
             this.shadow.scale.y = (GroundBlock.getPlotSizeWater().y / GroundBlock.getPlotSize().y);
             this.block.position.y += ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
@@ -60,7 +62,7 @@ class GroundBlock {
         for (let i = 0; i < 200; ++i) {
             let blade = new THREE.Mesh(grassBladeGeom, new THREE.MeshLambertMaterial({ color: Colors.GrassBlade }));
             
-            let position = (this.blockPositionIndex ? GroundBlock.getBlockPosition(this.blockPositionIndex) : (new THREE.Vector3()));
+            let position = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
             blade.position.x = position.x - (GroundBlock.getPlotSize().x / 2) + (Math.random() * GroundBlock.getPlotSize().x);
             blade.position.y = position.y + 50 + (grassBladeSize.y / 2);
             blade.position.z = position.z - (GroundBlock.getPlotSize().z / 2) + (Math.random() * GroundBlock.getPlotSize().z);
@@ -87,7 +89,7 @@ class GroundBlock {
     static getTopMiddleDelta() { return new THREE.Vector3(0, GroundBlock.getPlotSize().y / 2, 0); }
 
     static getGroundBlockColor(subtype) {
-        if (Colors.hasOwnProperty("GroundBlock_" + subtype)) { return Colors["GroundBlock_" + subtype]; }
+        if (Colors.hasOwnProperty("groundblock_" + subtype)) { return Colors["groundblock_" + subtype]; }
         else { return Colors.unknown; }
     }
 
@@ -111,11 +113,11 @@ class GroundBlock {
         return canvas;
     }
 
-    static getBlockPosition(blockPositionIndex) {
+    static getBlockPosition(indexXZ) {
         let position = new THREE.Vector3();
-        position.x = (-GroundBlock.getPlotSize().x * 5) + (blockPositionIndex.column * GroundBlock.getPlotSize().x);
+        position.x = (-GroundBlock.getPlotSize().x * 5) + (indexXZ.x * GroundBlock.getPlotSize().x);
         position.y = (-GroundBlock.getPlotSize().y / 2); //  Boxes expand from their center point by default, so these will reach 0 on the y axis.
-        position.z = (-GroundBlock.getPlotSize().z * 5) + (blockPositionIndex.row * GroundBlock.getPlotSize().z);
+        position.z = (-GroundBlock.getPlotSize().z * 5) + (indexXZ.z * GroundBlock.getPlotSize().z);
         return position;
     }
 };
