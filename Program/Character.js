@@ -8,6 +8,7 @@ class Character {
         this.walkPath = null;
         this.positionTarget = null;
         this.walkSpeed = 0.72;
+        this.busy = false;
         this.actions = { chop: null, plant: null, harvest: null, sleep: null, drink: null };
         this.content = this.generateContent();
     }
@@ -58,13 +59,21 @@ class Character {
     }
 
     commandToMove(indexXZ, target) {
+        if (this.busy) { return; }
         this.positionTarget = target;
         if (columnRowsEqual(indexXZ, this.indexXZ)) { this.reachDestination(); }
         else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); }
     }
 
     async layDown(bedPosition) {
+        this.busy = true;
         console.log("Sleeping...");
+        scene.remove(this.worldObject.meshObjectGroup);
+
+        await (new Promise(resolve => setTimeout(resolve, 1500)));
+
+        scene.add(this.worldObject.meshObjectGroup);
+        this.busy = false;
     }
 
     drinkWater() {

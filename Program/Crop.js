@@ -49,19 +49,16 @@ class Crop {
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
 		let seed1 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Seed }));
 		seed1.position.set(position1.x, position1.y, position1.z);
-		seed1.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed1);
 
 		let position2 = (new THREE.Vector3(-1 * plotSize.x / 8, 0, -1 * plotSize.z / 3)).add(plotMiddleTop);
 		let seed2 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Seed }));
 		seed2.position.set(position2.x, position2.y, position2.z);
-		seed2.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed2);
 
 		let position3 = (new THREE.Vector3(-1 * plotSize.x / 6, 0, plotSize.z / 4)).add(plotMiddleTop);
 		let seed3 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Seed }));
 		seed3.position.set(position3.x, position3.y, position3.z);
-		seed2.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed3);
 	}
 
@@ -75,19 +72,16 @@ class Crop {
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
 		let seed1 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Sprout }));
 		seed1.position.set(position1.x, position1.y, position1.z);
-		seed1.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed1);
 
 		let position2 = (new THREE.Vector3(-1 * plotSize.x / 8, 0, -1 * plotSize.z / 3)).add(plotMiddleTop);
 		let seed2 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Sprout }));
 		seed2.position.set(position2.x, position2.y, position2.z);
-		seed2.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed2);
 
 		let position3 = (new THREE.Vector3(-1 * plotSize.x / 6, 0, plotSize.z / 4)).add(plotMiddleTop);
 		let seed3 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Sprout }));
 		seed3.position.set(position3.x, position3.y, position3.z);
-		seed3.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed3);
 	}
 
@@ -101,19 +95,16 @@ class Crop {
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
 		let seed1 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Youth }));
 		seed1.position.set(position1.x, position1.y, position1.z);
-		seed1.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed1);
 
 		let position2 = (new THREE.Vector3(-1 * plotSize.x / 8, 0, -1 * plotSize.z / 3)).add(plotMiddleTop);
 		let seed2 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Youth }));
 		seed2.position.set(position2.x, position2.y, position2.z);
-		seed2.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed2);
 
 		let position3 = (new THREE.Vector3(-1 * plotSize.x / 6, 0, plotSize.z / 4)).add(plotMiddleTop);
 		let seed3 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Youth }));
 		seed3.position.set(position3.x, position3.y, position3.z);
-		seed3.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed3);
 	}
 
@@ -127,19 +118,16 @@ class Crop {
 		let position1 = (new THREE.Vector3(plotSize.x / 4, 0, plotSize.z / 6)).add(plotMiddleTop);
 		let seed1 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Grown }));
 		seed1.position.set(position1.x, position1.y, position1.z);
-		seed1.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed1);
 
 		let position2 = (new THREE.Vector3(-1 * plotSize.x / 8, 0, -1 * plotSize.z / 3)).add(plotMiddleTop);
 		let seed2 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Grown }));
 		seed2.position.set(position2.x, position2.y, position2.z);
-		seed2.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed2);
 
 		let position3 = (new THREE.Vector3(-1 * plotSize.x / 6, 0, plotSize.z / 4)).add(plotMiddleTop);
 		let seed3 = new THREE.Mesh(seedGeom, new THREE.MeshLambertMaterial({ color: Colors.Beans_Grown }));
 		seed3.position.set(position3.x, position3.y, position3.z);
-		seed3.worldObject = this.worldObject;
 		this.worldObject.addToMeshGroup(seed3);
 	}
 

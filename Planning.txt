@@ -1,6 +1,6 @@
 Version updates documented at: https://imgur.com/a/HGhlbDy
 
-Version 0000 (build 20190529):
+Version 0000 (build 2019-05-29):
 ==========
 - Display a basic flat map
 	- Small crop field with dirt plots
@@ -22,12 +22,11 @@ Version 0001 (build XXX) :
 - Proper coloring and lighting
 - Alteration to day/night cycle to improve coloring and lighting
 - Pathfinding and block-map based movement
+- Character stopping before plots to commit actions on them (walk TO a tree, not IN TO a tree, to chop it down...)
+- "Sleeping" now causes the character to disappear and become unable to be commanded for a short interval (while they sleep)
 ==========
-
-
 	
 FUTURE BUILDS
-	- Move characters using a navigation mesh or A* on block maps? (test different methods... see what works best)
 	- Grassy areas (grass should move with wind?)
 	- Character inventory (assume multiple characters eventually, all with their own hunger, thirst, exhaustion, fear, etc)
 	- Other crops (corn, squash, potatoes) with different growth times and nutritional values
