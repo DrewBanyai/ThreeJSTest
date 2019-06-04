@@ -7,7 +7,7 @@ class Character {
         this.position = new THREE.Vector3();
         this.walkPath = null;
         this.positionTarget = null;
-        this.walkSpeed = 0.36;
+        this.walkSpeed = 0.72;
         this.actions = { chop: null, plant: null, harvest: null, sleep: null, drink: null };
         this.content = this.generateContent();
     }
@@ -60,7 +60,7 @@ class Character {
     commandToMove(indexXZ, target) {
         this.positionTarget = target;
         if (columnRowsEqual(indexXZ, this.indexXZ)) { this.reachDestination(); }
-        else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); }
+        else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); console.log(this.walkPath); }
     }
 
     async layDown(bedPosition) {
@@ -76,10 +76,20 @@ class Character {
     }
 
     walk(timeDelta) { 
-        if (this.walkPath !== null) {
+        if (this.walkPath) {
             if (this.walkPath.length === 0) { this.walkPath = null; return }
-            this.indexXZ = this.walkPath[0];
 
+            //  If the next block is an unwalkable block, stop where we are and commit the action as if we reached the block
+            let block = getGroundBlock(this.walkPath[0].x, this.walkPath[0].z);
+            let nextBlockUnwalkable = (groundTypesUnwalkable.includes(block.worldObject.objectSubtype));
+            nextBlockUnwalkable |= (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType))
+            if (nextBlockUnwalkable) { 
+                this.walkPath.shift();
+                this.reachDestination();
+                return;
+            }
+
+            this.indexXZ = this.walkPath[0];
             let nextPosition = GroundBlock.getTopMiddleDelta().add(GroundBlock.getBlockPosition(this.walkPath[0]));
             let deltaPosition = new THREE.Vector3(nextPosition.x - this.position.x, nextPosition.y - this.position.y, nextPosition.z - this.position.z);
             let lengthSq = deltaPosition.lengthSq();
@@ -90,7 +100,7 @@ class Character {
             this.setPartPositions();
             if (this.position === nextPosition) { 
                 this.walkPath.shift();
-                if (this.walkPath.length === 0) { this.reachDestination(); }
+                if (this.walkPath.length === 0) { this.reachDestination(); return; }
             }
         }
     }

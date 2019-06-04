@@ -42,16 +42,19 @@ var getGroundBlockTopper = (indexXZ) => {
 
 var updateGroundMap = (timeDelta) => { for (let plot in groundPieces) { groundPieces[plot].update(timeDelta); } }
 
-var navigateWalk = (columnRowStart, columnRowEnd) => {
+const groundTypesUnwalkable = [ "water" ];
+const blockToppersUnwalkable = [ "bed", "tree" ];
+
+var navigateWalk = (indexXZStart, indexXZEnd) => {
     //  If we're already at our destination, return a blank list of movements
-    if (columnRowStart === columnRowEnd) { return []; }
-    let blockKeyStart = getKeyFromColumnRow(columnRowStart);
-    let blockKeyEnd = getKeyFromColumnRow(columnRowEnd);
+    if (indexXZStart === indexXZEnd) { return []; }
+    let blockKeyStart = getKeyFromColumnRow(indexXZStart);
+    let blockKeyEnd = getKeyFromColumnRow(indexXZEnd);
 
     //  Ensure both the starting and ending block exist
-    let startBlock = getGroundBlock(columnRowStart.x, columnRowStart.z);
+    let startBlock = getGroundBlock(indexXZStart.x, indexXZStart.z);
     if (startBlock === null) { console.log(`navigateWalk called with non-existent starting block: ${blockKeyStart}`); return false; }
-    let endBlock = getGroundBlock(columnRowEnd.x, columnRowEnd.z);
+    let endBlock = getGroundBlock(indexXZEnd.x, indexXZEnd.z);
     if (endBlock === null) { console.log(`navigateWalk called with non-existent ending block: ${blockKeyEnd}`); return false; }
 
     //  Ensure we haven't got two of the same block in the groundPieces list
@@ -62,6 +65,11 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
 
     let addToFrontier = (indexXZ, path) => {
         let blockKey = getKeyFromColumnRow(indexXZ);
+        let block = getGroundBlock(indexXZ.x, indexXZ.z);
+        let firstOrLast = columnRowsEqual(indexXZ, indexXZEnd) || columnRowsEqual(indexXZ, indexXZStart);
+        if (!block) { return; }
+        if (groundTypesUnwalkable.includes(block.worldObject.objectSubtype) && !firstOrLast) { console.log(indexXZ); return; }
+        if (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType) && !firstOrLast) { return; }
         if (oldFrontier.hasOwnProperty(blockKey)) { return; }
         if (frontier.hasOwnProperty(blockKey)) { return; }
         frontier[blockKey] = path;
@@ -72,21 +80,22 @@ var navigateWalk = (columnRowStart, columnRowEnd) => {
     let addFrontierNeighbors = (frontierEntry) => {
         let pathSize = frontierEntry.length;
         if (pathSize <= 0) { console.log("Attempting to addFrontierNeighbors to a node with an empty list!"); return; }
-        //console.log([...frontierEntry]);
         let x = frontierEntry[pathSize - 1].x;
         let z = frontierEntry[pathSize - 1].z;
         addToFrontier({ x: x - 1,   z: z },         pathPlusEntry(frontierEntry, { x: x - 1,     z: z }));
         addToFrontier({ x: x, z:    z - 1 },        pathPlusEntry(frontierEntry, { x: x,         z: z - 1 }));
         addToFrontier({ x: x + 1,   z: z },         pathPlusEntry(frontierEntry, { x: x + 1,     z: z }));
         addToFrontier({ x: x, z:    z + 1 },        pathPlusEntry(frontierEntry, { x: x,         z: z + 1 }));
-        addToFrontier({ x: x - 1,   z: z - 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z - 1 }));
-        addToFrontier({ x: x + 1,   z: z - 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z - 1 }));
-        addToFrontier({ x: x + 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z + 1 }));
-        addToFrontier({ x: x - 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z + 1 }));
+
+        //  Diagonals (cutting corners around objects looks bad, so I'm disabling these for now)
+        //addToFrontier({ x: x - 1,   z: z - 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z - 1 }));
+        //addToFrontier({ x: x + 1,   z: z - 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z - 1 }));
+        //addToFrontier({ x: x + 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z + 1 }));
+        //addToFrontier({ x: x - 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z + 1 }));
     }
     
     //  Put in a starting index frontier entry (frontier is a list of XZ positions, beginning with the start point)
-    addToFrontier(columnRowStart, [ columnRowStart ]);
+    addToFrontier(indexXZStart, [ indexXZStart ]);
 
     let index = 0;
     while (Object.keys(frontier).length > 0) {
