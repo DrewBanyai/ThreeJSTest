@@ -87,7 +87,24 @@ class MainUI {
 		woodLabel.innerHTML = "WOOD";
 		container.appendChild( woodLabel );
 
+		this.CreateCommandList(container);
+
 		return container;
+	}
+
+	CreateCommandList(container) {
+		let createCommandListContainer = document.createElement("div");
+		createCommandListContainer.style.color = "black";
+		container.appendChild(createCommandListContainer);
+
+		let createCL = new CreateCommandList();
+		createCommandListContainer.appendChild(createCL.content);
+
+		let addCondition = new AddCommandCondition();
+		createCommandListContainer.appendChild(addCondition.content);
+
+		let addAction = new AddCommandAction();
+		createCommandListContainer.appendChild(addAction.content);
 	}
 
 	static setColor(color) { 

@@ -8,6 +8,7 @@ class Character {
         this.walkPath = null;
         this.positionTarget = null;
         this.walkSpeed = 0.72;
+        this.command = null;
         this.busy = false;
         this.actions = { chop: null, plant: null, harvest: null, sleep: null, drink: null };
         this.content = this.generateContent();
@@ -43,6 +44,8 @@ class Character {
         for (let part in this.model) { this.worldObject.addToMeshGroup(this.model[part]); }
     }
 
+    SetCommandList(listID) { this.command = listID; }
+
     setPartPositions() {
         this.model.leg1.position.set(this.position.x + ((-1) * (this.modelSizes.legs.x / 2)), this.position.y + (this.modelSizes.legs.y / 2), this.position.z + 0);
         this.model.leg2.position.set(this.position.x + ((1)  * (this.modelSizes.legs.x / 2)), this.position.y + (this.modelSizes.legs.y / 2), this.position.z + 0);
@@ -62,7 +65,9 @@ class Character {
         if (this.busy) { return; }
         this.positionTarget = target;
         if (columnRowsEqual(indexXZ, this.indexXZ)) { this.reachDestination(); }
-        else { this.walkPath = navigateWalk(this.indexXZ, indexXZ); }
+        else { 
+            let destinationCheck = (key) => { return (key ===  getKeyFromColumnRow(indexXZ)); };
+            this.walkPath = findPath(this.indexXZ, destinationCheck); }
     }
 
     async layDown(bedPosition) {
@@ -81,36 +86,50 @@ class Character {
     }
 
     update(timeDelta) {
-        this.walk(timeDelta);
+        if (this.walkPath) { this.walk(timeDelta); }
+        else if (this.command !== null && this.busy === false) {
+            let commandList = CommandList[this.command];
+            let conditionsTrue = true;
+            commandList.conditions.forEach((condition) => {
+                switch (condition.conditionType) {
+                    case "WoodNearby":
+                        let destination = null;
+                        let treeExistsCheck = (key) => { if (getGroundBlockFromKey(key).topper instanceof Tree) { destination = getGroundBlockFromKey(key); return true; } return false; };
+                        this.walkPath = findPath(this.indexXZ, treeExistsCheck, condition.searchRadius);
+                        if (!this.walkPath || this.walkPath.length == 0) { return; }
+                        console.log(destination);
+                        this.positionTarget = destination;
+                        this.busy = true;
+                }
+            });
+        }
     }
 
     walk(timeDelta) { 
-        if (this.walkPath) {
-            if (this.walkPath.length === 0) { this.walkPath = null; return }
+        if (this.walkPath.length === 0) { this.walkPath = null; return; }
 
-            //  If the next block is an unwalkable block, stop where we are and commit the action as if we reached the block
-            let block = getGroundBlock(this.walkPath[0].x, this.walkPath[0].z);
-            let nextBlockUnwalkable = (groundTypesUnwalkable.includes(block.worldObject.objectSubtype));
-            nextBlockUnwalkable |= (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType))
-            if (nextBlockUnwalkable) { 
-                this.walkPath.shift();
-                this.reachDestination();
-                return;
-            }
+        //  If the next block is an unwalkable block, stop where we are and commit the action as if we reached the block
+        let block = getGroundBlock(this.walkPath[0].x, this.walkPath[0].z);
+        let nextBlockUnwalkable = (groundTypesUnwalkable.includes(block.worldObject.objectSubtype));
+        nextBlockUnwalkable |= (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType))
+        if (nextBlockUnwalkable) { 
+            this.walkPath.shift();
+            this.reachDestination();
+            return;
+        }
 
-            this.indexXZ = this.walkPath[0];
-            let nextPosition = GroundBlock.getTopMiddleDelta().add(GroundBlock.getBlockPosition(this.walkPath[0]));
-            let deltaPosition = new THREE.Vector3(nextPosition.x - this.position.x, nextPosition.y - this.position.y, nextPosition.z - this.position.z);
-            let lengthSq = deltaPosition.lengthSq();
-            deltaPosition.normalize();
-            deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
-            if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { this.position = nextPosition; }
-            else { this.position.add(deltaPosition); }
-            this.setPartPositions();
-            if (this.position === nextPosition) { 
-                this.walkPath.shift();
-                if (this.walkPath.length === 0) { this.reachDestination(); return; }
-            }
+        this.indexXZ = this.walkPath[0];
+        let nextPosition = GroundBlock.getTopMiddleDelta().add(GroundBlock.getBlockPosition(this.walkPath[0]));
+        let deltaPosition = new THREE.Vector3(nextPosition.x - this.position.x, nextPosition.y - this.position.y, nextPosition.z - this.position.z);
+        let lengthSq = deltaPosition.lengthSq();
+        deltaPosition.normalize();
+        deltaPosition.multiplyScalar(this.walkSpeed * timeDelta);
+        if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { this.position = nextPosition; }
+        else { this.position.add(deltaPosition); }
+        this.setPartPositions();
+        if (this.position === nextPosition) { 
+            this.walkPath.shift();
+            if (this.walkPath.length === 0) { this.reachDestination(); return; }
         }
     }
 
@@ -119,10 +138,13 @@ class Character {
         let object = (worldObject ? worldObject.baseObject : null);
         if (!object) { console.log("No object found at destination!"); return; }
 
+        console.log(object);
         if      ((object.topper instanceof Bed) && this.actions.sleep)      { this.actions.sleep(this, this.positionTarget); }
         else if ((object.topper instanceof Crop) && this.actions.harvest)   { this.actions.harvest(this, this.positionTarget); }
         else if ((object.topper instanceof Tree) && this.actions.chop)      { this.actions.chop(this, this.positionTarget); }
         else if (this.positionTarget.worldObject.objectSubtype === "dirt")  { this.actions.plant(this, this.positionTarget); }
         else if (this.positionTarget.worldObject.objectSubtype === "water") { this.actions.drink(this, this.positionTarget); }
+
+        this.busy = false;
     }
 };

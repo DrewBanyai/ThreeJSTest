@@ -1,5 +1,8 @@
 class CreateCommandList {
 	constructor() {
+		this.character = null;
+		this.conditionDataList = [];
+		this.actionDataList = [];
 		this.content = this.generateContent();
 	}
 
@@ -71,14 +74,8 @@ class CreateCommandList {
 		saveCommandListButton.onmouseleave = () => { saveCommandListButton.style.backgroundColor = "rgb(160, 160, 200)"; }
 		saveCommandListButton.onmousedown = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 200)"; }
 		saveCommandListButton.onmouseup = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		saveCommandListButton.onclick = () => { 
-			let taskListNameInput = document.getElementById("TaskNameInput");
-			if (!taskListNameInput.value || taskListNameInput.value === "") {
-				console.log("You must have a task list name to save this task list.");
-				return;
-			}
-			console.log(`Command list saved: [${taskListNameInput.value}]`);
-			CreateCommandList.HideCommandListMenu();
+		saveCommandListButton.onclick = () => {
+			this.SaveCommandList();
 		}
 		clNameContainer.appendChild(saveCommandListButton);
 
@@ -100,7 +97,7 @@ class CreateCommandList {
 		closeCommandListButton.onmouseleave = () => { closeCommandListButton.style.backgroundColor = "rgb(220, 160, 160)"; }
 		closeCommandListButton.onmousedown = () => { closeCommandListButton.style.backgroundColor = "rgb(220, 120, 120)"; }
 		closeCommandListButton.onmouseup = () => { closeCommandListButton.style.backgroundColor = "rgb(240, 120, 120)"; }
-		closeCommandListButton.onclick = () => { CreateCommandList.HideCommandListMenu(); }
+		closeCommandListButton.onclick = () => { CreateCommandList.HideMenu(); }
 		clNameContainer.appendChild(closeCommandListButton);
 
 		//  Command list conditions container
@@ -148,7 +145,8 @@ class CreateCommandList {
 			newConditionButton.onmousedown = () => { newConditionButton.style.backgroundColor = "rgb(80, 80, 80)"; }
 			newConditionButton.onmouseup = () => { newConditionButton.style.backgroundColor = "rgb(64, 64, 64)"; }
 			newConditionButton.onclick = () => {
-				console.log("Test 1");
+				if (AddCommandCondition.IsMenuActive()) { return; }
+				AddCommandCondition.ShowMenu();
 			}
 			clConditionsList.appendChild(newConditionButton);
 		}
@@ -204,7 +202,8 @@ class CreateCommandList {
 			newActionButton.onmousedown = () => { newActionButton.style.backgroundColor = "rgb(80, 80, 80)"; }
 			newActionButton.onmouseup = () => { newActionButton.style.backgroundColor = "rgb(64, 64, 64)"; }
 			newActionButton.onclick = () => {
-				console.log("Test 2");
+				if (AddCommandAction.IsMenuActive()) { return; }
+				AddCommandAction.ShowMenu();
 			}
 			clActionsList.appendChild(newActionButton);
 		}
@@ -215,25 +214,111 @@ class CreateCommandList {
 		}
 		clActionsContainer.appendChild(clActionsList);
 
-
+		container.SetCharacter = (character) => this.SetCharacter(character);
+		container.AddCondition = (condition) => this.AddCondition(condition);
+		container.AddAction = (action) => this.AddAction(action);
 
 		container.style.visibility = "hidden";
 
 		return container;
 	}
 
-	static IsCommandListMenuActive() { 
+	SetCharacter(character) { this.character = character; }
+
+	AddCondition(condition) {
+		let element = document.getElementById("CommandListConditionsList");
+		if (!element) { console.log("Element 'CommandListConditionsList' could not be found!"); return; }
+
+		let newEntry = document.createElement("div");
+		newEntry.style.height = "20px";
+		newEntry.style.width = "100%";
+		newEntry.style.textAlign = "center";
+		newEntry.innerText = condition.conditionType;
+		this.conditionDataList.push(condition);
+
+		switch (condition.conditiontype) {
+			case "WoodNearby":
+					newEntry.innerText += ` (${condition.searchRadius} spaces)`;
+					break;
+		}
+
+		element.appendChild(newEntry);
+	}
+
+	AddAction(action) {
+		let element = document.getElementById("CommandListActionsList");
+		if (!element) { console.log("Element 'CommandListActionsList' could not be found!"); return; }
+
+		let newEntry = document.createElement("div");
+		newEntry.style.height = "20px";
+		newEntry.style.width = "100%";
+		newEntry.style.textAlign = "center";
+		newEntry.innerText = action.actionType;
+		this.actionDataList.push(action);
+
+		switch (action.actionType) {
+			case "MoveToWood": break;
+		}
+
+		element.appendChild(newEntry);
+	}
+
+	SaveCommandList() {
+		if (this.character === null) {
+			console.log("This menu needs a link back to a character in order to save the command list to one");
+			return;
+		}
+
+		let taskListNameInput = document.getElementById("TaskNameInput");
+		if (!taskListNameInput.value || taskListNameInput.value === "") {
+			console.log("You must have a task list name to save this task list.");
+			return;
+		}
+
+		if (CommandList.hasOwnProperty(taskListNameInput.value)) {
+			console.log(`Command List already exists with the name "${taskListNameInput.value}", pick another name`);
+			return;
+		}
+
+		let conditionsList = document.getElementById("CommandListConditionsList");
+		if (!conditionsList.innerHTML || conditionsList.childNodes.length <= 0) { 
+			console.log("You must have a conditions list to save this task list.");
+			return;
+		}
+
+		let actionsList = document.getElementById("CommandListActionsList");
+		if (!actionsList.innerHTML || actionsList.childNodes.length <= 0) { 
+			console.log("You must have an actions list to save this task list.");
+			return;
+		}
+
+		//  Create the new command list, save it off, and send the identifier to the selected character
+		CommandList[taskListNameInput.value] = { conditions: this.conditionDataList, actions: this.actionDataList, };
+		this.character.baseObject.SetCommandList(taskListNameInput.value)
+
+		//  Hide the command list creation menu
+		CreateCommandList.HideMenu();
+	}
+
+	static SetCharacter(character) { 
+		let element = document.getElementById("CreateCommandListContainer");
+		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
+
+		element.SetCharacter(character);
+	 }
+
+	static IsMenuActive() { 
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 		return (element.style.visibility === "visible");
 	}
 
-	static ToggleCommandListMenu() {
-		if (CreateCommandList.IsCommandListMenuActive()) { CreateCommandList.HideCommandListMenu(); }
-		else { CreateCommandList.ShowCommandListMenu(); }
+	static ToggleMenu() {
+		if (CreateCommandList.IsMenuActive()) { CreateCommandList.HideMenu(); }
+		else { CreateCommandList.ShowMenu(); }
 	}
 
-	static ShowCommandListMenu() {
+	static ShowMenu() {
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 		element.style.visibility = "visible";
@@ -242,7 +327,7 @@ class CreateCommandList {
 		taskListNameInput.value = "";
 	}
 
-	static HideCommandListMenu() {
+	static HideMenu() {
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 		element.style.visibility = "hidden";

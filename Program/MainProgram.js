@@ -61,11 +61,6 @@ function createTitleBar() {
 	container.appendChild(mainUI.content);
 }
 
-function createCommandListMenu() {
-	let createCL = new CreateCommandList();
-	container.appendChild(createCL.content);
-}
-
 function createWorldController() {
 	//  Create the world controller instance, and pass in the scene so it can use it directly
 	worldController = new WorldController(scene);
@@ -118,9 +113,12 @@ function setEventListeners() {
 	});
 
 	document.addEventListener('keydown', function(event) {
-		if (event.keyCode == 32) { 
-			if (CreateCommandList.IsCommandListMenuActive()) { return; }
-			CreateCommandList.ShowCommandListMenu();
+		if (event.keyCode == 32) {
+			if (selectedObject !== null) {
+				CreateCommandList.SetCharacter(selectedObject);
+				if (CreateCommandList.IsMenuActive()) { return; }
+				CreateCommandList.ShowMenu();
+			}
 		}
 	});
 
@@ -167,7 +165,7 @@ function getFirstMouseIntersectObject() {
 }
 
 function highlightFirstMouseIntersect() {
-	if (CreateCommandList.IsCommandListMenuActive()) { return; }
+	if (CreateCommandList.IsMenuActive()) { return; }
 
 	let intersectObject = getFirstMouseIntersectObject();
 
@@ -224,7 +222,6 @@ function initialize() {
 
 	createStatsBlock();
 	createTitleBar();
-	createCommandListMenu();
 	createWorldController();
 
 	setEventListeners();
