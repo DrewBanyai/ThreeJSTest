@@ -82,6 +82,7 @@ class AddCommandAction {
         if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 
         element.AddAction(CommandAction.MoveToWood);
+        element.AddAction(CommandAction.ChopWood);
     }
 
 	static IsMenuActive() { 

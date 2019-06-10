@@ -44,7 +44,7 @@ class Character {
         for (let part in this.model) { this.worldObject.addToMeshGroup(this.model[part]); }
     }
 
-    SetCommandList(listID) { this.command = listID; }
+    SetCommandList(listID) { this.command = { CommandID: listID }; }
 
     setPartPositions() {
         this.model.leg1.position.set(this.position.x + ((-1) * (this.modelSizes.legs.x / 2)), this.position.y + (this.modelSizes.legs.y / 2), this.position.z + 0);
@@ -62,12 +62,14 @@ class Character {
     }
 
     commandToMove(indexXZ, target) {
-        if (this.busy) { return; }
         this.positionTarget = target;
         if (columnRowsEqual(indexXZ, this.indexXZ)) { this.reachDestination(); }
         else { 
             let destinationCheck = (key) => { return (key ===  getKeyFromColumnRow(indexXZ)); };
-            this.walkPath = findPath(this.indexXZ, destinationCheck); }
+            this.walkPath = findPath(this.indexXZ, destinationCheck);
+            this.busy = true;
+            this.command.actionIndex = 0;
+        }
     }
 
     async layDown(bedPosition) {
@@ -88,20 +90,58 @@ class Character {
     update(timeDelta) {
         if (this.walkPath) { this.walk(timeDelta); }
         else if (this.command !== null && this.busy === false) {
-            let commandList = CommandList[this.command];
+            let commandList = CommandList[this.command.CommandID];
             let conditionsTrue = true;
+
+            //  First, check all conditions
             commandList.conditions.forEach((condition) => {
                 switch (condition.conditionType) {
                     case "WoodNearby":
-                        let destination = null;
-                        let treeExistsCheck = (key) => { if (getGroundBlockFromKey(key).topper instanceof Tree) { destination = getGroundBlockFromKey(key); return true; } return false; };
-                        this.walkPath = findPath(this.indexXZ, treeExistsCheck, condition.searchRadius);
-                        if (!this.walkPath || this.walkPath.length == 0) { return; }
-                        console.log(destination);
-                        this.positionTarget = destination;
-                        this.busy = true;
+                        if (this.command.treePath) { break; }
+                        let treeExistsCheck = (key) => { if (getGroundBlockFromKey(key).topper instanceof Tree) { this.command.destinationTree = getGroundBlockFromKey(key); return true; } return false; };
+                        this.command.treePath = findPath(this.indexXZ, treeExistsCheck, condition.searchRadius);
+                        if (!this.command.treePath || this.command.treePath.length == 0) { conditionsTrue = false; }
+                        break;
+                        
+                    case "WaterNearby":
+                        if (this.command.waterPath) { break; }
+                        let waterExistsCheck = (key) => { return (getGroundBlockFromKey(key).worldObject.objectSubtype === "water"); }
+                        this.command.waterPath = findPath(this.indexXZ, waterExistsCheck, condition.searchRadius);
+                        if (!this.command.treePath || this.command.treePath.length == 0) { conditionsTrue = false; }
+                        break;
+                            
+                    case "Exhausted":
+                        //  TODO: Add this check after stats get moved into the character class
+                        conditionsTrue = false;
+                        break;
                 }
             });
+            if (conditionsTrue === false) { return; }
+
+            //  Next, go through all actions
+            this.command.actionIndex = this.command.actionIndex || 0;
+            if (this.command.actionIndex >= commandList.actions.length) { this.command.actionIndex = 0; }
+            let action = commandList.actions[this.command.actionIndex];
+            switch (action.actionType) {
+                case "MoveToWood":
+                    if (!this.command.treePath || this.command.treePath.length === 0) { console.log("NO TREE PATH EXISTS"); this.command.treePath = null; return; }
+                    if (this.command.treePath.length <= 1) { this.command.actionIndex++; return; }
+                    this.walkPath = this.command.treePath;
+                    this.command.treePath = null;
+                    this.busy = true;
+                    if (this.command.actionIndex === null || this.command.actionIndex === undefined) { this.command.actionIndex = 0; }
+                    this.command.actionIndex++;
+                    return;
+                
+                case "ChopWood":
+                    if (this.walkPath) { console.log("WALK PATH EXISTS"); return; }
+                    if (!this.command.destinationTree) { console.log("NO DESTINATION TREE EXISTS"); this.command.actionIndex++; return; }
+                    if (this.actions.chop) { this.actions.chop(this, this.command.destinationTree); }
+                    if (this.command.actionIndex === null || this.command.actionIndex === undefined) { this.command.actionIndex = 0; }
+                    this.command.treePath = null;
+                    this.command.actionIndex++;
+                    return;
+            }
         }
     }
 
@@ -127,23 +167,24 @@ class Character {
         if ((lengthSq === 0) || (deltaPosition.lengthSq() > lengthSq)) { this.position = nextPosition; }
         else { this.position.add(deltaPosition); }
         this.setPartPositions();
-        if (this.position === nextPosition) { 
+        if (this.position === nextPosition) {
             this.walkPath.shift();
             if (this.walkPath.length === 0) { this.reachDestination(); return; }
         }
     }
 
     reachDestination() {
-        let worldObject = this.positionTarget.worldObject;
-        let object = (worldObject ? worldObject.baseObject : null);
-        if (!object) { console.log("No object found at destination!"); return; }
-
-        console.log(object);
-        if      ((object.topper instanceof Bed) && this.actions.sleep)      { this.actions.sleep(this, this.positionTarget); }
-        else if ((object.topper instanceof Crop) && this.actions.harvest)   { this.actions.harvest(this, this.positionTarget); }
-        else if ((object.topper instanceof Tree) && this.actions.chop)      { this.actions.chop(this, this.positionTarget); }
-        else if (this.positionTarget.worldObject.objectSubtype === "dirt")  { this.actions.plant(this, this.positionTarget); }
-        else if (this.positionTarget.worldObject.objectSubtype === "water") { this.actions.drink(this, this.positionTarget); }
+        if (this.positionTarget !== null) {
+            let worldObject = this.positionTarget.worldObject;
+            let object = (worldObject ? worldObject.baseObject : null);
+            if (!object) { console.log("No object found at destination!"); return; }
+    
+            if      ((object.topper instanceof Bed) && this.actions.sleep)      { this.actions.sleep(this, this.positionTarget); }
+            else if ((object.topper instanceof Crop) && this.actions.harvest)   { this.actions.harvest(this, this.positionTarget); }
+            else if ((object.topper instanceof Tree) && this.actions.chop)      { this.actions.chop(this, this.positionTarget); }
+            else if (this.positionTarget.worldObject.objectSubtype === "dirt")  { this.actions.plant(this, this.positionTarget); }
+            else if (this.positionTarget.worldObject.objectSubtype === "water") { this.actions.drink(this, this.positionTarget); }
+        }
 
         this.busy = false;
     }

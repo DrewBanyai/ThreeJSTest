@@ -2,7 +2,7 @@ var CommandCondition = {};
 
 CommandCondition.WoodNearby = {
     conditionType: "WoodNearby",
-    searchRadius: 10,
+    searchRadius: 30,
 };
 
 CommandCondition.WaterNearby = {

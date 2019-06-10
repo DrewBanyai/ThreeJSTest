@@ -63,9 +63,15 @@ class WorldController {
         setGroundBlockTopper(columnRow2, bed, false);
     }
 
+    areAnyCharactersAtXZ(indexXZ) {
+        let characterExists = false;
+        this.characters.forEach((character) => { if (columnRowsEqual(character.indexXZ, indexXZ)) { characterExists = true; } });
+        return characterExists;
+    }
+
     plantTree(columnRowOverride) {
         let indexXZ = columnRowOverride ? columnRowOverride : getRandomBlockPosition();
-        let treePositionValid = (indexXZ) => { return ((getGroundBlockSubType(indexXZ) === "grass") && (!getGroundBlockTopper(indexXZ))); };
+        let treePositionValid = (indexXZ) => { return ((getGroundBlockSubType(indexXZ) === "grass") && (!getGroundBlockTopper(indexXZ)) && (!this.areAnyCharactersAtXZ(indexXZ))); };
         while (!treePositionValid(indexXZ)) { indexXZ = getRandomBlockPosition(); }
 
         let tree = new Tree({ height: "0.18", indexXZ: indexXZ })
