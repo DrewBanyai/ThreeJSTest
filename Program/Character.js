@@ -2,15 +2,44 @@ class Character {
     constructor(data) {
         this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
 		this.indexXZ = data.indexXZ;
-        this.modelSizes = { head: { x: .090, y: .090, z: .090 }, body: { x: .120, y: .150, z: .050 }, arms: { x: .050, y: .120, z: .050 }, legs: { x: .050, y: .130, z: .050 } };
-        this.model = { head: null, body: null, arm1: null, arm2: null, leg1: null, leg2: null };
+        this.modelSizes = { 
+            head: { x: 0.090, y: 0.090, z: 0.090 }, 
+            body: { x: 0.120, y: 0.150, z: 0.050 }, 
+            arms: { x: 0.050, y: 0.120, z: 0.050 }, 
+            legs: { x: 0.050, y: 0.130, z: 0.050 }
+        };
+        this.model = { 
+            head: null, 
+            body: null, 
+            arm1: null, 
+            arm2: null, 
+            leg1: null, 
+            leg2: null
+        };
         this.position = new THREE.Vector3();
         this.walkPath = null;
         this.positionTarget = null;
         this.walkSpeed = 0.72;
         this.command = null;
         this.busy = false;
-        this.actions = { chop: null, plant: null, harvest: null, sleep: null, drink: null };
+        this.stats = { 
+            hunger: 0, 
+            thirst: 0, 
+            exhaustion: 0, 
+            wood: 0
+        };
+        this.statTimers = { 
+            hunger: 0, 
+            thirst: 0, 
+            exhaustion: 0
+        };
+        this.actions = { 
+            chop: null, 
+            plant: null, 
+            harvest: null, 
+            sleep: null, 
+            drink: null
+        };
         this.content = this.generateContent();
     }
 
@@ -68,12 +97,13 @@ class Character {
             let destinationCheck = (key) => { return (key ===  getKeyFromColumnRow(indexXZ)); };
             this.walkPath = findPath(this.indexXZ, destinationCheck);
             this.busy = true;
-            this.command.actionIndex = 0;
+            if (this.command) { this.SetCommandList(this.command.CommandID); }
         }
     }
 
     async layDown(bedPosition) {
         this.busy = true;
+        this.walkPath = null;
         console.log("Sleeping...");
         scene.remove(this.worldObject.meshObjectGroup);
 
@@ -91,57 +121,19 @@ class Character {
         if (this.walkPath) { this.walk(timeDelta); }
         else if (this.command !== null && this.busy === false) {
             let commandList = CommandList[this.command.CommandID];
-            let conditionsTrue = true;
+            if (this.command.actionIndex && (this.command.actionIndex >= commandList.actions.length)) { this.SetCommandList(this.command.CommandID); }
+            this.positionTarget = null;
 
             //  First, check all conditions
-            commandList.conditions.forEach((condition) => {
-                switch (condition.conditionType) {
-                    case "WoodNearby":
-                        if (this.command.treePath) { break; }
-                        let treeExistsCheck = (key) => { if (getGroundBlockFromKey(key).topper instanceof Tree) { this.command.destinationTree = getGroundBlockFromKey(key); return true; } return false; };
-                        this.command.treePath = findPath(this.indexXZ, treeExistsCheck, condition.searchRadius);
-                        if (!this.command.treePath || this.command.treePath.length == 0) { conditionsTrue = false; }
-                        break;
-                        
-                    case "WaterNearby":
-                        if (this.command.waterPath) { break; }
-                        let waterExistsCheck = (key) => { return (getGroundBlockFromKey(key).worldObject.objectSubtype === "water"); }
-                        this.command.waterPath = findPath(this.indexXZ, waterExistsCheck, condition.searchRadius);
-                        if (!this.command.treePath || this.command.treePath.length == 0) { conditionsTrue = false; }
-                        break;
-                            
-                    case "Exhausted":
-                        //  TODO: Add this check after stats get moved into the character class
-                        conditionsTrue = false;
-                        break;
-                }
-            });
+            let conditionsTrue = true;
+            commandList.conditions.forEach((condition) => { conditionsTrue = conditionsTrue && (condition.check(this, condition)); });
             if (conditionsTrue === false) { return; }
 
             //  Next, go through all actions
             this.command.actionIndex = this.command.actionIndex || 0;
-            if (this.command.actionIndex >= commandList.actions.length) { this.command.actionIndex = 0; }
             let action = commandList.actions[this.command.actionIndex];
-            switch (action.actionType) {
-                case "MoveToWood":
-                    if (!this.command.treePath || this.command.treePath.length === 0) { console.log("NO TREE PATH EXISTS"); this.command.treePath = null; return; }
-                    if (this.command.treePath.length <= 1) { this.command.actionIndex++; return; }
-                    this.walkPath = this.command.treePath;
-                    this.command.treePath = null;
-                    this.busy = true;
-                    if (this.command.actionIndex === null || this.command.actionIndex === undefined) { this.command.actionIndex = 0; }
-                    this.command.actionIndex++;
-                    return;
-                
-                case "ChopWood":
-                    if (this.walkPath) { console.log("WALK PATH EXISTS"); return; }
-                    if (!this.command.destinationTree) { console.log("NO DESTINATION TREE EXISTS"); this.command.actionIndex++; return; }
-                    if (this.actions.chop) { this.actions.chop(this, this.command.destinationTree); }
-                    if (this.command.actionIndex === null || this.command.actionIndex === undefined) { this.command.actionIndex = 0; }
-                    this.command.treePath = null;
-                    this.command.actionIndex++;
-                    return;
-            }
+            if (action.action) { action.action(this, action); return; }
+            else { console.log("Something went wrong..."); }
         }
     }
 
@@ -174,6 +166,7 @@ class Character {
     }
 
     reachDestination() {
+        this.busy = false;
         if (this.positionTarget !== null) {
             let worldObject = this.positionTarget.worldObject;
             let object = (worldObject ? worldObject.baseObject : null);
@@ -185,7 +178,5 @@ class Character {
             else if (this.positionTarget.worldObject.objectSubtype === "dirt")  { this.actions.plant(this, this.positionTarget); }
             else if (this.positionTarget.worldObject.objectSubtype === "water") { this.actions.drink(this, this.positionTarget); }
         }
-
-        this.busy = false;
     }
 };

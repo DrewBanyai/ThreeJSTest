@@ -1,25 +1,37 @@
 var groundPieces = {};
 var diagonalWalkingEnabled = false;
 
-var getKeyFromXZ = (x, z) => { return `(${x}, ${z})`; }
-var getKeyFromColumnRow = (indexXZ) => {return getKeyFromXZ(indexXZ.x, indexXZ.z); }
-var addGroundBlockToMap = (block) => { groundPieces[getKeyFromColumnRow(block.indexXZ)] = block; }
+var getKeyFromXZ = (x, z) => { return `(${x}, ${z})`; };
+var getKeyFromColumnRow = (indexXZ) => {return getKeyFromXZ(indexXZ.x, indexXZ.z); };
+var addGroundBlockToMap = (block) => { groundPieces[getKeyFromColumnRow(block.indexXZ)] = block; };
 var setGroundBlockSubType = (x, z, subtype) => { groundPieces[getKeyFromXZ(x, z)].setGroundSubtype(subtype); };
-var getGroundBlock = (x, z) => { return getGroundBlockFromKey(getKeyFromXZ(x, z)); }
-var getGroundBlockFromKey = (key) => { let block = groundPieces[key]; return block ? block : null; }
-var getRandomBlockPosition = () => { return groundPieces[Object.keys(groundPieces)[parseInt(Math.random() * Object.keys(groundPieces).length)]].indexXZ; }
+var getGroundBlock = (x, z) => { return getGroundBlockFromKey(getKeyFromXZ(x, z)); };
+var getGroundBlockFromKey = (key) => { let block = groundPieces[key]; return block ? block : null; };
+var getRandomBlockPosition = () => { return groundPieces[Object.keys(groundPieces)[parseInt(Math.random() * Object.keys(groundPieces).length)]].indexXZ; };
 
 var isTreePresent = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`isTreePresent called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return (block.topper instanceof Tree);
-}
+};
 
 var isCropPresent = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`isCropPresent called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return (block.topper instanceof Crop);
-}
+};
+
+var isCropPresentAtKey = (key) => {
+    let block = getGroundBlockFromKey(key);
+    if (block === null) { console.log(`isCropPresent called on non-existent block: ${key}`); return false; }
+    return (block.topper instanceof Crop);
+};
+
+var isCropGrownAtKey = (key) => {
+    let block = getGroundBlockFromKey(key);
+    if (block === null) { console.log(`isCropPresent called on non-existent block: ${key}`); return false; }
+    return ((block.topper instanceof Crop) && (block.topper.currentState === Crop.stateEnum.GROWN));
+};
 
 var setGroundBlockTopper = (indexXZ, topper, reverse = true) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
@@ -27,22 +39,22 @@ var setGroundBlockTopper = (indexXZ, topper, reverse = true) => {
 
     block.topper = topper;
     if (topper !== null && reverse) { topper.groundBlock = block; }
-}
+};
 
 var getGroundBlockSubType = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`getGroundBlockSubType called on non-existent block ${getKeyFromColumnRow(indexXZ)}`); return false; }
     if (!block.worldObject) { console.log(`getGroundBlockSubType called on a block without worldObject: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return block.worldObject.objectSubtype;
-}
+};
 
 var getGroundBlockTopper = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`doesGroundBlockHaveTopper called on non-existent block ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return block.topper;
-}
+};
 
-var updateGroundMap = (timeDelta) => { for (let plot in groundPieces) { groundPieces[plot].update(timeDelta); } }
+var updateGroundMap = (timeDelta) => { for (let plot in groundPieces) { groundPieces[plot].update(timeDelta); } };
 
 const groundTypesUnwalkable = [ "water" ];
 const blockToppersUnwalkable = [ "bed", "tree" ];
@@ -70,7 +82,7 @@ var findPath = (indexXZStart, check, maxDistance = 500) => {
         if (oldFrontier.hasOwnProperty(blockKey)) { return; }
         if (frontier.hasOwnProperty(blockKey)) { return; }
         frontier[blockKey] = path;
-    }
+    };
 
     let pathPlusEntry = (path, entry) => { let newPath = [...path]; newPath.push(entry); return newPath; }
 
@@ -91,7 +103,7 @@ var findPath = (indexXZStart, check, maxDistance = 500) => {
             addToFrontier({ x: x + 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x + 1,     z: z + 1 }));
             addToFrontier({ x: x - 1,   z: z + 1 },     pathPlusEntry(frontierEntry, { x: x - 1,     z: z + 1 }));
         }
-    }
+    };
     
     //  Put in a starting index frontier entry (frontier is a list of XZ positions, beginning with the start point)
     addToFrontier(indexXZStart, [ indexXZStart ]);
@@ -111,4 +123,4 @@ var findPath = (indexXZStart, check, maxDistance = 500) => {
             if (currentFrontier[key].length <= maxDistance) { addFrontierNeighbors(currentFrontier[key]); }
         }
     }
-}
+};

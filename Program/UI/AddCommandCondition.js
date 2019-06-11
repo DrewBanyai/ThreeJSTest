@@ -28,40 +28,17 @@ class AddCommandCondition {
 		topBarContainer.style.display = "inline-flex";
 		modalBox.appendChild(topBarContainer);
 
-		let addConditionButton = document.createElement("div");
-		addConditionButton.id = "AddConditionButton";
-		addConditionButton.style.width = "90px";
-		addConditionButton.style.height = "26px";
-		addConditionButton.style.borderRadius = "6px";
-		addConditionButton.style.backgroundColor = "rgb(160, 160, 200)";
-		addConditionButton.style.color = "rgb(64, 64, 64);";
-		addConditionButton.style.border = "1px solid black";
-		addConditionButton.style.lineHeight = "26px";
-		addConditionButton.style.textAlign = "center";
-		addConditionButton.style.margin = "10px auto 0px auto";
-		addConditionButton.style.cursor = "pointer";
-		addConditionButton.style.userSelect = "none";
-		addConditionButton.innerText = "Save List";
-		addConditionButton.onmouseenter = () => { addConditionButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		addConditionButton.onmouseleave = () => { addConditionButton.style.backgroundColor = "rgb(160, 160, 200)"; }
-		addConditionButton.onmousedown = () => { addConditionButton.style.backgroundColor = "rgb(140, 140, 200)"; }
-		addConditionButton.onmouseup = () => { addConditionButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		addConditionButton.onclick = () => { 
-            this.AddCommandConditionToList();
-		}
-		topBarContainer.appendChild(addConditionButton);
-
 		let closeMenuButton = document.createElement("div");
 		closeMenuButton.id = "CloseMenuButton";
-		closeMenuButton.style.width = "30px";
-		closeMenuButton.style.height = "26px";
+		closeMenuButton.style.width = "20px";
+		closeMenuButton.style.height = "20px";
 		closeMenuButton.style.borderRadius = "6px";
-		closeMenuButton.style.backgroundColor = "rgb(220, 160, 160)";
+		closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)";
 		closeMenuButton.style.color = "rgb(64, 64, 64);";
 		closeMenuButton.style.border = "1px solid black";
-		closeMenuButton.style.lineHeight = "26px";
+		closeMenuButton.style.lineHeight = "20px";
 		closeMenuButton.style.textAlign = "center";
-		closeMenuButton.style.margin = "10px 5px 0px 0px";
+		closeMenuButton.style.margin = "5px 5px 0px auto";
 		closeMenuButton.style.cursor = "pointer";
 		closeMenuButton.style.userSelect = "none";
 		closeMenuButton.innerText = "X";
@@ -71,17 +48,56 @@ class AddCommandCondition {
 		closeMenuButton.onmouseup = () => { closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)"; }
 		closeMenuButton.onclick = () => { AddCommandCondition.HideMenu(); }
 		topBarContainer.appendChild(closeMenuButton);
+
+		let optionsList = document.createElement("div");
+		optionsList.id = "OptionsList";
+		optionsList.style.width = "90%";
+		optionsList.style.height = "260px";
+		optionsList.style.textAlign = "center";
+		optionsList.style.margin = "auto";
+		modalBox.appendChild(optionsList);
+
+		let addOption = (icon, condition) => {
+			let option = document.createElement("div");
+			option.style.width = "100%";
+			option.style.height = "32px";
+			option.style.backgroundColor = "white";
+			option.style.border = "1px solid black";
+			option.style.borderRadius = "6px";
+			option.style.margin = "0px auto 3px auto";
+
+			let optionLabel = document.createElement("span");
+			optionLabel.innerText = condition.Description;
+			optionLabel.style.lineHeight = option.style.height;
+			option.appendChild(optionLabel);
+
+			option.command = condition;
+			option.onclick = () => { 
+				this.AddCommandConditionToList(condition);
+				AddCommandCondition.HideMenu();
+			 };
+
+			 optionsList.appendChild(option);
+		};
+
+		addOption(null, CommandCondition.WoodNearby);
+		addOption(null, CommandCondition.WaterNearby);
+		addOption(null, CommandCondition.DirtPlotNearby);
+		addOption(null, CommandCondition.GrownCropNearby);
+		addOption(null, CommandCondition.Hungry);
+		addOption(null, CommandCondition.Thirsty);
+		addOption(null, CommandCondition.Exhausted);
         
         container.style.visibility = "hidden";
         
         return container;
     }
     
-    AddCommandConditionToList() {
+    AddCommandConditionToList(option) {
         let element = document.getElementById("CreateCommandListContainer");
         if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 
-        element.AddCondition(CommandCondition.WoodNearby);
+        element.AddCondition(option);
     }
 
 	static IsMenuActive() { 

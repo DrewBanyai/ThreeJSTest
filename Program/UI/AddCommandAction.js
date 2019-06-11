@@ -26,42 +26,20 @@ class AddCommandAction {
 		topBarContainer.id = "TopBarContainer";
 		topBarContainer.style.width = "100%";
 		topBarContainer.style.display = "inline-flex";
+		topBarContainer.style.margin = "0px 0px 4px 0px";
 		modalBox.appendChild(topBarContainer);
-
-		let addActionButton = document.createElement("div");
-		addActionButton.id = "AddActionButton";
-		addActionButton.style.width = "90px";
-		addActionButton.style.height = "26px";
-		addActionButton.style.borderRadius = "6px";
-		addActionButton.style.backgroundColor = "rgb(160, 160, 200)";
-		addActionButton.style.color = "rgb(64, 64, 64);";
-		addActionButton.style.border = "1px solid black";
-		addActionButton.style.lineHeight = "26px";
-		addActionButton.style.textAlign = "center";
-		addActionButton.style.margin = "10px auto 0px auto";
-		addActionButton.style.cursor = "pointer";
-		addActionButton.style.userSelect = "none";
-		addActionButton.innerText = "Save List";
-		addActionButton.onmouseenter = () => { addActionButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		addActionButton.onmouseleave = () => { addActionButton.style.backgroundColor = "rgb(160, 160, 200)"; }
-		addActionButton.onmousedown = () => { addActionButton.style.backgroundColor = "rgb(140, 140, 200)"; }
-		addActionButton.onmouseup = () => { addActionButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		addActionButton.onclick = () => { 
-            this.AddCommandActionToList();
-		}
-		topBarContainer.appendChild(addActionButton);
 
 		let closeMenuButton = document.createElement("div");
 		closeMenuButton.id = "CloseMenuButton";
-		closeMenuButton.style.width = "30px";
-		closeMenuButton.style.height = "26px";
+		closeMenuButton.style.width = "20px";
+		closeMenuButton.style.height = "20px";
 		closeMenuButton.style.borderRadius = "6px";
-		closeMenuButton.style.backgroundColor = "rgb(220, 160, 160)";
+		closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)";
 		closeMenuButton.style.color = "rgb(64, 64, 64);";
 		closeMenuButton.style.border = "1px solid black";
-		closeMenuButton.style.lineHeight = "26px";
+		closeMenuButton.style.lineHeight = "20px";
 		closeMenuButton.style.textAlign = "center";
-		closeMenuButton.style.margin = "10px 5px 0px 0px";
+		closeMenuButton.style.margin = "5px 5px 0px auto";
 		closeMenuButton.style.cursor = "pointer";
 		closeMenuButton.style.userSelect = "none";
 		closeMenuButton.innerText = "X";
@@ -71,18 +49,51 @@ class AddCommandAction {
 		closeMenuButton.onmouseup = () => { closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)"; }
 		closeMenuButton.onclick = () => { AddCommandAction.HideMenu(); }
 		topBarContainer.appendChild(closeMenuButton);
+
+		let optionsList = document.createElement("div");
+		optionsList.id = "OptionsList";
+		optionsList.style.width = "90%";
+		optionsList.style.height = "260px";
+		optionsList.style.textAlign = "center";
+		optionsList.style.margin = "auto";
+		modalBox.appendChild(optionsList);
+
+		let addOption = (icon, action) => {
+			let option = document.createElement("div");
+			option.style.width = "100%";
+			option.style.height = "32px";
+			option.style.backgroundColor = "white";
+			option.style.border = "1px solid black";
+			option.style.borderRadius = "6px";
+			option.style.margin = "0px auto 3px auto";
+
+			let optionLabel = document.createElement("span");
+			optionLabel.innerText = action.Description;
+			optionLabel.style.lineHeight = option.style.height;
+			option.appendChild(optionLabel);
+
+			option.command = action;
+			option.onclick = () => { 
+				this.AddCommandActionToList(action);
+				AddCommandAction.HideMenu();
+			 };
+
+			 optionsList.appendChild(option);
+		};
+
+		addOption(null, CommandAction.MoveToWood);
+		addOption(null, CommandAction.ChopWood);
         
         container.style.visibility = "hidden";
         
         return container;
     }
     
-    AddCommandActionToList() {
+    AddCommandActionToList(option) {
         let element = document.getElementById("CreateCommandListContainer");
         if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 
-        element.AddAction(CommandAction.MoveToWood);
-        element.AddAction(CommandAction.ChopWood);
+        element.AddAction(option);
     }
 
 	static IsMenuActive() { 

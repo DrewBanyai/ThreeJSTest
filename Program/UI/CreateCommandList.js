@@ -233,10 +233,10 @@ class CreateCommandList {
 		newEntry.style.height = "20px";
 		newEntry.style.width = "100%";
 		newEntry.style.textAlign = "center";
-		newEntry.innerText = condition.conditionType;
+		newEntry.innerText = condition.Description;
 		this.conditionDataList.push(condition);
 
-		switch (condition.conditiontype) {
+		switch (condition.Type) {
 			case "WoodNearby":
 					newEntry.innerText += ` (${condition.searchRadius} spaces)`;
 					break;
@@ -253,10 +253,10 @@ class CreateCommandList {
 		newEntry.style.height = "20px";
 		newEntry.style.width = "100%";
 		newEntry.style.textAlign = "center";
-		newEntry.innerText = action.actionType;
+		newEntry.innerText = action.Description;
 		this.actionDataList.push(action);
 
-		switch (action.actionType) {
+		switch (action.Type) {
 			case "MoveToWood": break;
 		}
 

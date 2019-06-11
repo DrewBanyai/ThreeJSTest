@@ -4,8 +4,6 @@ class WorldController {
 
         this.characters = []; //  A list of character WorldObject entities
         this.dayTime = 15;
-        this.characterStats = { hunger: 0, thirst: 0, exhaustion: 0, wood: 0 };
-        this.characterStatTimers = { hunger: 0, thirst: 0, exhaustion: 0 };
         this.content = this.generateContent();
     }
 
@@ -110,7 +108,7 @@ class WorldController {
         scene.remove(crop.worldObject.getMeshObjectGroup());
         setGroundBlockTopper(indexXZ, null);
         
-        this.characterStats.hunger = (this.characterStats.hunger > 5) ? this.characterStats.hunger - 5 : 0;
+        this.characters[0].stats.hunger = (this.characters[0].stats.hunger > 5) ? this.characters[0].stats.hunger - 5 : 0;
 
     }
 
@@ -122,7 +120,7 @@ class WorldController {
         character.actions.chop = (char, target) => {
             if (this.destroyTree(target.indexXZ)) {
                 this.plantTree();
-                this.characterStats.wood += 5;
+                this.characters[0].stats.wood += 5;
             }
         }
 
@@ -141,12 +139,12 @@ class WorldController {
             if (!(target.topper instanceof Bed)) { console.log("Attempting to lay in a bed where one does not exist"); return; }
             await char.layDown();
             DayNightCurrentState.currentTimer = DayNightCycle.morning;
-            this.characterStats.exhaustion = (this.characterStats.exhaustion > 5) ? this.characterStats.exhaustion - 5 : 0;
+            this.characters[0].stats.exhaustion = (this.characters[0].stats.exhaustion > 5) ? this.characters[0].stats.exhaustion - 5 : 0;
         }
 
         character.actions.drink = async (char, target) => {
             char.drinkWater();
-            this.characterStats.thirst = (this.characterStats.thirst > 5) ? this.characterStats.thirst - 5 : 0;
+            this.characters[0].stats.thirst = (this.characters[0].stats.thirst > 5) ? this.characters[0].stats.thirst - 5 : 0;
         }
     }
 
@@ -155,16 +153,16 @@ class WorldController {
         updateGroundMap(timeDelta);
         this.updateDayTime(timeDelta);
 
-        if ((this.characterStatTimers.hunger += timeDelta) > 5) { this.characterStats.hunger += 1; this.characterStatTimers.hunger -= 5; }
-        if ((this.characterStatTimers.thirst += timeDelta) > 4) { this.characterStats.thirst += 1; this.characterStatTimers.thirst -= 4; }
-        if ((this.characterStatTimers.exhaustion += timeDelta) > 3) { this.characterStats.exhaustion += 1; this.characterStatTimers.exhaustion -= 3; }
-        if (this.characterStats.hunger > 100) { this.characterStats.hunger = 100; }
-        if (this.characterStats.thirst > 100) { this.characterStats.thirst = 100; }
-        if (this.characterStats.exhaustion > 100) { this.characterStats.exhaustion = 100; }
-        MainUI.setHungerValue(this.characterStats.hunger);
-        MainUI.setThirstValue(this.characterStats.thirst);
-        MainUI.setExhaustionValue(this.characterStats.exhaustion);
-        MainUI.setWoodValue(this.characterStats.wood);
+        if ((this.characters[0].statTimers.hunger += timeDelta) > 5) { this.characters[0].stats.hunger += 1; this.characters[0].statTimers.hunger -= 5; }
+        if ((this.characters[0].statTimers.thirst += timeDelta) > 4) { this.characters[0].stats.thirst += 1; this.characters[0].statTimers.thirst -= 4; }
+        if ((this.characters[0].statTimers.exhaustion += timeDelta) > 3) { this.characters[0].stats.exhaustion += 1; this.characters[0].statTimers.exhaustion -= 3; }
+        if (this.characters[0].stats.hunger > 100) { this.characters[0].stats.hunger = 100; }
+        if (this.characters[0].stats.thirst > 100) { this.characters[0].stats.thirst = 100; }
+        if (this.characters[0].stats.exhaustion > 100) { this.characters[0].stats.exhaustion = 100; }
+        MainUI.setHungerValue(this.characters[0].stats.hunger);
+        MainUI.setThirstValue(this.characters[0].stats.thirst);
+        MainUI.setExhaustionValue(this.characters[0].stats.exhaustion);
+        MainUI.setWoodValue(this.characters[0].stats.wood);
     }
 
     updateDayTime(timeDelta) {
