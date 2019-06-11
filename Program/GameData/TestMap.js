@@ -429,5 +429,6 @@ var TestMapData = {
 	],
 	characters: [
 		{ indexXZ: { x: 5,   z: 5 } },
+		{ indexXZ: { x: 6,   z: 6 } },
 	],
 };

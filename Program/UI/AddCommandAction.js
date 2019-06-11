@@ -83,6 +83,11 @@ class AddCommandAction {
 
 		addOption(null, CommandAction.MoveToWood);
 		addOption(null, CommandAction.ChopWood);
+		addOption(null, CommandAction.MoveToBed);
+		addOption(null, CommandAction.SleepInBed);
+		addOption(null, CommandAction.MoveToDirt);
+		addOption(null, CommandAction.PlantCropOnDirt);
+		addOption(null, CommandAction.HarvestCrop);
         
         container.style.visibility = "hidden";
         

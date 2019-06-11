@@ -220,7 +220,14 @@ class CreateCommandList {
 
 		container.style.visibility = "hidden";
 
+		container.clearData = () => this.clearData();
+
 		return container;
+	}
+
+	clearData() {
+		this.conditionDataList = [];
+		this.actionDataList = [];
 	}
 
 	SetCharacter(character) { this.character = character; }
@@ -294,7 +301,7 @@ class CreateCommandList {
 
 		//  Create the new command list, save it off, and send the identifier to the selected character
 		CommandList[taskListNameInput.value] = { conditions: this.conditionDataList, actions: this.actionDataList, };
-		this.character.baseObject.SetCommandList(taskListNameInput.value)
+		this.character.SetCommandList(taskListNameInput.value)
 
 		//  Hide the command list creation menu
 		CreateCommandList.HideMenu();
@@ -321,6 +328,7 @@ class CreateCommandList {
 	static ShowMenu() {
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
+		element.clearData();
 		element.style.visibility = "visible";
 
 		let taskListNameInput = document.getElementById("TaskNameInput");
@@ -330,6 +338,7 @@ class CreateCommandList {
 	static HideMenu() {
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
+		element.clearData();
 		element.style.visibility = "hidden";
 
 		let conditionsList = document.getElementById("CommandListConditionsList");

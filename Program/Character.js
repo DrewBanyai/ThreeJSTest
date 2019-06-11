@@ -1,5 +1,6 @@
 class Character {
     constructor(data) {
+        this.name = data.name;
         this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
 		this.indexXZ = data.indexXZ;
         this.modelSizes = { 
@@ -73,7 +74,10 @@ class Character {
         for (let part in this.model) { this.worldObject.addToMeshGroup(this.model[part]); }
     }
 
-    SetCommandList(listID) { this.command = { CommandID: listID }; }
+    SetCommandList(listID) { 
+        this.command = { CommandID: listID };
+        console.log(this);
+     }
 
     setPartPositions() {
         this.model.leg1.position.set(this.position.x + ((-1) * (this.modelSizes.legs.x / 2)), this.position.y + (this.modelSizes.legs.y / 2), this.position.z + 0);
@@ -118,6 +122,7 @@ class Character {
     }
 
     update(timeDelta) {
+        if (this.busy) { console.log(this.busy); }
         if (this.walkPath) { this.walk(timeDelta); }
         else if (this.command !== null && this.busy === false) {
             let commandList = CommandList[this.command.CommandID];

@@ -89,7 +89,7 @@ function setEventListeners() {
 			{
 				selectedObject = (mouseOverObject && mouseOverObject.objectType === "Character") ? mouseOverObject : null;
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
-				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
+				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? `Character selected: ${selectedObject.baseObject.name}` : null; }
 			}
 			break;
 
@@ -97,7 +97,7 @@ function setEventListeners() {
 			{
 				selectedObject = null;
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
-				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? "Character selected" : null; }
+				if (selectedObjectLabel) { selectedObjectLabel.innerText = null; }
 			}
 			break;
 
@@ -115,7 +115,7 @@ function setEventListeners() {
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 32) {
 			if (selectedObject !== null) {
-				CreateCommandList.SetCharacter(selectedObject);
+				CreateCommandList.SetCharacter(selectedObject.baseObject);
 				if (CreateCommandList.IsMenuActive()) { return; }
 				CreateCommandList.ShowMenu();
 			}

@@ -10,7 +10,6 @@ class WorldController {
     generateContent() {
         this.createSceneColorAndLighting();
         this.createMapFromData(TestMapData);
-        this.createCharacter();
     }
 
     createSceneColorAndLighting() {
@@ -50,6 +49,11 @@ class WorldController {
                 case "tree":    this.plantTree(objectData.indexXZ);     break;
                 case "bed":     this.createBed(objectData.indexXZ);     break;
             }
+        });
+
+        //  Load all characters in from data
+        mapData.characters.forEach((character) => {
+            this.createCharacter(character.indexXZ, character.indexXZ.x.toString());
         });
     }
 
@@ -112,8 +116,8 @@ class WorldController {
 
     }
 
-    createCharacter() {
-        let character = new Character({ indexXZ: { x: 5, z: 5 } });
+    createCharacter(indexXZ, name) {
+        let character = new Character({ indexXZ: indexXZ, name: name });
         this.characters.push(character);
         scene.add(character.worldObject.getMeshObjectGroup());
 

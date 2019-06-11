@@ -62,7 +62,7 @@ const blockToppersUnwalkable = [ "bed", "tree" ];
 var findPath = (indexXZStart, check, maxDistance = 500) => {
     //  If we're already at our destination, return a blank list of movements
     let blockKeyStart = getKeyFromColumnRow(indexXZStart);
-    if (check(blockKeyStart)) { console.log("We are already at our destination"); return []; }
+    if (check(blockKeyStart)) { return []; }
 
     //  Ensure both the starting and ending block exist
     let startBlock = getGroundBlock(indexXZStart.x, indexXZStart.z);

@@ -84,6 +84,7 @@ class AddCommandCondition {
 		addOption(null, CommandCondition.WaterNearby);
 		addOption(null, CommandCondition.DirtPlotNearby);
 		addOption(null, CommandCondition.GrownCropNearby);
+		addOption(null, CommandCondition.BedNearby);
 		addOption(null, CommandCondition.Hungry);
 		addOption(null, CommandCondition.Thirsty);
 		addOption(null, CommandCondition.Exhausted);

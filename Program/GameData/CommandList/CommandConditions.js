@@ -32,7 +32,7 @@ CommandCondition.DirtPlotNearby = {
     searchRadius: 20,
     check: (character, condition) => {
         if (character.command.dirtPlotPath) { return true; }
-        let dirtPlotExistsCheck = (key) => { return (getGroundBlockFromKey(key).worldObject.objectSubtype === "dirt" && !isCropPresentAtKey(key)); }
+        let dirtPlotExistsCheck = (key) => { if ((getGroundBlockFromKey(key).worldObject.objectSubtype === "dirt") && (!isCropPresentAtKey(key))) { character.command.destinationDirt = getGroundBlockFromKey(key); return true; } return false; };
         character.command.dirtPlotPath = findPath(character.indexXZ, dirtPlotExistsCheck, condition.searchRadius);
         if (!character.command.dirtPlotPath || character.command.dirtPlotPath.length == 0) { return false; }
         return true;
@@ -45,9 +45,22 @@ CommandCondition.GrownCropNearby = {
     searchRadius: 20,
     check: (character, condition) => {
         if (character.command.dirtPlotPath) { return true; }
-        let dirtPlotExistsCheck = (key) => { return (getGroundBlockFromKey(key).worldObject.objectSubtype === "dirt" && isCropGrownAtKey(key)); }
+        let dirtPlotExistsCheck = (key) => { if ((getGroundBlockFromKey(key).worldObject.objectSubtype === "dirt") && isCropGrownAtKey(key)) { character.command.destinationDirt = getGroundBlockFromKey(key); return true; } return false; };
         character.command.dirtPlotPath = findPath(character.indexXZ, dirtPlotExistsCheck, condition.searchRadius);
         if (!character.command.dirtPlotPath || character.command.dirtPlotPath.length == 0) { return false; }
+        return true;
+    },
+};
+
+CommandCondition.BedNearby = {
+    conditionType: "BedNearby",
+    Description: "If there is a bed within 40 spaces...",
+    searchRadius: 40,
+    check: (character, condition) => {
+        if (character.command.bedPath) { return true; }
+        let bedExistsCheck = (key) => { if (getGroundBlockFromKey(key).topper instanceof Bed) { character.command.destinationBed = getGroundBlockFromKey(key); return true; } return false; };
+        character.command.bedPath = findPath(character.indexXZ, bedExistsCheck, condition.searchRadius);
+        if (!character.command.bedPath || character.command.bedPath.length == 0) { return false; }
         return true;
     },
 };
