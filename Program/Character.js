@@ -3,20 +3,7 @@ class Character {
         this.name = data.name;
         this.worldObject = new WorldObject({ type: "Character", subtype: "Model", baseObject: this });
 		this.indexXZ = data.indexXZ;
-        this.modelSizes = { 
-            head: { x: 0.090, y: 0.090, z: 0.090 }, 
-            body: { x: 0.120, y: 0.150, z: 0.050 }, 
-            arms: { x: 0.050, y: 0.120, z: 0.050 }, 
-            legs: { x: 0.050, y: 0.130, z: 0.050 }
-        };
-        this.model = { 
-            head: null, 
-            body: null, 
-            arm1: null, 
-            arm2: null, 
-            leg1: null, 
-            leg2: null
-        };
+        this.model = null;
         this.position = new THREE.Vector3();
         this.walkPath = null;
         this.positionTarget = null;
@@ -45,51 +32,29 @@ class Character {
     }
 
     generateContent() {
-        let headColor = "rgb(200, 100, 100)";
-        let bodyColor = "rgb(100, 200, 100)";
-        let arm1Color = "rgb(100, 100, 200)";
-        let arm2Color = "rgb(100, 60, 200)";
-        let leg1Color = "rgb(100, 100, 100)";
-        let leg2Color = "rgb(100, 60, 100)";
-        
-		this.position = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
+		this.position = GroundBlock.getBlockPosition(this.indexXZ);
 		this.position.y += GroundBlock.getTopMiddleDelta().y;
         
-        let headGeom = new THREE.BoxBufferGeometry(this.modelSizes.head.x, this.modelSizes.head.y, this.modelSizes.head.z);
-        this.model.head = new THREE.Mesh(headGeom, new THREE.MeshLambertMaterial({ color: headColor }));
-        let bodyGeom = new THREE.BoxBufferGeometry(this.modelSizes.body.x, this.modelSizes.body.y, this.modelSizes.body.z);
-        this.model.body = new THREE.Mesh(bodyGeom, new THREE.MeshLambertMaterial({ color: bodyColor }));
-        let armsGeom = new THREE.BoxBufferGeometry(this.modelSizes.arms.x, this.modelSizes.arms.y, this.modelSizes.arms.z);
-        this.model.arm1 = new THREE.Mesh(armsGeom, new THREE.MeshLambertMaterial({ color: arm1Color }));
-        this.model.arm2 = new THREE.Mesh(armsGeom, new THREE.MeshLambertMaterial({ color: arm2Color }));
-        let legsGeom = new THREE.BoxBufferGeometry(this.modelSizes.legs.x, this.modelSizes.legs.y, this.modelSizes.legs.z);
-        this.model.leg1 = new THREE.Mesh(legsGeom, new THREE.MeshLambertMaterial({ color: leg1Color }));
-        this.model.leg2 = new THREE.Mesh(legsGeom, new THREE.MeshLambertMaterial({ color: leg2Color }));
-
-        for (let part in this.model) { this.model[part].castShadow = true; }
-
+        this.model = generateModel_BasicCharacter();
         this.setPartPositions();
 
         //  Add all meshes to the WorldObject mesh collection
-        for (let part in this.model) { this.worldObject.addToMeshGroup(this.model[part]); }
+        for (let part in this.model.parts) { this.worldObject.addToMeshGroup(this.model.parts[part]); }
     }
 
-    SetCommandList(listID) { 
-        this.command = { CommandID: listID };
-        console.log(this);
-     }
+    SetCommandList(listID) { this.command = { CommandID: listID }; }
 
     setPartPositions() {
-        this.model.leg1.position.set(this.position.x + ((-1) * (this.modelSizes.legs.x / 2)), this.position.y + (this.modelSizes.legs.y / 2), this.position.z + 0);
-        this.model.leg2.position.set(this.position.x + ((1)  * (this.modelSizes.legs.x / 2)), this.position.y + (this.modelSizes.legs.y / 2), this.position.z + 0);
-        this.model.body.position.set(this.position.x + (0), this.position.y + (this.modelSizes.legs.y + (this.modelSizes.body.y / 2)), this.position.z + 0);
-        this.model.arm1.position.set(this.position.x + ((-this.modelSizes.body.x / 2) + (-this.modelSizes.arms.x / 2)), this.position.y + (this.modelSizes.legs.y + (this.modelSizes.arms.y / 2) + (this.modelSizes.body.y - this.modelSizes.arms.y)), this.position.z + 0);
-        this.model.arm2.position.set(this.position.x + ((this.modelSizes.body.x / 2) + (this.modelSizes.arms.x / 2)), this.position.y + (this.modelSizes.legs.y + (this.modelSizes.arms.y / 2) + (this.modelSizes.body.y - this.modelSizes.arms.y)), this.position.z + 0);
-        this.model.head.position.set(this.position.x + (0), this.position.y + (this.modelSizes.legs.y + this.modelSizes.body.y + (this.modelSizes.head.y / 2)), this.position.z + 0);
+        this.model.parts.leg1.position.set(this.position.x + ((-1) * (this.model.sizes.legs.x / 2)), this.position.y + (this.model.sizes.legs.y / 2), this.position.z + 0);
+        this.model.parts.leg2.position.set(this.position.x + ((1)  * (this.model.sizes.legs.x / 2)), this.position.y + (this.model.sizes.legs.y / 2), this.position.z + 0);
+        this.model.parts.body.position.set(this.position.x + (0), this.position.y + (this.model.sizes.legs.y + (this.model.sizes.body.y / 2)), this.position.z + 0);
+        this.model.parts.arm1.position.set(this.position.x + ((-this.model.sizes.body.x / 2) + (-this.model.sizes.arms.x / 2)), this.position.y + (this.model.sizes.legs.y + (this.model.sizes.arms.y / 2) + (this.model.sizes.body.y - this.model.sizes.arms.y)), this.position.z + 0);
+        this.model.parts.arm2.position.set(this.position.x + ((this.model.sizes.body.x / 2) + (this.model.sizes.arms.x / 2)), this.position.y + (this.model.sizes.legs.y + (this.model.sizes.arms.y / 2) + (this.model.sizes.body.y - this.model.sizes.arms.y)), this.position.z + 0);
+        this.model.parts.head.position.set(this.position.x + (0), this.position.y + (this.model.sizes.legs.y + this.model.sizes.body.y + (this.model.sizes.head.y / 2)), this.position.z + 0);
     }
 
     getCenterPoint() {
-        let height = this.position.y + (this.modelSizes.legs.y + this.modelSizes.body.y + this.modelSizes.head.y);
+        let height = this.position.y + (this.model.sizes.legs.y + this.model.sizes.body.y + this.model.sizes.head.y);
         let ground = GroundBlock.getTopMiddleDelta();
         return new THREE.Vector3(ground.x, ground.y + (height / 2), ground.z)
     }
@@ -122,7 +87,6 @@ class Character {
     }
 
     update(timeDelta) {
-        if (this.busy) { console.log(this.busy); }
         if (this.walkPath) { this.walk(timeDelta); }
         else if (this.command !== null && this.busy === false) {
             let commandList = CommandList[this.command.CommandID];

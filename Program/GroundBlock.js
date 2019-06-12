@@ -9,17 +9,14 @@ class GroundBlock {
     }
 
     generateContent() {
-        var geometry = new THREE.BoxGeometry(GroundBlock.getPlotSize().x, GroundBlock.getPlotSize().y, GroundBlock.getPlotSize().z);
-        var material = new THREE.MeshLambertMaterial({ color: Colors.greenLight });
-        this.block = new THREE.Mesh(geometry, material);
-
-        //  Create a basic block geometry and then generate a mesh with it
-        let position = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
-        this.block.position.set(position.x, position.y, position.z);
+        //  Create the basic block geometry
+        let position = GroundBlock.getBlockPosition(this.indexXZ);
+        let model = generateModel_GroundBlock(position);
+        this.block = model.block;
+        this.shadow = model.shadow;
 
         if (this.worldObject.objectSubtype === "grass") { this.addGrass(); }
 
-        this.shadow = customizeShadow(this.block, 0.25);
         this.worldObject.addToMeshGroup(this.block);
         this.worldObject.addToMeshGroup(this.shadow);
         
@@ -62,7 +59,7 @@ class GroundBlock {
         for (let i = 0; i < 200; ++i) {
             let blade = new THREE.Mesh(grassBladeGeom, new THREE.MeshLambertMaterial({ color: Colors.GrassBlade }));
             
-            let position = (this.indexXZ ? GroundBlock.getBlockPosition(this.indexXZ) : (new THREE.Vector3()));
+            let position = GroundBlock.getBlockPosition(this.indexXZ);
             blade.position.x = position.x - (GroundBlock.getPlotSize().x / 2) + (Math.random() * GroundBlock.getPlotSize().x);
             blade.position.y = position.y + 50 + (grassBladeSize.y / 2);
             blade.position.z = position.z - (GroundBlock.getPlotSize().z / 2) + (Math.random() * GroundBlock.getPlotSize().z);
