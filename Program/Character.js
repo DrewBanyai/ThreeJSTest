@@ -104,6 +104,17 @@ class Character {
             if (action.action) { action.action(this, action); return; }
             else { console.log("Something went wrong..."); }
         }
+
+        this.updateStats(timeDelta);
+    }
+
+    updateStats(timeDelta) {
+        if ((this.statTimers.hunger += timeDelta) > 5) { this.stats.hunger += 1; this.statTimers.hunger -= 5; }
+        if ((this.statTimers.thirst += timeDelta) > 4) { this.stats.thirst += 1; this.statTimers.thirst -= 4; }
+        if ((this.statTimers.exhaustion += timeDelta) > 3) { this.stats.exhaustion += 1; this.statTimers.exhaustion -= 3; }
+        if (this.stats.hunger > 100) { this.stats.hunger = 100; }
+        if (this.stats.thirst > 100) { this.stats.thirst = 100; }
+        if (this.stats.exhaustion > 100) { this.stats.exhaustion = 100; }
     }
 
     walk(timeDelta) { 

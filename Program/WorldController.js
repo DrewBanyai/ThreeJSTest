@@ -103,7 +103,7 @@ class WorldController {
         setGroundBlockTopper(indexXZ, crop);
     }
 
-    harvestCrop(indexXZ) {
+    harvestCrop(char, indexXZ) {
         if (!isCropPresent(indexXZ)) { console.log(`Attempted to harvest non-existent crop at index ${getKeyFromColumnRow(indexXZ)}`); return; }
 
         let crop = getGroundBlockTopper(indexXZ);
@@ -112,7 +112,7 @@ class WorldController {
         scene.remove(crop.worldObject.getMeshObjectGroup());
         setGroundBlockTopper(indexXZ, null);
         
-        this.characters[0].stats.hunger = (this.characters[0].stats.hunger > 5) ? this.characters[0].stats.hunger - 5 : 0;
+        char.stats.hunger = (char.stats.hunger > 5) ? char.stats.hunger - 5 : 0;
 
     }
 
@@ -124,7 +124,7 @@ class WorldController {
         character.actions.chop = (char, target) => {
             if (this.destroyTree(target.indexXZ)) {
                 this.plantTree();
-                this.characters[0].stats.wood += 5;
+                char.stats.wood += 5;
             }
         }
 
@@ -136,19 +136,19 @@ class WorldController {
         character.actions.harvest = (char, target) => {
             if (!(target.topper instanceof Crop)) { console.log("Attempting to harvest a crop where one does not exist"); return; }
             let blockKey = getKeyFromColumnRow(target.indexXZ);
-            this.harvestCrop(target.indexXZ);
+            this.harvestCrop(char, target.indexXZ);
         }
 
         character.actions.sleep = async (char, target) => {
             if (!(target.topper instanceof Bed)) { console.log("Attempting to lay in a bed where one does not exist"); return; }
             await char.layDown();
             DayNightCurrentState.currentTimer = DayNightCycle.morning;
-            this.characters[0].stats.exhaustion = (this.characters[0].stats.exhaustion > 5) ? this.characters[0].stats.exhaustion - 5 : 0;
+            char.stats.exhaustion = (char.stats.exhaustion > 5) ? char.stats.exhaustion - 5 : 0;
         }
 
         character.actions.drink = async (char, target) => {
             char.drinkWater();
-            this.characters[0].stats.thirst = (this.characters[0].stats.thirst > 5) ? this.characters[0].stats.thirst - 5 : 0;
+            char.stats.thirst = (char.stats.thirst > 5) ? char.stats.thirst - 5 : 0;
         }
     }
 
@@ -156,17 +156,7 @@ class WorldController {
         this.characters.forEach((character) => character.update(timeDelta));
         updateGroundMap(timeDelta);
         this.updateDayTime(timeDelta);
-
-        if ((this.characters[0].statTimers.hunger += timeDelta) > 5) { this.characters[0].stats.hunger += 1; this.characters[0].statTimers.hunger -= 5; }
-        if ((this.characters[0].statTimers.thirst += timeDelta) > 4) { this.characters[0].stats.thirst += 1; this.characters[0].statTimers.thirst -= 4; }
-        if ((this.characters[0].statTimers.exhaustion += timeDelta) > 3) { this.characters[0].stats.exhaustion += 1; this.characters[0].statTimers.exhaustion -= 3; }
-        if (this.characters[0].stats.hunger > 100) { this.characters[0].stats.hunger = 100; }
-        if (this.characters[0].stats.thirst > 100) { this.characters[0].stats.thirst = 100; }
-        if (this.characters[0].stats.exhaustion > 100) { this.characters[0].stats.exhaustion = 100; }
-        MainUI.setHungerValue(this.characters[0].stats.hunger);
-        MainUI.setThirstValue(this.characters[0].stats.thirst);
-        MainUI.setExhaustionValue(this.characters[0].stats.exhaustion);
-        MainUI.setWoodValue(this.characters[0].stats.wood);
+        CharacterMenu.Update();
     }
 
     updateDayTime(timeDelta) {

@@ -61,6 +61,11 @@ function createTitleBar() {
 	container.appendChild(mainUI.content);
 }
 
+function createCharacterMenu() {
+	let charMenu = new CharacterMenu();
+	container.appendChild(charMenu.content);
+}
+
 function createWorldController() {
 	//  Create the world controller instance, and pass in the scene so it can use it directly
 	worldController = new WorldController(scene);
@@ -88,6 +93,13 @@ function setEventListeners() {
 			case 0: //  Left button
 			{
 				selectedObject = (mouseOverObject && mouseOverObject.objectType === "Character") ? mouseOverObject : null;
+				
+				if (selectedObject) {
+					CharacterMenu.SetCharacter(selectedObject);
+					CharacterMenu.ShowMenu();
+				}
+				else { CharacterMenu.HideMenu(); }
+
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
 				if (selectedObjectLabel) { selectedObjectLabel.innerText = selectedObject ? `Character selected: ${selectedObject.baseObject.name}` : null; }
 			}
@@ -96,6 +108,7 @@ function setEventListeners() {
 			case 1: //  Middle button
 			{
 				selectedObject = null;
+				CharacterMenu.HideMenu();
 				let selectedObjectLabel = document.getElementById("SelectedTypeTitle");
 				if (selectedObjectLabel) { selectedObjectLabel.innerText = null; }
 			}
@@ -222,6 +235,7 @@ function initialize() {
 
 	createStatsBlock();
 	createTitleBar();
+	createCharacterMenu();
 	createWorldController();
 
 	setEventListeners();
