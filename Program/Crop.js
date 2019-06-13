@@ -10,8 +10,8 @@ class Crop {
         this.worldObject = new WorldObject({ type: "crop", subtype: data.cropType, baseObject: this });
 		this.currentState = Crop.stateEnum.SEED;
 		this.indexXZ = data.indexXZ;
-		this.cropTime = 0;
-		this.cropCycle = Crop.getCropCycle(this.worldObject.objectSubtype);
+		this.growthTime = 0;
+		this.growthCycle = Crop.getGrowthCycle(this.worldObject.objectSubtype);
 		this.groundBlock = null;
 		this.generateContent();
 	}
@@ -78,17 +78,17 @@ class Crop {
 	update(timeDelta) {
 		if (this.currentState === Crop.stateEnum.GROWN) { return; }
 
-		this.cropTime += timeDelta;
+		this.growthTime += timeDelta;
 		switch (this.currentState) {
-			case Crop.stateEnum.YOUTH: 	if (this.cropCycle.grown <= this.cropTime) { this.switchState(Crop.stateEnum.YOUTH, Crop.stateEnum.GROWN); } 	break;
-			case Crop.stateEnum.SPROUT: if (this.cropCycle.youth <= this.cropTime) { this.switchState(Crop.stateEnum.SPROUT, Crop.stateEnum.YOUTH); } 	break;
-			case Crop.stateEnum.SEED: 	if (this.cropCycle.sprout <= this.cropTime) { this.switchState(Crop.stateEnum.SEED, Crop.stateEnum.SPROUT); } 	break;
-			default:					console.log(`Crop state: ${this.currentState}`); this.switchState(null, Crop.stateEnum.SEED); 					break;
+			case Crop.stateEnum.YOUTH: 	if (this.growthCycle.grown <= this.growthTime) { this.switchState(Crop.stateEnum.YOUTH, Crop.stateEnum.GROWN); } 	break;
+			case Crop.stateEnum.SPROUT: if (this.growthCycle.youth <= this.growthTime) { this.switchState(Crop.stateEnum.SPROUT, Crop.stateEnum.YOUTH); } 	break;
+			case Crop.stateEnum.SEED: 	if (this.growthCycle.sprout <= this.growthTime) { this.switchState(Crop.stateEnum.SEED, Crop.stateEnum.SPROUT); } 	break;
+			default:					console.log(`State: ${this.currentState}`); this.switchState(null, Crop.stateEnum.SEED); 							break;
 		}
 	}
 
-	static getCropCycle(cropType) {
-		switch (cropType) {
+	static getGrowthCycle(type) {
+		switch (type) {
 			case "beans": 		return { seed: 0, sprout: 3, youth: 6, grown: 9 };
 			default:			return { seed: 0, sprout: 10, youth: 20, grown: 30 };
 		}

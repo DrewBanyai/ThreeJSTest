@@ -94,9 +94,9 @@ class WorldController {
         return true;
     }
 
-    plantCrop(indexXZ) {
+    plantCrop(char, indexXZ) {
         if (!(getGroundBlockSubType(indexXZ) === "dirt")) { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
-        
+
         let crop = new Crop({ cropType: "beans", indexXZ: indexXZ });
         scene.add(crop.worldObject.getMeshObjectGroup());
 
@@ -130,7 +130,7 @@ class WorldController {
 
         character.actions.plant = (char, target) => {
             if (target.topper instanceof Crop) { console.log("Attempting to plant a crop where one already exists"); return; }
-            this.plantCrop(target.indexXZ);
+            this.plantCrop(char, target.indexXZ);
         }
 
         character.actions.harvest = (char, target) => {
