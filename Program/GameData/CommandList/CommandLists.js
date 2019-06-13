@@ -1,1 +1,1 @@
-var CommandList = {};
+let CommandList = {};

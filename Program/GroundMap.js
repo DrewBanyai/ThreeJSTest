@@ -1,39 +1,39 @@
-var groundPieces = {};
-var diagonalWalkingEnabled = false;
+let groundPieces = {};
+let diagonalWalkingEnabled = false;
 
-var getKeyFromXZ = (x, z) => { return `(${x}, ${z})`; };
-var getKeyFromColumnRow = (indexXZ) => {return getKeyFromXZ(indexXZ.x, indexXZ.z); };
-var addGroundBlockToMap = (block) => { groundPieces[getKeyFromColumnRow(block.indexXZ)] = block; };
-var setGroundBlockSubType = (x, z, subtype) => { groundPieces[getKeyFromXZ(x, z)].setGroundSubtype(subtype); };
-var getGroundBlock = (x, z) => { return getGroundBlockFromKey(getKeyFromXZ(x, z)); };
-var getGroundBlockFromKey = (key) => { let block = groundPieces[key]; return block ? block : null; };
-var getRandomBlockPosition = () => { return groundPieces[Object.keys(groundPieces)[parseInt(Math.random() * Object.keys(groundPieces).length)]].indexXZ; };
+let getKeyFromXZ = (x, z) => { return `(${x}, ${z})`; };
+let getKeyFromColumnRow = (indexXZ) => {return getKeyFromXZ(indexXZ.x, indexXZ.z); };
+let addGroundBlockToMap = (block) => { groundPieces[getKeyFromColumnRow(block.indexXZ)] = block; };
+let setGroundBlockSubType = (x, z, subtype) => { groundPieces[getKeyFromXZ(x, z)].setGroundSubtype(subtype); };
+let getGroundBlock = (x, z) => { return getGroundBlockFromKey(getKeyFromXZ(x, z)); };
+let getGroundBlockFromKey = (key) => { let block = groundPieces[key]; return block ? block : null; };
+let getRandomBlockPosition = () => { return groundPieces[Object.keys(groundPieces)[parseInt(Math.random() * Object.keys(groundPieces).length)]].indexXZ; };
 
-var isTreePresent = (indexXZ) => {
+let isTreePresent = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`isTreePresent called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return (block.topper instanceof Tree);
 };
 
-var isCropPresent = (indexXZ) => {
+let isCropPresent = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`isCropPresent called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return (block.topper instanceof Crop);
 };
 
-var isCropPresentAtKey = (key) => {
+let isCropPresentAtKey = (key) => {
     let block = getGroundBlockFromKey(key);
     if (block === null) { console.log(`isCropPresent called on non-existent block: ${key}`); return false; }
     return (block.topper instanceof Crop);
 };
 
-var isCropGrownAtKey = (key) => {
+let isCropGrownAtKey = (key) => {
     let block = getGroundBlockFromKey(key);
     if (block === null) { console.log(`isCropPresent called on non-existent block: ${key}`); return false; }
     return ((block.topper instanceof Crop) && (block.topper.currentState === Crop.stateEnum.GROWN));
 };
 
-var setGroundBlockTopper = (indexXZ, topper, reverse = true) => {
+let setGroundBlockTopper = (indexXZ, topper, reverse = true) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`setGroundBlockTopper called on non-existent block: ${getKeyFromColumnRow(indexXZ)}`); return false; }
 
@@ -41,25 +41,25 @@ var setGroundBlockTopper = (indexXZ, topper, reverse = true) => {
     if (topper !== null && reverse) { topper.groundBlock = block; }
 };
 
-var getGroundBlockSubType = (indexXZ) => {
+let getGroundBlockSubType = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`getGroundBlockSubType called on non-existent block ${getKeyFromColumnRow(indexXZ)}`); return false; }
     if (!block.worldObject) { console.log(`getGroundBlockSubType called on a block without worldObject: ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return block.worldObject.objectSubtype;
 };
 
-var getGroundBlockTopper = (indexXZ) => {
+let getGroundBlockTopper = (indexXZ) => {
     let block = getGroundBlock(indexXZ.x, indexXZ.z);
     if (block === null) { console.log(`doesGroundBlockHaveTopper called on non-existent block ${getKeyFromColumnRow(indexXZ)}`); return false; }
     return block.topper;
 };
 
-var updateGroundMap = (timeDelta) => { for (let plot in groundPieces) { groundPieces[plot].update(timeDelta); } };
+let updateGroundMap = (timeDelta) => { for (let plot in groundPieces) { groundPieces[plot].update(timeDelta); } };
 
 const groundTypesUnwalkable = [ "water" ];
 const blockToppersUnwalkable = [ "bed", "tree" ];
 
-var findPath = (indexXZStart, check, maxDistance = 500) => {
+let findPath = (indexXZStart, check, maxDistance = 500) => {
     //  If we're already at our destination, return a blank list of movements
     let blockKeyStart = getKeyFromColumnRow(indexXZStart);
     if (check(blockKeyStart)) { return []; }

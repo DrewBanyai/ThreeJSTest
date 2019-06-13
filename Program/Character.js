@@ -28,14 +28,15 @@ class Character {
             sleep: null, 
             drink: null
         };
-        this.content = this.generateContent();
+        this.generateContent();
     }
 
     generateContent() {
 		this.position = GroundBlock.getBlockPosition(this.indexXZ);
 		this.position.y += GroundBlock.getTopMiddleDelta().y;
         
-        this.model = generateModel_BasicCharacter();
+        this.model = {};
+        generateModel_BasicCharacter(this.model);
         this.setPartPositions();
 
         //  Add all meshes to the WorldObject mesh collection

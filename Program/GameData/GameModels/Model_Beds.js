@@ -1,6 +1,4 @@
-var generateModel_GenericBed = (position) => {
-    let model = {};
-
+let generateModel_GenericBed = (model, position) => {
     let bedFullHeight = 0.1;
     let plotSize = GroundBlock.getPlotSize();
     let plotYDelta = GroundBlock.getTopMiddleDelta();
@@ -46,6 +44,4 @@ var generateModel_GenericBed = (position) => {
     //  Pillow
     model.bedPillow = new THREE.Mesh(pillowGeom, new THREE.MeshLambertMaterial({ color: pillowColor }));
     model.bedPillow.position.set(position.x, position.y + bedPostSize.y + bedFrameSize.y + mattressSize.y + (pillowSize.y / 2), position.z - (pillowSize.z / 2));
-
-    return model;
 };

@@ -1,28 +1,28 @@
-var container = null;
-var camera = null;
-var controls = null;
-var scene = null;
-var renderer = null;
+let container = null;
+let camera = null;
+let controls = null;
+let scene = null;
+let renderer = null;
 
-var statsBlock = null;
-var mousePosition = new THREE.Vector2(10000, 10000), INTERSECTED;
-var raycaster = new THREE.Raycaster();
-var clock = new THREE.Clock();
+let statsBlock = null;
+let mousePosition = new THREE.Vector2(10000, 10000), INTERSECTED;
+let raycaster = new THREE.Raycaster();
+let clock = new THREE.Clock();
 
-var mouseOverObject = null;
-var selectedObject = null;
+let mouseOverObject = null;
+let selectedObject = null;
 
-var worldController = null;
+let worldController = null;
 
 function createScene() {
 	scene = new THREE.Scene();
 }
 
 function createCamera() {
-	var aspectRatio = window.innerWidth / window.innerHeight;
-	var fieldOfView = 25;
-	var nearPlane = .1;
-	var farPlane = 1000; 
+	let aspectRatio = window.innerWidth / window.innerHeight;
+	let fieldOfView = 25;
+	let nearPlane = .1;
+	let farPlane = 1000; 
 
 	//  Create a 3D camera, and set it behind the 0,0,0 position, aiming at it.
 	camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
@@ -166,6 +166,7 @@ function getFirstMouseIntersectObject() {
 
 	let intersects = raycaster.intersectObjects(scene.children, true);
 	if (intersects.length === 0) { return null; }
+	if (intersects.length > 1000) { console.log(intersects); }
 	
 	let object = null;
 	for (let i = 0; i < intersects.length; ++i) {
@@ -219,7 +220,7 @@ function animateProgram() {
 function initialize() {
 	//  Check if WebGL is available. If not, show a warning and exit out
 	if ( !WEBGL.isWebGLAvailable() ) {
-		var warning = WEBGL.getWebGLErrorMessage();
+		let warning = WEBGL.getWebGLErrorMessage();
 		document.getElementById('container').appendChild(warning);
 		return;
 	}
@@ -244,7 +245,7 @@ function initialize() {
 }
 
 function beginRender() {
-	var render = function() {
+	let render = function() {
 		requestAnimationFrame( render );
 
 		renderer.render( scene, camera );

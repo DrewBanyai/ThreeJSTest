@@ -1,4 +1,4 @@
-var CommandCondition = {};
+let CommandCondition = {};
 
 CommandCondition.WoodNearby = {
     conditionType: "WoodNearby",

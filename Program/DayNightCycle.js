@@ -1,5 +1,5 @@
 //  The current state, which other systems can access after a call to update
-var DayNightCurrentState = {
+let DayNightCurrentState = {
 	currentTimer: 15.0,
 	lightLevel: 0,
 	skyColor: "rgb(0, 0, 0)",
@@ -30,7 +30,7 @@ let rgbDiff = (rgb1, rgb2) => { return { r: rgb2.r - rgb1.r, g: rgb2.g - rgb1.g,
 let rgbMultiply = (rgb, multiple) => { return { r: rgb.r * multiple, g: rgb.g * multiple, b: rgb.b * multiple }; }
 let rgbInt = (rgb, multiple) => { return { r: parseInt(rgb.r), g: parseInt(rgb.g), b: parseInt(rgb.b) }; }
 
-var updateDayTimeCycle = (timeDelta) => {
+let updateDayTimeCycle = (timeDelta) => {
 	//  Update the current timer, then ensure we stay within the time range we've defined
 	DayNightCurrentState.currentTimer += timeDelta * DayNightCycle.intervalsPerSecond;
 	while (DayNightCurrentState.currentTimer >= DayNightCycle.dayNightIntervalCount) { DayNightCurrentState.currentTimer -= DayNightCycle.dayNightIntervalCount; }

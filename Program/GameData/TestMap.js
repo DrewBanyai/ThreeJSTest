@@ -1,4 +1,4 @@
-var TestMapData = {
+let TestMapData = {
 	groundBlocks: [
 		{ indexXZ: { x: 0,   z: 0 },   groundtype: "grass" },
 		{ indexXZ: { x: 1,   z: 0 },   groundtype: "grass" },

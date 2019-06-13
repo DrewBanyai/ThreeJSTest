@@ -5,13 +5,14 @@ class GroundBlock {
         this.block = null;
         this.topper = null;
         this.shadow = null;
-        this.content = this.generateContent();
+        this.generateContent();
     }
 
     generateContent() {
         //  Create the basic block geometry
         let position = GroundBlock.getBlockPosition(this.indexXZ);
-        let model = generateModel_GroundBlock(position);
+        let model = {};
+        generateModel_GroundBlock(model, position);
         this.block = model.block;
         this.shadow = model.shadow;
 
@@ -91,13 +92,13 @@ class GroundBlock {
     }
 
     static generateGrassTexture() {
-        var canvas = document.createElement( 'canvas' );
+        let canvas = document.createElement( 'canvas' );
         canvas.width = 512;
         canvas.height = 512;
 
-        var context = canvas.getContext( '2d' );
+        let context = canvas.getContext( '2d' );
 
-        for ( var i = 0; i < 20000; i ++ ) {
+        for ( let i = 0; i < 20000; i ++ ) {
             context.fillStyle = 'hsl(0,0%,' + ( Math.random() * 50 + 50 ) + '%)';
             context.beginPath();
             context.arc( Math.random() * canvas.width, Math.random() * canvas.height, Math.random() + 0.15, 0, Math.PI * 2, true );

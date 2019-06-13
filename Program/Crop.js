@@ -13,7 +13,7 @@ class Crop {
 		this.cropTime = 0;
 		this.cropCycle = Crop.getCropCycle(this.worldObject.objectSubtype);
 		this.groundBlock = null;
-		this.content = this.generateContent();
+		this.generateContent();
 	}
 
 	generateContent() {
@@ -41,7 +41,8 @@ class Crop {
 
 	createSeed() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
-		let model = generateModel_BeansSeed(position);
+		let model = {};
+		generateModel_BeansSeed(model, position);
 		this.worldObject.addToMeshGroup(model.plant1);
 		this.worldObject.addToMeshGroup(model.plant2);
 		this.worldObject.addToMeshGroup(model.plant3);
@@ -49,7 +50,8 @@ class Crop {
 
 	createSprout() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
-		let model = generateModel_BeansSprout(position);
+		let model = {};
+		generateModel_BeansSprout(model, position);
 		this.worldObject.addToMeshGroup(model.plant1);
 		this.worldObject.addToMeshGroup(model.plant2);
 		this.worldObject.addToMeshGroup(model.plant3);
@@ -57,7 +59,8 @@ class Crop {
 
 	createYouth() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
-		let model = generateModel_BeansYouth(position);
+		let model = {};
+		generateModel_BeansYouth(model, position);
 		this.worldObject.addToMeshGroup(model.plant1);
 		this.worldObject.addToMeshGroup(model.plant2);
 		this.worldObject.addToMeshGroup(model.plant3);
@@ -65,7 +68,8 @@ class Crop {
 
 	createGrown() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
-		let model = generateModel_BeansGrown(position);
+		let model = {};
+		generateModel_BeansGrown(model, position);
 		this.worldObject.addToMeshGroup(model.plant1);
 		this.worldObject.addToMeshGroup(model.plant2);
 		this.worldObject.addToMeshGroup(model.plant3);

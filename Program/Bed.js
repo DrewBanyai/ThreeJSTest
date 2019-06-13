@@ -2,12 +2,13 @@ class Bed {
 	constructor(data) {
         this.worldObject = new WorldObject({ type: "bed", subtype: "basic", baseObject: this });
 		this.indexXZ = data.indexXZ;
-		this.content = this.generateContent();
+		this.generateContent();
 	}
 
 	generateContent() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
-		let model = generateModel_GenericBed(position);
+		let model = {};
+		generateModel_GenericBed(model, position);
 
 		this.worldObject.addToMeshGroup(model.bedPostTL);
 		this.worldObject.addToMeshGroup(model.bedPostTR);

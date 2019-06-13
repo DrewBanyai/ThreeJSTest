@@ -1,4 +1,4 @@
-var CommandAction = {};
+let CommandAction = {};
 
 CommandAction.MoveToWood = {
     Type: "MoveToWood",

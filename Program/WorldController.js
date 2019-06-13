@@ -4,7 +4,7 @@ class WorldController {
 
         this.characters = []; //  A list of character WorldObject entities
         this.dayTime = 15;
-        this.content = this.generateContent();
+        this.generateContent();
     }
 
     generateContent() {

@@ -1,5 +1,5 @@
 //  These colors are usable anywhere in the program
-var Colors = {
+let Colors = {
 	//  Basic colors to be used across the project
 	cyan: 					"rgb(36, 128, 121)",
 	brown: 					"rgb(169,143,120)",

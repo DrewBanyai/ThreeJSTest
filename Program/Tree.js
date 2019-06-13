@@ -13,19 +13,20 @@ class Tree {
 		this.height = data.height;
 		this.groundBlock = null;
 		this.shadow = null;
-		this.content = this.generateContent();
+		this.generateContent();
 	}
 
 	generateContent() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
-		let treeModel = generateModel_TreeGrown(position);
+		let model = {};
+		generateModel_TreeGrown(model, position);
 
-		this.worldObject.addToMeshGroup(treeModel.trunk);
-		this.worldObject.addToMeshGroup(treeModel.tree);
-		this.worldObject.addToMeshGroup(treeModel.shadow);
+		this.worldObject.addToMeshGroup(model.trunk);
+		this.worldObject.addToMeshGroup(model.tree);
+		this.worldObject.addToMeshGroup(model.shadow);
 
 		//  Save off the shadow
-		this.shadow = treeModel.shadow;
+		this.shadow = model.shadow;
 
 		return null;
 	}

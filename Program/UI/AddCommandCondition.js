@@ -13,7 +13,7 @@ class AddCommandCondition {
 		let modalBox = document.createElement("div");
 		modalBox.id = "AddCommandCondition";
 		modalBox.style.width = "400px";
-		modalBox.style.height = "300px";
+		modalBox.style.height = "340px";
 		modalBox.style.background = "darkgray";
 		modalBox.style.border = "1px solid black";
 		modalBox.style.borderRadius = "6px";

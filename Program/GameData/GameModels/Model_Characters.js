@@ -1,6 +1,4 @@
-var generateModel_BasicCharacter = () => {
-    let model = {};
-
+let generateModel_BasicCharacter = (model) => {
     model.colors = {
         head: "rgb(200, 100, 100)",
         body: "rgb(100, 200, 100)",
@@ -31,6 +29,4 @@ var generateModel_BasicCharacter = () => {
     model.parts.leg2 = new THREE.Mesh(legsGeom, new THREE.MeshLambertMaterial({ color: model.colors.leg2 }));
 
     for (let part in this.model) { this.model[part].castShadow = true; }
-
-    return model;
 };
