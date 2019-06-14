@@ -9,7 +9,7 @@ class MainUI {
 
 		//  Create the title bar at the top of the screen
 		let info = document.createElement( 'div' );
-		info.id = "TopScreenTitle",
+		info.id = "TopScreenTitle";
 		info.style.position = 'absolute';
 		info.style.top = '10px';
 		info.style.width = '100%';
@@ -19,7 +19,7 @@ class MainUI {
 		
 		//  Create the object type label at the top of the screen
 		let objectType = document.createElement( 'div' );
-		objectType.id = "ObjectTypeTitle",
+		objectType.id = "ObjectTypeTitle";
 		objectType.style.position = 'absolute';
 		objectType.style.top = '30px';
 		objectType.style.width = '100%';
@@ -29,7 +29,7 @@ class MainUI {
 		
 		//  Create the object type label at the top of the screen
 		let selectedType = document.createElement( 'div' );
-		selectedType.id = "SelectedTypeTitle",
+		selectedType.id = "SelectedTypeTitle";
 		selectedType.style.position = 'absolute';
 		selectedType.style.top = '50px';
 		selectedType.style.width = '100%';
@@ -39,7 +39,7 @@ class MainUI {
         
 		//  Create the day time label at the top of the screen
 		let dayTimeLabel = document.createElement( 'div' );
-		dayTimeLabel.id = "DayTimeLabel",
+		dayTimeLabel.id = "DayTimeLabel";
 		dayTimeLabel.style.position = 'absolute';
 		dayTimeLabel.style.top = '60px';
 		dayTimeLabel.style.left = "10px";
@@ -83,4 +83,4 @@ class MainUI {
 		if (!element) { console.log("Element 'DayTimeLabel' could not be found!"); return; }
 		element.innerText = value;
 	}
-};
+}

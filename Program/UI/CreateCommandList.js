@@ -147,12 +147,12 @@ class CreateCommandList {
 				AddCommandCondition.ShowMenu();
 			};
 			clConditionsList.appendChild(newConditionButton);
-		}
+		};
 		clConditionsList.onmouseleave = () => {
 			if (newConditionButton === null) { return; }
 			clConditionsList.removeChild(newConditionButton);
 			newConditionButton = null;
-		}
+		};
 		clConditionsContainer.appendChild(clConditionsList);
 
 		//  Command list actions container
@@ -204,12 +204,12 @@ class CreateCommandList {
 				AddCommandAction.ShowMenu();
 			};
 			clActionsList.appendChild(newActionButton);
-		}
+		};
 		clActionsList.onmouseleave = () => {
 			if (newActionButton === null) { return; }
 			clActionsList.removeChild(newActionButton);
 			newActionButton = null;
-		}
+		};
 		clActionsContainer.appendChild(clActionsList);
 
 		container.SetCharacter = (character) => this.SetCharacter(character);

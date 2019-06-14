@@ -21,7 +21,7 @@ function createScene() {
 function createCamera() {
 	let aspectRatio = window.innerWidth / window.innerHeight;
 	let fieldOfView = 25;
-	let nearPlane = .1;
+	let nearPlane = 0.1;
 	let farPlane = 1000; 
 
 	//  Create a 3D camera, and set it behind the 0,0,0 position, aiming at it.

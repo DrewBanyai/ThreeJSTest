@@ -5,6 +5,6 @@ let customizeShadow = (mesh, opacity) =>{ //opacity, target mesh
     mesh_shadow.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
     mesh_shadow.receiveShadow = true;
     return mesh_shadow;
-}
+};
 
-let columnRowsEqual = (a, b) => { return ((a.x === b.x) && (a.z === b.z)); }
+let columnRowsEqual = (a, b) => { return ((a.x === b.x) && (a.z === b.z)); };

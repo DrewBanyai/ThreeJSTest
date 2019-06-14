@@ -91,15 +91,15 @@ class ChooseCommandList {
 			newCommandListButton.onclick = () => {
 				ChooseCommandList.HideMenu();
 				CreateCommandList.ShowMenu();
-			}
+			};
 			this.commandList.appendChild(newCommandListButton);
-		}
+		};
 		this.commandList.onmouseleave = () => {
             let element = document.getElementById("ChooseCommandListContainer");
 			if (newCommandListButton === null) { return; }
 			this.commandList.removeChild(newCommandListButton);
 			newCommandListButton = null;
-		}
+		};
         modalBox.appendChild(this.commandList);
         
         container.SetCharacter = (character) => this.SetCharacter(character);
@@ -142,7 +142,7 @@ class ChooseCommandList {
     }
 
     SaveCommandListToCharacter(clName) {
-        this.character.SetCommandList(clName)
+        this.character.SetCommandList(clName);
     }
 
 	static SetCharacter(character) { 

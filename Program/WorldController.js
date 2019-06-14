@@ -17,7 +17,7 @@ class WorldController {
         scene.background = new THREE.Color(null);
 
         //  Set the ambient lighting for the scene
-        this.lighting.ambient = new THREE.AmbientLight(null, 0.5)
+        this.lighting.ambient = new THREE.AmbientLight(null, 0.5);
         scene.add(this.lighting.ambient);
 
         //  Set the shadow lighting for the scene
@@ -27,7 +27,7 @@ class WorldController {
         scene.add(this.lighting.shadow);
 
         //  Set the backlight lighting for the scene
-        this.lighting.backlight = new THREE.DirectionalLight(null, .2);
+        this.lighting.backlight = new THREE.DirectionalLight(null, 0.2);
         this.lighting.backlight.position.set(-100, 200, 50);
         this.lighting.backlight.castShadow = false;
         scene.add(this.lighting.backlight);
@@ -76,7 +76,7 @@ class WorldController {
         let treePositionValid = (indexXZ) => { return ((getGroundBlockSubType(indexXZ) === "grass") && (!getGroundBlockTopper(indexXZ)) && (!this.areAnyCharactersAtXZ(indexXZ))); };
         while (!treePositionValid(indexXZ)) { indexXZ = getRandomBlockPosition(); }
 
-        let tree = new Tree({ height: "0.18", indexXZ: indexXZ })
+        let tree = new Tree({ height: "0.18", indexXZ: indexXZ });
         scene.add(tree.worldObject.getMeshObjectGroup());
 
         setGroundBlockTopper(indexXZ, tree);
@@ -95,7 +95,7 @@ class WorldController {
     }
 
     plantCrop(char, indexXZ) {
-        if (!(getGroundBlockSubType(indexXZ) === "dirt")) { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
+        if (getGroundBlockSubType(indexXZ) !== "dirt") { console.log("Attempted to plant a crop on the wrong type of GroundPlot"); return; }
 
         let crop = new Crop({ cropType: "beans", indexXZ: indexXZ });
         scene.add(crop.worldObject.getMeshObjectGroup());
@@ -126,30 +126,30 @@ class WorldController {
                 this.plantTree();
                 char.stats.wood += 5;
             }
-        }
+        };
 
         character.actions.plant = (char, target) => {
             if (target.topper instanceof Crop) { console.log("Attempting to plant a crop where one already exists"); return; }
             this.plantCrop(char, target.indexXZ);
-        }
+        };
 
         character.actions.harvest = (char, target) => {
             if (!(target.topper instanceof Crop)) { console.log("Attempting to harvest a crop where one does not exist"); return; }
             let blockKey = getKeyFromColumnRow(target.indexXZ);
             this.harvestCrop(char, target.indexXZ);
-        }
+        };
 
         character.actions.sleep = async (char, target) => {
             if (!(target.topper instanceof Bed)) { console.log("Attempting to lay in a bed where one does not exist"); return; }
             await char.layDown();
             DayNightCurrentState.currentTimer = DayNightCycle.morning;
             char.stats.exhaustion = (char.stats.exhaustion > 5) ? char.stats.exhaustion - 5 : 0;
-        }
+        };
 
         character.actions.drink = async (char, target) => {
             char.drinkWater();
             char.stats.thirst = (char.stats.thirst > 5) ? char.stats.thirst - 5 : 0;
-        }
+        };
     }
 
     update(timeDelta) {
@@ -173,6 +173,6 @@ class WorldController {
 
         //  Show the current time of day in the UI
         let timeOfDay = DayNightCurrentState.nightTime ? "Night time" : "Day time";
-        MainUI.setDayTimeValue(`${timeOfDay} - ${parseInt(DayNightCurrentState.currentTimer)}`)
+        MainUI.setDayTimeValue(`${timeOfDay} - ${parseInt(DayNightCurrentState.currentTimer)}`);
     }
 }

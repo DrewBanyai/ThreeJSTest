@@ -19,7 +19,7 @@ CommandCondition.WaterNearby = {
     searchRadius: 10,
     check: (character, condition) => {
         if (character.command.waterPath) { return true; }
-        let waterExistsCheck = (key) => { return (getGroundBlockFromKey(key).worldObject.objectSubtype === "water"); }
+        let waterExistsCheck = (key) => { return (getGroundBlockFromKey(key).worldObject.objectSubtype === "water"); };
         character.command.waterPath = findPath(character.indexXZ, waterExistsCheck, condition.searchRadius);
         if (!character.command.waterPath || character.command.waterPath.length == 0) { return false; }
         return true;

@@ -9,7 +9,7 @@ class WorldObject {
 	}
 
 	addToMeshGroup(item) { item.worldObject = this; this.meshObjectGroup.add(item); }
-	removeFromMeshGroup(item) { this.meshObjectGroup.children = this.meshObjectGroup.children.filter(function(value, index, arr) { return value !== item; })};
+	removeFromMeshGroup(item) { this.meshObjectGroup.children = this.meshObjectGroup.children.filter(function(value, index, arr) { return value !== item; }); }
 	clearMeshGroup() { while (this.meshObjectGroup.children.length > 0) { this.meshObjectGroup.children.pop(); } }
 	getMeshObjectGroup() { return this.meshObjectGroup; }
 	setIsRayColliding(func) { this.isRayColliding = func; }

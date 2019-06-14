@@ -4,7 +4,7 @@ let DayNightCurrentState = {
 	lightLevel: 0,
 	skyColor: "rgb(0, 0, 0)",
 	nightTime: false,
-}
+};
 
 //  Constant values we'll use to determine current light and color values for the world
 const DayNightCycle = {
@@ -17,7 +17,7 @@ const DayNightCycle = {
 		{ r: 135, 	g: 196, 	b: 235 },		//  Mid-day Blue
 		{ r: 71, 	g: 92, 		b: 108 },		//  Evening Blue
 	],
-	skyColorRGB: () => { return `rgb(${DayNightCurrentState.skyColor.r}, ${DayNightCurrentState.skyColor.g}, ${DayNightCurrentState.skyColor.b})` },
+	skyColorRGB: () => { return `rgb(${DayNightCurrentState.skyColor.r}, ${DayNightCurrentState.skyColor.g}, ${DayNightCurrentState.skyColor.b})`; },
 	morning: 0.7,
 	evening: 2.7,
 };
@@ -25,10 +25,10 @@ const DayNightCycle = {
 if (DayNightCycle.dayLightLevels.length != DayNightCycle.dayNightIntervalCount) { console.log("dayLightLevels is not the correct length!"); }
 if (DayNightCycle.skyColorLevels.length != DayNightCycle.dayNightIntervalCount) { console.log("skyColorLevels is not the correct length!"); }
 
-let rgbAdd = (rgb1, rgb2) => { return { r: rgb2.r + rgb1.r, g: rgb2.g + rgb1.g, b: rgb2.b + rgb1.b }; }
-let rgbDiff = (rgb1, rgb2) => { return { r: rgb2.r - rgb1.r, g: rgb2.g - rgb1.g, b: rgb2.b - rgb1.b }; }
-let rgbMultiply = (rgb, multiple) => { return { r: rgb.r * multiple, g: rgb.g * multiple, b: rgb.b * multiple }; }
-let rgbInt = (rgb, multiple) => { return { r: parseInt(rgb.r), g: parseInt(rgb.g), b: parseInt(rgb.b) }; }
+let rgbAdd = (rgb1, rgb2) => { return { r: rgb2.r + rgb1.r, g: rgb2.g + rgb1.g, b: rgb2.b + rgb1.b }; };
+let rgbDiff = (rgb1, rgb2) => { return { r: rgb2.r - rgb1.r, g: rgb2.g - rgb1.g, b: rgb2.b - rgb1.b }; };
+let rgbMultiply = (rgb, multiple) => { return { r: rgb.r * multiple, g: rgb.g * multiple, b: rgb.b * multiple }; };
+let rgbInt = (rgb, multiple) => { return { r: parseInt(rgb.r), g: parseInt(rgb.g), b: parseInt(rgb.b) }; };
 
 let updateDayTimeCycle = (timeDelta) => {
 	//  Update the current timer, then ensure we stay within the time range we've defined
@@ -61,4 +61,4 @@ let updateDayTimeCycle = (timeDelta) => {
 
 	//  Adjust the UI to night time mode (white text) or day time mode (black text)
 	if (oldNightTime !== DayNightCurrentState.nightTime) { MainUI.setColor(DayNightCurrentState.nightTime ? "white" : "black"); }
-}
+};

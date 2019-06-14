@@ -84,7 +84,7 @@ let findPath = (indexXZStart, check, maxDistance = 500) => {
         frontier[blockKey] = path;
     };
 
-    let pathPlusEntry = (path, entry) => { let newPath = [...path]; newPath.push(entry); return newPath; }
+    let pathPlusEntry = (path, entry) => { let newPath = [...path]; newPath.push(entry); return newPath; };
 
     let addFrontierNeighbors = (frontierEntry) => {
         let pathSize = frontierEntry.length;
@@ -113,7 +113,7 @@ let findPath = (indexXZStart, check, maxDistance = 500) => {
         ++index;
         //  Add all frontier entries to the old frontier map, make a copy of the frontier list, then clear it
         for (let key in frontier) { oldFrontier[key] = true; }
-        let currentFrontier = {}
+        let currentFrontier = {};
         for (let key in frontier) { currentFrontier[key] = Object.assign(frontier[key]); }
         frontier = {};
 

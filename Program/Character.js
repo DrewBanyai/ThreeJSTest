@@ -57,7 +57,7 @@ class Character {
     getCenterPoint() {
         let height = this.position.y + (this.model.sizes.legs.y + this.model.sizes.body.y + this.model.sizes.head.y);
         let ground = GroundBlock.getTopMiddleDelta();
-        return new THREE.Vector3(ground.x, ground.y + (height / 2), ground.z)
+        return new THREE.Vector3(ground.x, ground.y + (height / 2), ground.z);
     }
 
     commandToMove(indexXZ, target) {
@@ -124,7 +124,7 @@ class Character {
         //  If the next block is an unwalkable block, stop where we are and commit the action as if we reached the block
         let block = getGroundBlock(this.walkPath[0].x, this.walkPath[0].z);
         let nextBlockUnwalkable = (groundTypesUnwalkable.includes(block.worldObject.objectSubtype));
-        nextBlockUnwalkable |= (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType))
+        nextBlockUnwalkable |= (block.topper && blockToppersUnwalkable.includes(block.topper.worldObject.objectType));
         if (nextBlockUnwalkable) { 
             this.walkPath.shift();
             this.reachDestination();

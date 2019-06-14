@@ -7,7 +7,7 @@ class AddCommandCondition {
 		let container = document.createElement("div");
 		container.id = "AddCommandConditionContainer";
 		container.style.position = "absolute";
-		container.style.width = "100%",
+		container.style.width = "100%";
 		container.style.height = "100%";
 
 		let modalBox = document.createElement("div");
@@ -42,12 +42,11 @@ class AddCommandCondition {
 		closeMenuButton.style.cursor = "pointer";
 		closeMenuButton.style.userSelect = "none";
 		closeMenuButton.innerText = "X";
-		closeMenuButton.onmouseenter = () => { closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)"; }
-		closeMenuButton.onmouseleave = () => { closeMenuButton.style.backgroundColor = "rgb(220, 160, 160)"; }
-		closeMenuButton.onmousedown = () => { closeMenuButton.style.backgroundColor = "rgb(220, 120, 120)"; }
-		closeMenuButton.onmouseup = () => { closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)"; }
-		closeMenuButton.onclick = () => { AddCommandCondition.HideMenu(); }
-		topBarContainer.appendChild(closeMenuButton);
+		closeMenuButton.onmouseenter = () => { closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)"; };
+		closeMenuButton.onmouseleave = () => { closeMenuButton.style.backgroundColor = "rgb(220, 160, 160)"; };
+		closeMenuButton.onmousedown = () => { closeMenuButton.style.backgroundColor = "rgb(220, 120, 120)"; };
+		closeMenuButton.onmouseup = () => { closeMenuButton.style.backgroundColor = "rgb(240, 120, 120)"; };
+		closeMenuButton.onclick = () => { AddCommandCondition.HideMenu(); };
 
 		let optionsList = document.createElement("div");
 		optionsList.id = "OptionsList";

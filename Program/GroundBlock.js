@@ -16,7 +16,7 @@ class GroundBlock {
         this.block = model.block;
         this.shadow = model.shadow;
 
-        if (this.worldObject.objectSubtype === "grass") { this.addGrass(); }
+        if (this.worldObject.objectSubtype === "grass") { /*this.addGrass();*/ }
 
         this.worldObject.addToMeshGroup(this.block);
         this.worldObject.addToMeshGroup(this.shadow);
@@ -28,7 +28,7 @@ class GroundBlock {
 
     setGroundSubtype(subtype) {
         //  Get rid of any special additions from the old subtype (this.worldObject.objectSubtype)
-        if (this.worldObject.objectSubtype === "grass") { this.removeGrass(); }
+        if (this.worldObject.objectSubtype === "grass") { /*this.removeGrass();*/ }
         if (this.worldObject.objectSubtype === "water") { 
             this.block.position.y -= ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
             this.shadow.position.y -= ((GroundBlock.getPlotSizeWater().y - GroundBlock.getPlotSize().y) / 2);
@@ -40,7 +40,7 @@ class GroundBlock {
         this.block.material.color.set(GroundBlock.getGroundBlockColor(this.worldObject.objectSubtype));
 
         //  Add any special additions from the new subtype (this.worldObject.objectSubtype)
-        if (subtype === "grass") { this.addGrass(); }
+        if (subtype === "grass") { /*this.addGrass();*/ }
         if (subtype === "water") { 
             this.block.scale.y = (GroundBlock.getPlotSizeWater().y / GroundBlock.getPlotSize().y);
             this.shadow.scale.y = (GroundBlock.getPlotSizeWater().y / GroundBlock.getPlotSize().y);
@@ -50,7 +50,6 @@ class GroundBlock {
     }
 
     addGrass() {
-        return;
         if (this.topper && this.topper.grass === true) { console.log("Attempting to place a grass patch where one already exists!"); return; }
         this.topper = new THREE.Group();
         this.topper.grass = true;
@@ -72,7 +71,6 @@ class GroundBlock {
     }
 
     removeGrass() {
-        return; //  For now, return out... we don't have grass
         if (!this.topper || this.topper.grass !== true) { console.log("Attempting to remove a grass patch where one does not exist!"); return; }
         this.worldObject.removeFromMeshGroup(this.topper);
         this.topper = null;
