@@ -118,4 +118,4 @@ class GroundBlock {
         position.z = (-GroundBlock.getPlotSize().z * 5) + (indexXZ.z * GroundBlock.getPlotSize().z);
         return position;
     }
-};
+}

@@ -2,12 +2,12 @@ let CommandCondition = {};
 
 CommandCondition.WoodNearby = {
     conditionType: "WoodNearby",
-    Description: "If there is a tree within 30 spaces...",
-    searchRadius: 30,
+    Description: "If there is a grown tree within 60 spaces...",
+    searchRadius: 60,
     check: (character, condition) => { 
         if (character.command.treePath) { return true; }
-        let treeExistsCheck = (key) => { if (getGroundBlockFromKey(key).topper instanceof Tree) { character.command.destinationTree = getGroundBlockFromKey(key); return true; } return false; };
-        character.command.treePath = findPath(character.indexXZ, treeExistsCheck, condition.searchRadius);
+        let grownTreeCheck = (key) => { if ((getGroundBlockFromKey(key).topper instanceof Tree) && (getGroundBlockFromKey(key).topper.currentState === Tree.stateEnum.GROWN)) { character.command.destinationTree = getGroundBlockFromKey(key); return true; } return false; };
+        character.command.treePath = findPath(character.indexXZ, grownTreeCheck, condition.searchRadius);
         if (!character.command.treePath || character.command.treePath.length == 0) { return false; }
         return true;
     },

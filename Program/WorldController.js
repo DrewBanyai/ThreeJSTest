@@ -175,4 +175,4 @@ class WorldController {
         let timeOfDay = DayNightCurrentState.nightTime ? "Night time" : "Day time";
         MainUI.setDayTimeValue(`${timeOfDay} - ${parseInt(DayNightCurrentState.currentTimer)}`)
     }
-};
+}

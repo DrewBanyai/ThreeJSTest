@@ -20,4 +20,4 @@ class Bed {
 	
 		return null;
 	}
-};
+}

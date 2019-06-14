@@ -15,46 +15,46 @@ class CharacterMenu {
         container.style.top = "90px";
 		
 		//  Create the hunger label at the top of the screen
-		let hungerLabel = document.createElement( 'div' );
-		hungerLabel.id = "HungerLabel",
-		hungerLabel.style.position = 'absolute';
-		hungerLabel.style.top = '10px';
-		hungerLabel.style.left = "10px";
-		hungerLabel.style.width = '100%';
-		hungerLabel.innerHTML = "HUNGER";
-		container.appendChild( hungerLabel );
+		let hungerLabel = new TextLabel("HungerLabel", {
+			position: "absolute",
+			top: "10px",
+			left: "10px",
+			width: "100%",
+			text: "HUNGER",
+		});
+		container.appendChild(hungerLabel.content);
 		
 		//  Create the thirst label at the top of the screen
-		let thirstLabel = document.createElement( 'div' );
-		thirstLabel.id = "ThirstLabel",
-		thirstLabel.style.position = 'absolute';
-		thirstLabel.style.top = '30px';
-		thirstLabel.style.left = "10px";
-		thirstLabel.style.width = '100%';
-		thirstLabel.innerHTML = "THIRST";
-		container.appendChild( thirstLabel );
+		let thirstLabel = new TextLabel("ThirstLabel", {
+			position: "absolute",
+			top: "30px",
+			left: "10px",
+			width: "100%",
+			text: "THIRST",
+		});
+		container.appendChild(thirstLabel.content);
 		
 		//  Create the exhaustion label at the top of the screen
-		let exhaustionLabel = document.createElement( 'div' );
-		exhaustionLabel.id = "ExhaustionLabel",
-		exhaustionLabel.style.position = 'absolute';
-		exhaustionLabel.style.top = '50px';
-		exhaustionLabel.style.left = "10px";
-		exhaustionLabel.style.width = '100%';
-		exhaustionLabel.innerHTML = "EXHAUSTION";
-		container.appendChild( exhaustionLabel );
+		let exhaustionLabel = new TextLabel("ExhaustionLabel", {
+			position: "absolute",
+			top: "50px",
+			left: "10px",
+			width: "100%",
+			text: "EXHAUSTION",
+		});
+		container.appendChild(exhaustionLabel.content);
 		
 		//  Create the wood label at the top of the screen
-		let woodLabel = document.createElement( 'div' );
-		woodLabel.id = "WoodLabel",
-		woodLabel.style.position = 'absolute';
-		woodLabel.style.top = '70px';
-		woodLabel.style.left = "10px";
-		woodLabel.style.width = '100%';
-		woodLabel.innerHTML = "WOOD";
-		container.appendChild( woodLabel );
+		let woodLabel = new TextLabel("WoodLabel", {
+			position: "absolute",
+			top: "70px",
+			left: "10px",
+			width: "100%",
+			text: "WOOD",
+		});
+		container.appendChild(woodLabel.content);
 
-        container.style.visibility = "hidden";
+        container.style.display = "none";
 
         container.setCharacter = (character) => this.setCharacter(character);
         container.update = () => this.update();
@@ -67,7 +67,7 @@ class CharacterMenu {
     }
 
     update() {
-        if (this.character === null || this.content.style.visibility === "hidden") { return; }
+        if (this.character === null || this.content.style.display === "none") { return; }
 
         CharacterMenu.setHungerValue(this.character.stats.hunger);
         CharacterMenu.setThirstValue(this.character.stats.thirst);
@@ -114,7 +114,7 @@ class CharacterMenu {
 	static IsMenuActive() { 
 		let element = document.getElementById("CharacterMenuContainer");
 		if (!element) { console.log("Element 'CharacterMenuContainer' could not be found!"); return; }
-		return (element.style.visibility === "visible");
+		return (!element.style.display);
 	}
 
 	static ToggleMenu() {
@@ -125,12 +125,12 @@ class CharacterMenu {
 	static ShowMenu() {
 		let element = document.getElementById("CharacterMenuContainer");
 		if (!element) { console.log("Element 'CharacterMenuContainer' could not be found!"); return; }
-		element.style.visibility = "visible";
+		element.style.display = "";
 	}
 
 	static HideMenu() {
 		let element = document.getElementById("CharacterMenuContainer");
 		if (!element) { console.log("Element 'CharacterMenuContainer' could not be found!"); return; }
-		element.style.visibility = "hidden";
+		element.style.display = "none";
 	}
-};
+}

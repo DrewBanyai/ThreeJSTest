@@ -47,24 +47,29 @@ class MainUI {
 		dayTimeLabel.innerHTML = "DAY/TIME";
 		container.appendChild( dayTimeLabel );
 
-		this.CreateCommandList(container);
+		this.CreateCommandListMenus(container);
 
 		return container;
 	}
 
-	CreateCommandList(container) {
-		let createCommandListContainer = document.createElement("div");
-		createCommandListContainer.style.color = "black";
-		container.appendChild(createCommandListContainer);
+	CreateCommandListMenus(container) {
+		//  Command List Menu Container
+		let commandListMenuContainer = document.createElement("div");
+		commandListMenuContainer.style.color = "black";
+		container.appendChild(commandListMenuContainer);
+
+		let chooseCL = new ChooseCommandList();
+		commandListMenuContainer.appendChild(chooseCL.content);
 
 		let createCL = new CreateCommandList();
-		createCommandListContainer.appendChild(createCL.content);
+		createCL.content.style.display = "none";
+		commandListMenuContainer.appendChild(createCL.content);
 
 		let addCondition = new AddCommandCondition();
-		createCommandListContainer.appendChild(addCondition.content);
+		commandListMenuContainer.appendChild(addCondition.content);
 
 		let addAction = new AddCommandAction();
-		createCommandListContainer.appendChild(addAction.content);
+		commandListMenuContainer.appendChild(addAction.content);
 	}
 
 	static setColor(color) { 

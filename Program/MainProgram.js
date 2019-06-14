@@ -128,9 +128,10 @@ function setEventListeners() {
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 32) {
 			if (selectedObject !== null) {
+				ChooseCommandList.SetCharacter(selectedObject.baseObject);
 				CreateCommandList.SetCharacter(selectedObject.baseObject);
-				if (CreateCommandList.IsMenuActive()) { return; }
-				CreateCommandList.ShowMenu();
+				if (ChooseCommandList.IsMenuActive()) { return; }
+				ChooseCommandList.ShowMenu();
 			}
 		}
 	});

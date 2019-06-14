@@ -89,7 +89,7 @@ class AddCommandAction {
 		addOption(null, CommandAction.PlantCropOnDirt);
 		addOption(null, CommandAction.HarvestCrop);
         
-        container.style.visibility = "hidden";
+        container.style.display = "none";
         
         return container;
     }
@@ -104,7 +104,7 @@ class AddCommandAction {
 	static IsMenuActive() { 
 		let element = document.getElementById("AddCommandActionContainer");
 		if (!element) { console.log("Element 'AddCommandActionContainer' could not be found!"); return; }
-		return (element.style.visibility === "visible");
+		return (!element.style.display);
 	}
 
 	static ToggleMenu() {
@@ -115,12 +115,12 @@ class AddCommandAction {
 	static ShowMenu() {
 		let element = document.getElementById("AddCommandActionContainer");
 		if (!element) { console.log("Element 'AddCommandActionContainer' could not be found!"); return; }
-		element.style.visibility = "visible";
+		element.style.display = "";
 	}
 
 	static HideMenu() {
 		let element = document.getElementById("AddCommandActionContainer");
 		if (!element) { console.log("Element 'AddCommandActionContainer' could not be found!"); return; }
-		element.style.visibility = "hidden";
+		element.style.display = "none";
 	}
-};
+}

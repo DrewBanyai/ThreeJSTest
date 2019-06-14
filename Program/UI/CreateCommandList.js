@@ -10,7 +10,7 @@ class CreateCommandList {
 		let container = document.createElement("div");
 		container.id = "CreateCommandListContainer";
 		container.style.position = "absolute";
-		container.style.width = "100%",
+		container.style.width = "100%";
 		container.style.height = "100%";
 
 		let modalBox = document.createElement("div");
@@ -21,7 +21,7 @@ class CreateCommandList {
 		modalBox.style.border = "1px solid black";
 		modalBox.style.borderRadius = "6px";
 		modalBox.style.position = "relative";
-		modalBox.style.top = "200px",
+		modalBox.style.top = "200px";
 		modalBox.style.margin = "auto";
 		container.appendChild(modalBox);
 
@@ -52,8 +52,8 @@ class CreateCommandList {
 		taskNameInput.style.borderRadius = "6px";
 		taskNameInput.style.border = "1px solid rgb(64, 64, 64)";
 		taskNameInput.style.padding = "0px 6px 0px 6px";
-		taskNameInput.onkeydown = () => {  if (taskNameInput.value.length > maxTaskNameLength) { taskNameInput.value = taskNameInput.value.substr(0, maxTaskNameLength); } }
-		taskNameInput.onkeyup = () => {  if (taskNameInput.value.length > maxTaskNameLength) { taskNameInput.value = taskNameInput.value.substr(0, maxTaskNameLength); } }
+		taskNameInput.onkeydown = () => {  if (taskNameInput.value.length > maxTaskNameLength) { taskNameInput.value = taskNameInput.value.substr(0, maxTaskNameLength); } };
+		taskNameInput.onkeyup = () => {  if (taskNameInput.value.length > maxTaskNameLength) { taskNameInput.value = taskNameInput.value.substr(0, maxTaskNameLength); } };
 		clNameContainer.appendChild(taskNameInput);
 
 		let saveCommandListButton = document.createElement("div");
@@ -70,13 +70,11 @@ class CreateCommandList {
 		saveCommandListButton.style.cursor = "pointer";
 		saveCommandListButton.style.userSelect = "none";
 		saveCommandListButton.innerText = "Save List";
-		saveCommandListButton.onmouseenter = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		saveCommandListButton.onmouseleave = () => { saveCommandListButton.style.backgroundColor = "rgb(160, 160, 200)"; }
-		saveCommandListButton.onmousedown = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 200)"; }
-		saveCommandListButton.onmouseup = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 240)"; }
-		saveCommandListButton.onclick = () => {
-			this.SaveCommandList();
-		}
+		saveCommandListButton.onmouseenter = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 240)"; };
+		saveCommandListButton.onmouseleave = () => { saveCommandListButton.style.backgroundColor = "rgb(160, 160, 200)"; };
+		saveCommandListButton.onmousedown = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 200)"; };
+		saveCommandListButton.onmouseup = () => { saveCommandListButton.style.backgroundColor = "rgb(140, 140, 240)"; };
+		saveCommandListButton.onclick = () => { this.SaveCommandList(); };
 		clNameContainer.appendChild(saveCommandListButton);
 
 		let closeCommandListButton = document.createElement("div");
@@ -93,11 +91,11 @@ class CreateCommandList {
 		closeCommandListButton.style.cursor = "pointer";
 		closeCommandListButton.style.userSelect = "none";
 		closeCommandListButton.innerText = "X";
-		closeCommandListButton.onmouseenter = () => { closeCommandListButton.style.backgroundColor = "rgb(240, 120, 120)"; }
-		closeCommandListButton.onmouseleave = () => { closeCommandListButton.style.backgroundColor = "rgb(220, 160, 160)"; }
-		closeCommandListButton.onmousedown = () => { closeCommandListButton.style.backgroundColor = "rgb(220, 120, 120)"; }
-		closeCommandListButton.onmouseup = () => { closeCommandListButton.style.backgroundColor = "rgb(240, 120, 120)"; }
-		closeCommandListButton.onclick = () => { CreateCommandList.HideMenu(); }
+		closeCommandListButton.onmouseenter = () => { closeCommandListButton.style.backgroundColor = "rgb(240, 120, 120)"; };
+		closeCommandListButton.onmouseleave = () => { closeCommandListButton.style.backgroundColor = "rgb(220, 160, 160)"; };
+		closeCommandListButton.onmousedown = () => { closeCommandListButton.style.backgroundColor = "rgb(220, 120, 120)"; };
+		closeCommandListButton.onmouseup = () => { closeCommandListButton.style.backgroundColor = "rgb(240, 120, 120)"; };
+		closeCommandListButton.onclick = () => { CreateCommandList.HideMenu(); };
 		clNameContainer.appendChild(closeCommandListButton);
 
 		//  Command list conditions container
@@ -140,14 +138,14 @@ class CreateCommandList {
 			newConditionButton.style.cursor = "pointer";
 			newConditionButton.style.userSelect = "none";
 			newConditionButton.innerText = "Add New Condition";
-			newConditionButton.onmouseenter = () => { newConditionButton.style.backgroundColor = "rgb(64, 64, 64)"; }
-			newConditionButton.onmouseleave = () => { newConditionButton.style.backgroundColor = "rgb(0, 0, 0)"; }
-			newConditionButton.onmousedown = () => { newConditionButton.style.backgroundColor = "rgb(80, 80, 80)"; }
-			newConditionButton.onmouseup = () => { newConditionButton.style.backgroundColor = "rgb(64, 64, 64)"; }
+			newConditionButton.onmouseenter = () => { newConditionButton.style.backgroundColor = "rgb(64, 64, 64)"; };
+			newConditionButton.onmouseleave = () => { newConditionButton.style.backgroundColor = "rgb(0, 0, 0)"; };
+			newConditionButton.onmousedown = () => { newConditionButton.style.backgroundColor = "rgb(80, 80, 80)"; };
+			newConditionButton.onmouseup = () => { newConditionButton.style.backgroundColor = "rgb(64, 64, 64)"; };
 			newConditionButton.onclick = () => {
 				if (AddCommandCondition.IsMenuActive()) { return; }
 				AddCommandCondition.ShowMenu();
-			}
+			};
 			clConditionsList.appendChild(newConditionButton);
 		}
 		clConditionsList.onmouseleave = () => {
@@ -197,14 +195,14 @@ class CreateCommandList {
 			newActionButton.style.cursor = "pointer";
 			newActionButton.style.userSelect = "none";
 			newActionButton.innerText = "Add New Action";
-			newActionButton.onmouseenter = () => { newActionButton.style.backgroundColor = "rgb(64, 64, 64)"; }
-			newActionButton.onmouseleave = () => { newActionButton.style.backgroundColor = "rgb(0, 0, 0)"; }
-			newActionButton.onmousedown = () => { newActionButton.style.backgroundColor = "rgb(80, 80, 80)"; }
-			newActionButton.onmouseup = () => { newActionButton.style.backgroundColor = "rgb(64, 64, 64)"; }
+			newActionButton.onmouseenter = () => { newActionButton.style.backgroundColor = "rgb(64, 64, 64)"; };
+			newActionButton.onmouseleave = () => { newActionButton.style.backgroundColor = "rgb(0, 0, 0)"; };
+			newActionButton.onmousedown = () => { newActionButton.style.backgroundColor = "rgb(80, 80, 80)"; };
+			newActionButton.onmouseup = () => { newActionButton.style.backgroundColor = "rgb(64, 64, 64)"; };
 			newActionButton.onclick = () => {
 				if (AddCommandAction.IsMenuActive()) { return; }
 				AddCommandAction.ShowMenu();
-			}
+			};
 			clActionsList.appendChild(newActionButton);
 		}
 		clActionsList.onmouseleave = () => {
@@ -218,7 +216,7 @@ class CreateCommandList {
 		container.AddCondition = (condition) => this.AddCondition(condition);
 		container.AddAction = (action) => this.AddAction(action);
 
-		container.style.visibility = "hidden";
+		container.style.display = "none";
 
 		container.clearData = () => this.clearData();
 
@@ -282,7 +280,7 @@ class CreateCommandList {
 			return;
 		}
 
-		if (CommandList.hasOwnProperty(taskListNameInput.value)) {
+		if (CommandListList.hasOwnProperty(taskListNameInput.value)) {
 			console.log(`Command List already exists with the name "${taskListNameInput.value}", pick another name`);
 			return;
 		}
@@ -300,11 +298,12 @@ class CreateCommandList {
 		}
 
 		//  Create the new command list, save it off, and send the identifier to the selected character
-		CommandList[taskListNameInput.value] = { conditions: this.conditionDataList, actions: this.actionDataList, };
-		this.character.SetCommandList(taskListNameInput.value)
+		CommandListList[taskListNameInput.value] = { conditions: this.conditionDataList, actions: this.actionDataList, };
 
-		//  Hide the command list creation menu
+		//  Hide the command list creation menu, show the command list choice
 		CreateCommandList.HideMenu();
+		ChooseCommandList.ShowMenu();
+		ChooseCommandList.Update();
 	}
 
 	static SetCharacter(character) { 
@@ -317,7 +316,7 @@ class CreateCommandList {
 	static IsMenuActive() { 
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
-		return (element.style.visibility === "visible");
+		return (!element.style.display);
 	}
 
 	static ToggleMenu() {
@@ -329,7 +328,7 @@ class CreateCommandList {
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 		element.clearData();
-		element.style.visibility = "visible";
+		element.style.display = "";
 
 		let taskListNameInput = document.getElementById("TaskNameInput");
 		taskListNameInput.value = "";
@@ -339,7 +338,7 @@ class CreateCommandList {
 		let element = document.getElementById("CreateCommandListContainer");
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 		element.clearData();
-		element.style.visibility = "hidden";
+		element.style.display = "none";
 
 		let conditionsList = document.getElementById("CommandListConditionsList");
 		conditionsList.innerHTML = [];
@@ -347,4 +346,4 @@ class CreateCommandList {
 		let actionsList = document.getElementById("CommandListActionsList");
 		actionsList.innerHTML = [];
 	}
-};
+}

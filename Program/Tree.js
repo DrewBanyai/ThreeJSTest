@@ -21,7 +21,7 @@ class Tree {
 	generateContent() {
 		let position = GroundBlock.getBlockPosition(this.indexXZ);
 		let model = {};
-		generateModel_TreeGrown(model, position);
+		generateModel_TreeSeed(model, position);
 
 		this.worldObject.addToMeshGroup(model.trunk);
 		this.worldObject.addToMeshGroup(model.tree);
@@ -102,4 +102,4 @@ class Tree {
 			default:			return { sprout: 0, sapling: 10, youth: 20, grown: 30 };
 		}
 	}
-};
+}

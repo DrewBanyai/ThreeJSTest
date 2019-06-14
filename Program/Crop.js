@@ -93,4 +93,4 @@ class Crop {
 			default:			return { seed: 0, sprout: 10, youth: 20, grown: 30 };
 		}
 	}
-};
+}

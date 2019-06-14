@@ -90,7 +90,7 @@ class Character {
     update(timeDelta) {
         if (this.walkPath) { this.walk(timeDelta); }
         else if (this.command !== null && this.busy === false) {
-            let commandList = CommandList[this.command.CommandID];
+            let commandList = CommandListList[this.command.CommandID];
             if (this.command.actionIndex && (this.command.actionIndex >= commandList.actions.length)) { this.SetCommandList(this.command.CommandID); }
             this.positionTarget = null;
 
@@ -160,4 +160,4 @@ class Character {
             else if (this.positionTarget.worldObject.objectSubtype === "water") { this.actions.drink(this, this.positionTarget); }
         }
     }
-};
+}

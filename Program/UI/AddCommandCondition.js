@@ -89,7 +89,7 @@ class AddCommandCondition {
 		addOption(null, CommandCondition.Thirsty);
 		addOption(null, CommandCondition.Exhausted);
         
-        container.style.visibility = "hidden";
+        container.style.display = "none";
         
         return container;
     }
@@ -104,7 +104,7 @@ class AddCommandCondition {
 	static IsMenuActive() { 
 		let element = document.getElementById("AddCommandConditionContainer");
 		if (!element) { console.log("Element 'AddCommandConditionContainer' could not be found!"); return; }
-		return (element.style.visibility === "visible");
+		return (!element.style.display);
 	}
 
 	static ToggleMenu() {
@@ -115,12 +115,12 @@ class AddCommandCondition {
 	static ShowMenu() {
 		let element = document.getElementById("AddCommandConditionContainer");
 		if (!element) { console.log("Element 'AddCommandConditionContainer' could not be found!"); return; }
-		element.style.visibility = "visible";
+		element.style.display = "";
 	}
 
 	static HideMenu() {
 		let element = document.getElementById("AddCommandConditionContainer");
 		if (!element) { console.log("Element 'AddCommandConditionContainer' could not be found!"); return; }
-		element.style.visibility = "hidden";
+		element.style.display = "none";
 	}
-};
+}
