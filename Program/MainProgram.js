@@ -166,16 +166,13 @@ function getFirstMouseIntersectObject() {
 
 	let intersects = raycaster.intersectObjects(scene.children, true);
 	if (intersects.length === 0) { return null; }
-	if (intersects.length > 1000) { console.log(intersects); }
 	
-	let object = null;
 	for (let i = 0; i < intersects.length; ++i) {
-		object = intersects[i].object;
-		if (object && object.worldObject) { break; }
+		if (intersects[i].object && intersects[i].object.worldObject) { 
+			return intersects[i].object.worldObject; 
+		}
 	}
-	if (!object || !object.worldObject) { return null; }
-
-	return object.worldObject;
+	return null;
 }
 
 function highlightFirstMouseIntersect() {
@@ -247,9 +244,8 @@ function initialize() {
 function beginRender() {
 	let render = function() {
 		requestAnimationFrame( render );
-
 		renderer.render( scene, camera );
-	}
+	};
 	render();
 }
 

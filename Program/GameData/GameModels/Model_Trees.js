@@ -5,6 +5,7 @@ let generateModel_TreeSeed = (model, position) => {
     model.trunk.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + (trunkSize.y / 2), position.z);
     model.trunk.castShadow = true;
     model.trunk.receiveShadow = true;
+    model.trunk.frustumCulled = true;
     
     let treeSize = { x: 0.216, y: 0.36, z: 0.216 };
     let treeGeom = new THREE.BoxBufferGeometry(treeSize.x, treeSize.y, treeSize.z);
@@ -12,6 +13,7 @@ let generateModel_TreeSeed = (model, position) => {
     model.tree.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + trunkSize.y + (treeSize.y / 2), position.z);
     model.tree.castShadow = true;
     model.tree.receiveShadow = false;
+    model.tree.frustumCulled = true;
 
     model.shadow = customizeShadow(model.tree, 0.25); // mesh, opacity
 };
@@ -23,6 +25,7 @@ let generateModel_TreeSprout = (model, position) => {
     model.trunk.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + (trunkSize.y / 2), position.z);
     model.trunk.castShadow = true;
     model.trunk.receiveShadow = true;
+    model.trunk.frustumCulled = true;
     
     let treeSize = { x: 0.216, y: 0.36, z: 0.216 };
     let treeGeom = new THREE.BoxBufferGeometry(treeSize.x, treeSize.y, treeSize.z);
@@ -30,6 +33,7 @@ let generateModel_TreeSprout = (model, position) => {
     model.tree.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + trunkSize.y + (treeSize.y / 2), position.z);
     model.tree.castShadow = true;
     model.tree.receiveShadow = false;
+    model.tree.frustumCulled = true;
 
     model.shadow = customizeShadow(model.tree, 0.25); // mesh, opacity
 };
@@ -41,6 +45,7 @@ let generateModel_TreeYouth = (model, position) => {
     model.trunk.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + (trunkSize.y / 2), position.z);
     model.trunk.castShadow = true;
     model.trunk.receiveShadow = true;
+    model.trunk.frustumCulled = true;
     
     let treeSize = { x: 0.216, y: 0.36, z: 0.216 };
     let treeGeom = new THREE.BoxBufferGeometry(treeSize.x, treeSize.y, treeSize.z);
@@ -48,6 +53,7 @@ let generateModel_TreeYouth = (model, position) => {
     model.tree.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + trunkSize.y + (treeSize.y / 2), position.z);
     model.tree.castShadow = true;
     model.tree.receiveShadow = false;
+    model.tree.frustumCulled = true;
 
     model.shadow = customizeShadow(model.tree, 0.25); // mesh, opacity
 };
@@ -59,6 +65,7 @@ let generateModel_TreeGrown = (model, position) => {
     model.trunk.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + (trunkSize.y / 2), position.z);
     model.trunk.castShadow = true;
     model.trunk.receiveShadow = true;
+    model.trunk.frustumCulled = true;
     
     let treeSize = { x: 0.216, y: 0.36, z: 0.216 };
     let treeGeom = new THREE.BoxBufferGeometry(treeSize.x, treeSize.y, treeSize.z);
@@ -66,6 +73,7 @@ let generateModel_TreeGrown = (model, position) => {
     model.tree.position.set(position.x, position.y + (GroundBlock.getPlotSize().y / 2) + trunkSize.y + (treeSize.y / 2), position.z);
     model.tree.castShadow = true;
     model.tree.receiveShadow = false;
+    model.tree.frustumCulled = true;
 
     model.shadow = customizeShadow(model.tree, 0.25); // mesh, opacity
 };

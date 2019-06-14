@@ -4,7 +4,7 @@ class GroundBlock {
         this.indexXZ = data.indexXZ;
         this.block = null;
         this.topper = null;
-        this.shadow = null;
+        //this.shadow = null;
         this.generateContent();
     }
 

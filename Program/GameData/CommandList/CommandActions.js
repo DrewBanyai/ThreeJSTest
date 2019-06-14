@@ -63,7 +63,7 @@ CommandAction.MoveToDirt = {
     Description: "Move to the dirt",
     action: (character, action) => {
         if (!character.command.dirtPlotPath) { console.log("NO DIRT PLOT PATH EXISTS"); character.command.dirtPlotPath = null; return; }
-        if (character.command.dirtPlotPath.length <= 1) { character.command.actionIndex++; return; }
+        if (character.command.dirtPlotPath.length < 1) { character.command.actionIndex++; return; }
         character.walkPath = character.command.dirtPlotPath;
         character.command.dirtPlotPath = null;
         character.busy = true;
