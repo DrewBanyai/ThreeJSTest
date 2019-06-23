@@ -6,7 +6,20 @@ CommandCondition.WoodNearby = {
     searchRadius: 60,
     check: (character, condition) => { 
         if (character.command.treePath) { return true; }
-        let grownTreeCheck = (key) => { if ((getGroundBlockFromKey(key).topper instanceof Tree) && (getGroundBlockFromKey(key).topper.currentState === Tree.stateEnum.GROWN)) { character.command.destinationTree = getGroundBlockFromKey(key); return true; } return false; };
+        let grownTreeCheck = (key) => { 
+            let block = getGroundBlockFromKey(key);
+            let tree = block.topper;
+            if ((tree instanceof Tree) && (tree.currentState === Tree.stateEnum.GROWN) && ((tree.targeter === null) || (tree.targeter === character))) { 
+                if ((character.command.destinationTree != block) && (character.command.destinationTree != null) && (character.command.destinationTree.topper instanceof Tree)) {
+                    character.command.destinationTree.topper.targeter = null;
+                }
+                tree.targeter = character;
+                character.command.destinationTree = block;
+                return true;
+            }
+            return false; 
+        };
+
         character.command.treePath = findPath(character.indexXZ, grownTreeCheck, condition.searchRadius);
         if (!character.command.treePath || character.command.treePath.length == 0) { return false; }
         return true;

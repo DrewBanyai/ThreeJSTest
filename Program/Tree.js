@@ -15,6 +15,7 @@ class Tree {
 		this.height = data.height;
 		this.groundBlock = null;
 		this.shadow = null;
+		this.targeter = null;
 		this.generateContent();
 	}
 
