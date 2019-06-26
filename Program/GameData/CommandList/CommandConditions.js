@@ -9,13 +9,15 @@ CommandCondition.WoodNearby = {
         let grownTreeCheck = (key) => { 
             let block = getGroundBlockFromKey(key);
             let tree = block.topper;
-            if ((tree instanceof Tree) && (tree.currentState === Tree.stateEnum.GROWN) && ((tree.targeter === null) || (tree.targeter === character))) { 
-                if ((character.command.destinationTree != block) && (character.command.destinationTree != null) && (character.command.destinationTree.topper instanceof Tree)) {
-                    character.command.destinationTree.topper.targeter = null;
+            if ((tree instanceof Tree) && (tree.currentState === Tree.stateEnum.GROWN)) {
+                if (tree.targeter === character) { character.command.destinationTree = block; return true; }
+                if (tree.targeter === null) { 
+                    let myDestTree = character.command.destinationTree;
+                    if ((myDestTree != null) && (myDestTree != block) && (myDestTree.topper instanceof Tree)) { myDestTree.topper.targeter = null; }
+                    tree.targeter = character;
+                    character.command.destinationTree = block;
+                    return true;
                 }
-                tree.targeter = character;
-                character.command.destinationTree = block;
-                return true;
             }
             return false; 
         };
