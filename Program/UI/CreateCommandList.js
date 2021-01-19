@@ -311,7 +311,7 @@ class CreateCommandList {
 		if (!element) { console.log("Element 'CreateCommandListContainer' could not be found!"); return; }
 
 		element.SetCharacter(character);
-	 }
+	}
 
 	static IsMenuActive() { 
 		let element = document.getElementById("CreateCommandListContainer");

@@ -128,6 +128,7 @@ function setEventListeners() {
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode == 32) {
 			if (selectedObject !== null) {
+				CharacterCommandListMenu.SetCharacter(selectedObject.baseObject);
 				ChooseCommandList.SetCharacter(selectedObject.baseObject);
 				CreateCommandList.SetCharacter(selectedObject.baseObject);
 				if (ChooseCommandList.IsMenuActive()) { return; }
